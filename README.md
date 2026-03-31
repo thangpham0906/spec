@@ -60,3 +60,4 @@ Kiểm tra code của module <tên-module> theo checklist.
 ```
 
 "Dựa theo quy chuẩn trong thư mục .spec/, hãy tạo data patch..."
+https://experienceleague.adobe.com/en/docs/commerce

@@ -128,6 +128,23 @@ Cho phép chạy nhiều kết nối DB cho Main, Checkout và Sales.
 
 ---
 
+## 7. Ghi đè cấu hình cấp cao (Advanced Overrides)
+
+Để hỗ trợ CI/CD và Deployment an toàn, Magento cho phép ghi đè cấu hình mà không cần truy cập Admin.
+
+### Quy trình Export/Import
+- `bin/magento app:config:dump`: Xuất cấu hình từ DB ra `config.php` (shared) và `env.php` (sensitive).
+- `bin/magento app:config:import`: Áp dụng cấu hình từ file vào hệ thống.
+
+### Ghi đè bằng Biến môi trường (MANDATORY cho Cloud/Docker)
+Cấu trúc: `CONFIG__<SCOPE>__<PATH__COMPONENTS__JOINED__BY__DOUBLE__UNDERSCORE>`
+- **Scope:** `DEFAULT` (toàn hệ thống), `STORES__<CODE>`, `WEBSITES__<CODE>`.
+- **Ví dụ cụ thể**:
+  - Đổi Search Engine: `CONFIG__DEFAULT__CATALOG__SEARCH__ENGINE=opensearch`
+  - Đổi Base URL cho Website 1: `CONFIG__WEBSITES__BASE__WEB__UNSECURE__BASE_URL=https://site1.com/`
+
+---
+
 ## Liên kết
 
 - Maintenance CLI: xem [maintenance-cli.md](./maintenance-cli.md)

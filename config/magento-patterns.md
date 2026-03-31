@@ -261,3 +261,6 @@ Dùng `Magento\Framework\Setup\InstallSchemaInterface` (nhưng đặt trong clas
 - Tham khảo Quản lý Đa website (Multi-site): xem [multi-site-management.md](./references/multi-site-management.md)
 - Tham khảo Tìm kiếm & Điều hướng (Search): xem [search-navigation.md](./references/search-navigation.md)
 - Tham khảo Lưu trữ & Phương tiện (Storage): xem [storage-media.md](./references/storage-media.md)
+- Tham khảo Quy trình Triển khai (Deployment): xem [deployment-pipeline.md](./references/deployment-pipeline.md)
+- Tham khảo Danh mục Đường dẫn cấu hình: xem [config-paths.md](./references/config-paths.md)
+- Tham khảo Quản lý Kho hàng (MSI): xem [inventory-msi.md](./references/inventory-msi.md)
