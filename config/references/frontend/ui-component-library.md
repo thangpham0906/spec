@@ -1652,5 +1652,6 @@ Tích hợp với **Form**: trong `<settings><layout>` đặt `type` = `tabs`, `
 
 ## Liên kết
 - [Kiến trúc UI Components](./ui-components.md)
+- [How-to & Debug](./ui-components-howto.md)
 - [Admin UI Grid](./admin-ui-grid.md)
 - [Thư viện JavaScript](./ui-components-js-library.md)
