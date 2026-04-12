@@ -1,6 +1,6 @@
 # GraphQL — Web API (Adobe Commerce)
 
-Tài liệu gốc nằm trên **Adobe Developer — Commerce Web APIs → GraphQL**. Trong spec này, toàn bộ mục **Usage** (endpoint, token, cache, filter, response, headers, introspection, protected mutations, security, staging) gom tại [`usage.md`](./usage.md); **Reference** schema theo phiên bản tại [`reference.md`](./reference.md). Nhánh **Schema (guide)** — mục lục query/mutation theo domain trên Adobe, bắt đầu từ [`schema-attributes.md`](./schema-attributes.md) (nhóm **Attributes**); các nhóm khác (Cart, Products, …) tra trực tiếp trên [GraphQL schema](https://developer.adobe.com/commerce/webapi/graphql/schema/).
+Tài liệu gốc nằm trên **Adobe Developer — Commerce Web APIs → GraphQL**. Trong spec này, toàn bộ mục **Usage** (endpoint, token, cache, filter, response, headers, introspection, protected mutations, security, staging) gom tại [`usage.md`](./usage.md); **Reference** schema theo phiên bản tại [`reference.md`](./reference.md). Nhánh **Schema (guide)** — mục lục query/mutation theo domain trên Adobe: [`schema-attributes.md`](./schema-attributes.md) (**Attributes**), [`schema-cart.md`](./schema-cart.md) (**Cart** — queries §2–§4; mutations mục lục §5 chi tiết §6–§39; **interfaces** `CartItemInterface` §40), [`schema-catalog-service.md`](./schema-catalog-service.md) (**Catalog Service** + **`productSearch`** Live Search — §1–§7).
 
 Nhánh **Development** (định nghĩa `schema.graphqls`, resolver/batch resolver, mở rộng schema, Identity/cache tag, urlResolver tùy chỉnh, debug, exception, functional test): [`development.md`](./development.md).  
 **App Server / resolver stateless** (ràng buộc khi chạy long-lived PHP): [`../graphql-app-server.md`](../graphql-app-server.md) — bổ sung cho doc Adobe, không thay thế.
@@ -18,7 +18,7 @@ Nhánh **Development** (định nghĩa `schema.graphqls`, resolver/batch resolve
 | Chủ đề | Adobe (chính thức) | Trong `.spec` |
 |--------|-------------------|----------------|
 | Schema reference (queries/mutations theo bản) | [GraphQL API reference](https://developer.adobe.com/commerce/webapi/graphql/reference/) | [`reference.md`](./reference.md) |
-| Schema guide (mục lục theo domain: Attributes, Cart, …) | [GraphQL schema](https://developer.adobe.com/commerce/webapi/graphql/schema/) | [`schema-attributes.md`](./schema-attributes.md) §1; nhóm khác → Adobe |
+| Schema guide (mục lục theo domain: Attributes, Cart, Catalog Service, …) | [GraphQL schema](https://developer.adobe.com/commerce/webapi/graphql/schema/) | [`schema-attributes.md`](./schema-attributes.md) §1; [`schema-cart.md`](./schema-cart.md) §1; [`schema-catalog-service.md`](./schema-catalog-service.md) §1; nhóm khác → Adobe |
 | Chạy query/mutation, endpoint, usage tổng quan | [GraphQL — Usage](https://developer.adobe.com/commerce/webapi/graphql/usage/) | [`usage.md`](./usage.md) §1 |
 | Authorization / token | [Authorization](https://developer.adobe.com/commerce/webapi/graphql/usage/authorization-tokens/) | [`usage.md`](./usage.md) §2 |
 | Caching | [Caching](https://developer.adobe.com/commerce/webapi/graphql/usage/caching/) | [`usage.md`](./usage.md) §3 |
@@ -70,11 +70,89 @@ Nhánh **Development** (định nghĩa `schema.graphqls`, resolver/batch resolve
 | `setCustomAttributesOnNegotiableQuote` | [setCustomAttributesOnNegotiableQuote](https://developer.adobe.com/commerce/webapi/graphql/schema/attributes/mutations/set-custom-negotiable-quote/) | [`schema-attributes.md`](./schema-attributes.md) §17 |
 | Attribute interfaces (PaaS / SaaS) | [Interfaces](https://developer.adobe.com/commerce/webapi/graphql/schema/attributes/interfaces/) | [`schema-attributes.md`](./schema-attributes.md) §18 |
 
+### Schema — Cart (queries)
+
+| Chủ đề | Adobe (chính thức) | Trong `.spec` |
+|--------|-------------------|----------------|
+| Cart (tổng quan shopper / sidebar) | [Cart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/) | [`schema-cart.md`](./schema-cart.md) §1 |
+| Danh sách queries | [Cart queries](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/queries/) | [`schema-cart.md`](./schema-cart.md) §2 |
+| `cart` | [cart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/queries/cart/) | [`schema-cart.md`](./schema-cart.md) §3 |
+| `pickupLocations` | [pickupLocations](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/queries/pickup-locations/) | [`schema-cart.md`](./schema-cart.md) §4 |
+
+### Schema — Cart (mutations — thêm SP & khuyến mãi)
+
+| Chủ đề | Adobe (chính thức) | Trong `.spec` |
+|--------|-------------------|----------------|
+| Mục lục mutations | [Cart mutations](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/) | [`schema-cart.md`](./schema-cart.md) §5 |
+| `addProductsToCart` | [addProductsToCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/add-products/) | [`schema-cart.md`](./schema-cart.md) §6 |
+| `addSimpleProductsToCart` | [addSimpleProductsToCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/add-simple-products/) | [`schema-cart.md`](./schema-cart.md) §7 |
+| `addConfigurableProductsToCart` | [addConfigurableProductsToCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/add-configurable-products/) | [`schema-cart.md`](./schema-cart.md) §8 |
+| `addBundleProductsToCart` | [addBundleProductsToCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/add-bundle-products/) | [`schema-cart.md`](./schema-cart.md) §9 |
+| `addDownloadableProductsToCart` | [addDownloadableProductsToCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/add-downloadable-products/) | [`schema-cart.md`](./schema-cart.md) §10 |
+| `addVirtualProductsToCart` | [addVirtualProductsToCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/add-virtual-products/) | [`schema-cart.md`](./schema-cart.md) §11 |
+| `applyCouponToCart` | [applyCouponToCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/apply-coupon/) | [`schema-cart.md`](./schema-cart.md) §12 |
+| `applyCouponsToCart` | [applyCouponsToCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/apply-coupons/) | [`schema-cart.md`](./schema-cart.md) §13 |
+| `applyGiftCardToCart` | [applyGiftCardToCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/apply-giftcard/) | [`schema-cart.md`](./schema-cart.md) §14 |
+| `applyRewardPointsToCart` | [applyRewardPointsToCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/apply-reward-points/) | [`schema-cart.md`](./schema-cart.md) §15 |
+
+### Schema — Cart (mutations — gỡ dòng/mã, redeem, đặt hàng, giỏ, estimate)
+
+| Chủ đề | Adobe (chính thức) | Trong `.spec` |
+|--------|-------------------|----------------|
+| `removeItemFromCart` | [removeItemFromCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/remove-item/) | [`schema-cart.md`](./schema-cart.md) §16 |
+| `removeGiftCardFromCart` | [removeGiftCardFromCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/remove-giftcard/) | [`schema-cart.md`](./schema-cart.md) §17 |
+| `removeCouponsFromCart` | [removeCouponsFromCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/remove-coupons/) | [`schema-cart.md`](./schema-cart.md) §18 |
+| `removeCouponFromCart` | [removeCouponFromCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/remove-coupon/) | [`schema-cart.md`](./schema-cart.md) §19 |
+| `redeemGiftCardBalanceAsStoreCredit` | [redeemGiftCardBalanceAsStoreCredit](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/redeem-giftcard-balance/) | [`schema-cart.md`](./schema-cart.md) §20 |
+| `placeOrder` | [placeOrder](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/place-order/) | [`schema-cart.md`](./schema-cart.md) §21 |
+| `mergeCarts` | [mergeCarts](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/merge/) | [`schema-cart.md`](./schema-cart.md) §22 |
+| `estimateTotals` | [estimateTotals](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/estimate-totals/) | [`schema-cart.md`](./schema-cart.md) §23 |
+| `estimateShippingMethods` | [estimateShippingMethods](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/estimate-shipping-methods/) | [`schema-cart.md`](./schema-cart.md) §24 |
+| `createGuestCart` | [createGuestCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/create-guest-cart/) | [`schema-cart.md`](./schema-cart.md) §25 |
+| `createEmptyCart` | [createEmptyCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/create-empty-cart/) | [`schema-cart.md`](./schema-cart.md) §26 |
+| `clearCart` | [clearCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/clear-cart/) | [`schema-cart.md`](./schema-cart.md) §27 |
+| `assignCustomerToGuestCart` | [assignCustomerToGuestCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/assign-customer-to-guest-cart/) | [`schema-cart.md`](./schema-cart.md) §28 |
+| `applyStoreCreditToCart` | [applyStoreCreditToCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/apply-store-credit/) | [`schema-cart.md`](./schema-cart.md) §29 |
+
+### Schema — Cart (mutations — chỉnh dòng, địa chỉ, ship, thanh toán, guest email, quà, gỡ reward/credit)
+
+| Chủ đề | Adobe (chính thức) | Trong `.spec` |
+|--------|-------------------|----------------|
+| `updateCartItems` | [updateCartItems](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/update-items/) | [`schema-cart.md`](./schema-cart.md) §30 |
+| `setShippingMethodsOnCart` | [setShippingMethodsOnCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/set-shipping-method/) | [`schema-cart.md`](./schema-cart.md) §31 |
+| `setShippingAddressesOnCart` | [setShippingAddressesOnCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/set-shipping-address/) | [`schema-cart.md`](./schema-cart.md) §32 |
+| `setPaymentMethodOnCart` | [setPaymentMethodOnCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/set-payment-method/) | [`schema-cart.md`](./schema-cart.md) §33 |
+| `setPaymentMethodAndPlaceOrder` | [setPaymentMethodAndPlaceOrder](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/set-payment-place-order/) | [`schema-cart.md`](./schema-cart.md) §34 |
+| `setGuestEmailOnCart` | [setGuestEmailOnCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/set-guest-email/) | [`schema-cart.md`](./schema-cart.md) §35 |
+| `setGiftOptionsOnCart` | [setGiftOptionsOnCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/set-gift-options/) | [`schema-cart.md`](./schema-cart.md) §36 |
+| `setBillingAddressOnCart` | [setBillingAddressOnCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/set-billing-address/) | [`schema-cart.md`](./schema-cart.md) §37 |
+| `removeStoreCreditFromCart` | [removeStoreCreditFromCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/remove-store-credit/) | [`schema-cart.md`](./schema-cart.md) §38 |
+| `removeRewardPointsFromCart` | [removeRewardPointsFromCart](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/mutations/remove-reward-points/) | [`schema-cart.md`](./schema-cart.md) §39 |
+
+### Schema — Cart (interfaces)
+
+| Chủ đề | Adobe (chính thức) | Trong `.spec` |
+|--------|-------------------|----------------|
+| `CartItemInterface` (implementations) | [Cart — Interfaces](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/interfaces/) | [`schema-cart.md`](./schema-cart.md) §40 |
+
+### Schema — Catalog Service & Live Search (`productSearch`)
+
+| Chủ đề | Adobe (chính thức) | Trong `.spec` |
+|--------|-------------------|----------------|
+| Catalog Service (tổng quan) | [Catalog Service](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §1 |
+| `categories` | [categories](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/categories/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §3 |
+| `products` | [products](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/products/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §4 |
+| `productSearch` | [productSearch](https://developer.adobe.com/commerce/webapi/graphql/schema/live-search/queries/product-search/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §5 |
+| `refineProduct` | [refineProduct](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/refine-product/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §6 |
+| `variants` | [variants](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/product-variants/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §7 |
+
 ---
 
 ## Liên kết
 
 - [GraphQL Guide (Adobe)](https://developer.adobe.com/commerce/webapi/graphql/) — cổng tổng
+- Schema guide — Cart: [`schema-cart.md`](./schema-cart.md)
+- Schema guide — Catalog Service: [`schema-catalog-service.md`](./schema-catalog-service.md)
 - Schema guide — Attributes: [`schema-attributes.md`](./schema-attributes.md)
 - Development (tóm tắt Adobe): [`development.md`](./development.md)
 - App Server & resolver stateless: [`../graphql-app-server.md`](../graphql-app-server.md)

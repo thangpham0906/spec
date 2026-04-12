@@ -2,7 +2,7 @@
 
 Nguồn: [GraphQL API reference](https://developer.adobe.com/commerce/webapi/graphql/reference/)
 
-**Bổ sung:** [GraphQL schema](https://developer.adobe.com/commerce/webapi/graphql/schema/) (guide theo domain — Attributes, Cart, …) khác với trang **reference theo phiên bản**; tóm tắt nhóm **Attributes** trong [`schema-attributes.md`](./schema-attributes.md).
+**Bổ sung:** [GraphQL schema](https://developer.adobe.com/commerce/webapi/graphql/schema/) (guide theo domain — Attributes, Cart, Catalog Service, …) khác với trang **reference theo phiên bản**; tóm tắt nhóm **Attributes** trong [`schema-attributes.md`](./schema-attributes.md), nhóm **Cart** trong [`schema-cart.md`](./schema-cart.md), **Catalog Service** / **`productSearch`** (Live Search) trong [`schema-catalog-service.md`](./schema-catalog-service.md).
 
 ## Cách dùng trang reference
 
