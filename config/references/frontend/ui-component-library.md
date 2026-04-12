@@ -852,16 +852,33 @@ Hiển thị text có gắn link tĩnh hoặc động (xử lý trong `prepareDa
 ## 23. ListingToolbar & Công cụ Phân trang
 
 ### A. ListingToolbar
-Container phía trên Grid, chứa tất cả các tiện ích điều khiển.
+
+Nguồn chi tiết: [ListingToolbar (Adobe Commerce)](https://developer.adobe.com/commerce/frontend-core/ui-components/components/toolbar).
+
+Container phía trên **listing**: gom bookmark, columns controls, search, filters, mass actions, paging, v.v. JS: `Magento_Ui/js/grid/toolbar.js` (kế thừa `UiCollection`), template: `ui/grid/toolbar`.
+
+| Thuộc tính | Ý nghĩa | Mặc định |
+|------------|---------|----------|
+| `sticky` | Toolbar cố định khi cuộn (paging/filter/header bám viewport) | `false` |
+| `stickyClass` | Class bổ sung cho root khi sticky | `{'sticky-header': true}` |
+| `stickyTmpl` | Template phần sticky | `ui/grid/sticky/sticky` |
+| `template` | Template toolbar | `ui/grid/toolbar` |
+
+Ví dụ đầy đủ (sticky + các công cụ — theo Adobe):
+
 ```xml
 <listingToolbar name="listing_top">
+    <settings>
+        <sticky>true</sticky>
+    </settings>
     <bookmark name="bookmarks"/>
     <columnsControls name="columns_controls"/>
-    <exportButton name="export_button"/>
     <filterSearch name="fulltext"/>
-    <filters name="listing_filters"/>
+    <filters name="listing_filters">
+        <!-- filter definitions -->
+    </filters>
     <massaction name="listing_massaction">
-        <!-- Các action -->
+        <!-- actions -->
     </massaction>
     <paging name="listing_paging"/>
 </listingToolbar>
@@ -912,10 +929,61 @@ Phân trang cho **Listing**; tạo thêm instance **Sizes** (chọn số bản g
 ```
 
 ### C. Sizes
-Cho phép người dùng thay đổi số lượng bản ghi hiển thị trên mỗi trang (20, 30, 50, 100, 200). Đi kèm **Paging** (xem mục B).
 
-### D. Search
-Ô tìm kiếm nhanh (fulltext search) trên Grid.
+Nguồn chi tiết: [Sizes (Adobe Commerce)](https://developer.adobe.com/commerce/frontend-core/ui-components/components/sizes).
+
+Con của **Paging**: định nghĩa **số bản ghi tối đa** trên một trang và danh sách mức chọn. JS: `Magento_Ui/js/grid/paging/sizes.js`, template: `ui/grid/paging/sizes`.
+
+| Thuộc tính | Ý nghĩa | Mặc định |
+|------------|---------|----------|
+| `component` | RequireJS | `Magento_Ui/js/grid/paging/sizes` |
+| `maxSize` | Số dòng tối đa cho phép | `999` |
+| `minSize` | Số dòng tối thiểu | `1` |
+| `options` | Danh sách kích thước trang (mảng `{ value, label }`) | `[]` |
+| `template` | Template | `ui/grid/paging/sizes` |
+| `value` | Số dòng mỗi trang ban đầu | `20` |
+
+**SizeOption:** mỗi phần tử cần `value` (number) và `label` (hiển thị).
+
+Thường **không khai báo Sizes riêng** mà cấu hình qua `sizesConfig` bên trong **Paging** (xem §23.B). Ví dụ tích hợp (theo Adobe):
+
+```xml
+<paging name="listing_paging">
+    <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+            <item name="sizesConfig" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/grid/paging/sizes</item>
+                <item name="template" xsi:type="string">ui/grid/paging/sizes</item>
+                <item name="maxSize" xsi:type="number">500</item>
+            </item>
+        </item>
+    </argument>
+</paging>
+```
+
+### D. Search (filterSearch)
+
+Nguồn chi tiết: [Search (Adobe Commerce)](https://developer.adobe.com/commerce/frontend-core/ui-components/components/search).
+
+Ô tìm kiếm **fulltext** trên grid; gom các filter khác. JS: `Magento_Ui/js/grid/search/search.js`, template: `ui/grid/search/search`.
+
+| Thuộc tính | Ý nghĩa | Mặc định |
+|------------|---------|----------|
+| `label` | Nhãn ô tìm | `$t('Keyword')` |
+| `placeholder` | Placeholder khi rỗng | `'Search by keyword'` |
+| `statefull.value` | Lưu `value` vào storage khi đổi | `true` |
+| `template` | Template | `ui/grid/search/search` |
+
+Gắn trong `listingToolbar`:
+
+```xml
+<listingToolbar name="listing_top">
+    <filterSearch name="fulltext"/>
+</listingToolbar>
+```
+
+Cấu hình đầy đủ (provider, chips, bookmarks) ví dụ:
+
 ```xml
 <filterSearch name="fulltext">
     <argument name="data" xsi:type="array">
@@ -931,24 +999,182 @@ Cho phép người dùng thay đổi số lượng bản ghi hiển thị trên 
 </filterSearch>
 ```
 
-### E. Range (Filter)
-Bộ lọc theo khoảng giá trị (from/to), thường dùng cho số lượng và giá.
+### E. Range (filter — from / to)
+
+Nguồn chi tiết: [Range (Adobe Commerce)](https://developer.adobe.com/commerce/frontend-core/ui-components/components/range).
+
+Bộ lọc **khoảng** trên grid: hai ô **from / to** (kiểu `date` hoặc `text`). PHP backend: `Magento\Ui\Component\Filters\Type\Range`. JS: `Magento_Ui/js/grid/filters/range`, template: `ui/grid/filters/elements/group`.
+
+| Thuộc tính | Ý nghĩa | Mặc định |
+|------------|---------|----------|
+| `class` | Class PHP xử lý backend | `Magento\Ui\Component\Filters\Type\Range` |
+| `component` | RequireJS | `Magento_Ui/js/grid/filters/range` |
+| `isRange` | Bật chế độ range | `true` |
+| `rangeType` | Loại input con (`date`, …) | — |
+| `template` | Template nhóm | `ui/grid/filters/elements/group` |
+
+**API JS:** `buildChildren()`, `clear()`, `hasData()`.
+
+Khai báo trên **column** (Magento map sang `dateRange` / `textRange`):
+
+```xml
+<column name="period">
+    <settings>
+        <filter>dateRange</filter>
+        <label translate="true">Period</label>
+    </settings>
+</column>
+```
+
+```xml
+<column name="size">
+    <settings>
+        <filter>textRange</filter>
+        <label translate="true">Size</label>
+    </settings>
+</column>
+```
 
 ### F. TreeMassActions
-Phiên bản nâng cao của MassActions, hỗ trợ trình đơn con dạng cây (ví dụ: "Thay đổi trạng thái > Bật / Tắt").
+
+Nguồn chi tiết: [TreeMassActions (Adobe Commerce)](https://developer.adobe.com/commerce/frontend-core/ui-components/components/tree-mass-actions).
+
+**Decorator** của MassActions: thêm **menu lồng nhau** (nested actions). JS: `Magento_Ui/js/grid/tree-massactions.js`, template: `ui/grid/tree-massactions`, submenu: `ui/grid/submenu` (kế thừa MassActions).
+
+| Thuộc tính | Ý nghĩa | Mặc định |
+|------------|---------|----------|
+| `submenuTemplate` | Template submenu | `ui/grid/submenu` |
+| `template` | Template component | `ui/grid/tree-massactions` |
+| `actions` | Danh sách `MassActionContainer` \| `MassAction` | — |
+
+**MassActionContainer:** `label`, `type` (id), `actions` (mảng con — có thể lồng container hoặc action lá).
+
+```xml
+<massaction name="listing_massaction" component="Magento_Ui/js/grid/tree-massactions">
+    <action name="action_example">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="type" xsi:type="string">action</item>
+                <item name="label" xsi:type="string" translate="true">Actions</item>
+            </item>
+        </argument>
+        <argument name="actions" xsi:type="array">
+            <item name="0" xsi:type="array">
+                <item name="type" xsi:type="string">sub_action1</item>
+                <item name="label" xsi:type="string" translate="true">Sub action #1</item>
+                <item name="url" xsi:type="url" path="some/path">
+                    <param name="some_param">1</param>
+                </item>
+            </item>
+            <item name="1" xsi:type="array">
+                <item name="type" xsi:type="string">sub_action2</item>
+                <item name="label" xsi:type="string" translate="true">Sub action #2</item>
+                <item name="url" xsi:type="url" path="some/path">
+                    <param name="some_param">2</param>
+                </item>
+            </item>
+        </argument>
+    </action>
+</massaction>
+```
+
+### G. Sortby
+
+Nguồn chi tiết: [Sortby (Adobe Commerce)](https://developer.adobe.com/commerce/frontend-core/ui-components/components/sortby).
+
+Điều khiển **sắp xếp** cột (asc/desc). JS: `Magento_Ui/js/grid/sortBy.js`, template: `ui/grid/sortBy`.
+
+| Thuộc tính | Ý nghĩa | Mặc định |
+|------------|---------|----------|
+| `template` | Template | `ui/grid/sortBy` |
+| `options` | Danh sách tùy chọn sort | `[]` |
+| `applied` | Sort đang áp dụng | `{}` |
+| `sorting` | `asc` hoặc `desc` | `asc` |
+| `selectedOption` | Option đang chọn | — |
+| `isVisible` | Hiển thị component | `true` |
+
+Ví dụ (container `sorting` + `columnProvider` — theo Adobe):
+
+```xml
+<container name="sorting"
+           provider="dataProvider"
+           displayArea="sorting"
+           sortOrder="20"
+           component="Magento_Ui/js/grid/sortBy">
+    <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+            <item name="deps" xsi:type="array">
+                <item name="0" xsi:type="string">columnProvider</item>
+            </item>
+        </item>
+    </argument>
+</container>
+<columns name="columnProvider">
+    <column name="name">
+        <settings>
+            <label translate="true">Name</label>
+            <visible>false</visible>
+            <sortable>true</sortable>
+        </settings>
+    </column>
+</columns>
+```
 
 ---
 
 ## 24. Nhập liệu Form (Bổ sung)
 
 ### A. Select (Dropdown)
-Chọn một giá trị từ danh sách.
+
+Nguồn chi tiết: [Select (Adobe Commerce)](https://developer.adobe.com/commerce/frontend-core/ui-components/components/select).
+
+Một lựa chọn duy nhất từ danh sách. JS: `Magento_Ui/js/form/element/select.js`; field wrapper: `ui/form/field`; phần control: `ui/form/element/select`.
+
+| Thuộc tính | Ý nghĩa | Mặc định |
+|------------|---------|----------|
+| `component` | RequireJS | `Magento_Ui/js/form/element/select` |
+| `elementTmpl` | Template control select | `ui/form/element/select` |
+| `template` | Template khung field | `ui/form/field` |
+| `caption` | Caption cho thẻ `<select>` | `''` |
+| `options` | Mảng option | `[]` |
+
+#### Options từ class (Source)
+
 ```xml
 <field name="status" formElement="select">
     <settings>
         <label translate="true">Trạng thái</label>
         <options class="Magento\Config\Model\Config\Source\Yesno"/>
     </settings>
+</field>
+```
+
+#### Options tĩnh trong XML + caption (theo ví dụ Adobe)
+
+```xml
+<field name="select_example" formElement="select">
+    <settings>
+        <dataType>text</dataType>
+        <label translate="true">Select Example</label>
+        <dataScope>select_example</dataScope>
+    </settings>
+    <formElements>
+        <select>
+            <settings>
+                <options>
+                    <option name="1" xsi:type="array">
+                        <item name="value" xsi:type="string">1</item>
+                        <item name="label" xsi:type="string">Option #1</item>
+                    </option>
+                    <option name="2" xsi:type="array">
+                        <item name="value" xsi:type="string">2</item>
+                        <item name="label" xsi:type="string">Option #2</item>
+                    </option>
+                </options>
+                <caption translate="true">-- Please Select --</caption>
+            </settings>
+        </select>
+    </formElements>
 </field>
 ```
 
@@ -1001,8 +1227,52 @@ Shortcut của **Checkboxset** với input dạng **radio** (chọn một giá t
 </radioset>
 ```
 
-### C. Textarea
-Ô nhập văn bản nhiều dòng.
+### C. Text (ô text / hiển thị text)
+
+Nguồn chi tiết: [Text (Adobe Commerce)](https://developer.adobe.com/commerce/frontend-core/ui-components/components/text).
+
+Hiển thị/chỉnh sửa chuỗi trong Form, DynamicRows, v.v. PHP: `Magento\Ui\Component\Form\Element\DataType\Text`. JS: `Magento_Ui/js/form/element/text.js`, `elementTmpl`: `ui/form/element/text`.
+
+| Thuộc tính | Ý nghĩa | Mặc định |
+|------------|---------|----------|
+| `class` | Class PHP | `Magento\Ui\Component\Form\Element\DataType\Text` |
+| `component` | RequireJS | `Magento_Ui/js/form/element/text` |
+| `disabled` | Vô hiệu hóa | `false` |
+| `elementTmpl` | Template control | `ui/form/element/text` |
+| `label` | Nhãn | `''` |
+| `links.value` | Liên kết `value` với provider | `${ $.provider }:${ $.dataScope }` |
+| `visible` | Hiển thị | `true` |
+
+Ví dụ `formElement="input"` + template text + import từ data provider (theo Adobe):
+
+```xml
+<field name="text_example" formElement="input" sortOrder="10">
+    <settings>
+        <elementTmpl>ui/form/element/text</elementTmpl>
+        <label translate="true">Text Field Example</label>
+        <imports>
+            <link name="value">${ $.provider }:data.customer.firstname</link>
+        </imports>
+    </settings>
+</field>
+```
+
+### D. Textarea
+
+Nguồn chi tiết: [Textarea (Adobe Commerce)](https://developer.adobe.com/commerce/frontend-core/ui-components/components/text-area).
+
+Field `<textarea>`. JS: `Magento_Ui/js/form/element/textarea.js`, `elementTmpl`: `ui/form/element/textarea`, khung field: `ui/form/field`.
+
+| Thuộc tính | Ý nghĩa | Mặc định |
+|------------|---------|----------|
+| `component` | RequireJS | `Magento_Ui/js/form/element/textarea` |
+| `elementTmpl` | Template textarea | `ui/form/element/textarea` |
+| `template` | Template field | `ui/form/field` |
+| `rows` / `cols` | Thuộc tính DOM | `2` / `15` |
+| `label` | Nhãn | `''` |
+
+#### Cách 1 — `formElement="textarea"` (thường gặp)
+
 ```xml
 <field name="description" formElement="textarea">
     <settings>
@@ -1013,8 +1283,42 @@ Shortcut của **Checkboxset** với input dạng **radio** (chọn một giá t
 </field>
 ```
 
-### D. WYSIWYG
-Trình soạn thảo văn bản trực quan (What You See Is What You Get) tích hợp TinyMCE.
+#### Cách 2 — `config` trong `argument` (theo ví dụ Adobe)
+
+```xml
+<field name="textarea_example">
+    <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+            <item name="formElement" xsi:type="string">textarea</item>
+            <item name="cols" xsi:type="number">15</item>
+            <item name="rows" xsi:type="number">5</item>
+            <item name="label" translate="true" xsi:type="string">Textarea Field Example</item>
+            <item name="dataType" translate="true" xsi:type="string">text</item>
+        </item>
+    </argument>
+</field>
+```
+
+### E. WYSIWYG
+
+Nguồn chi tiết: [WYSIWYG (Adobe Commerce)](https://developer.adobe.com/commerce/frontend-core/ui-components/components/wysiwyg/).
+
+Adapter **TinyMCE** gắn với form UI Component; hỗ trợ cấu hình tương thích `tinymce.init()` (Magento không validate từng option — cần đối chiếu [TinyMCE](https://www.tiny.cloud/docs/) khi cấu hình). PHP: `Magento\Ui\Component\Form\Element\Wysiwyg`. JS: `Magento_Ui/js/form/element/wysiwyg.js`, `elementTmpl`: `ui/form/element/wysiwyg`, khung field: `ui/form/field`.
+
+| Thuộc tính | Ý nghĩa | Mặc định |
+|------------|---------|----------|
+| `class` | Class PHP | `Magento\Ui\Component\Form\Element\Wysiwyg` |
+| `component` | RequireJS | `Magento_Ui/js/form/element/wysiwyg` |
+| `content` | Nội dung ban đầu | `''` |
+| `elementSelector` | Selector phần tử bọc editor | `textarea` |
+| `elementTmpl` | Template field WYSIWYG | `ui/form/element/wysiwyg` |
+| `links.value` | Liên kết với provider | `${ $.provider }:${ $.dataScope }` |
+| `template` | Template field chung | `ui/form/field` |
+
+**Sự kiện (TinyMCE / adapter):** có thể bắt qua `varienGlobalEvents` (`mage/adminhtml/events`), ví dụ `tinymceFocus`, `tinymceBlur`, `tinymceChange`, `tinymcePaste`, `tinymceSaveContent`, `wysiwygEditorInitialized`, … — danh sách đầy đủ trên trang Adobe.
+
+#### Ví dụ tối thiểu
+
 ```xml
 <field name="content" formElement="wysiwyg">
     <settings>
@@ -1030,19 +1334,250 @@ Trình soạn thảo văn bản trực quan (What You See Is What You Get) tích
 </field>
 ```
 
-### E. UrlInput
-Linh kiện nhập URL chuyên dụng, hỗ trợ chọn liên kết đến Product, Category hoặc CMS Page qua giao diện chọn.
+#### Ví dụ có `wysiwygConfigData` (chiều cao, biến, widget, ảnh, directive)
 
-### F. UI-Select
-Linh kiện dropdown nâng cao (typeahead/searchable), hỗ trợ tìm kiếm ajax, chọn nhiều và hiển thị dạng cây.
+```xml
+<field name="wysiwyg_example" sortOrder="50" formElement="wysiwyg">
+    <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+            <item name="wysiwygConfigData" xsi:type="array">
+                <item name="height" xsi:type="string">100px</item>
+                <item name="add_variables" xsi:type="boolean">true</item>
+                <item name="add_widgets" xsi:type="boolean">true</item>
+                <item name="add_images" xsi:type="boolean">true</item>
+                <item name="add_directives" xsi:type="boolean">true</item>
+            </item>
+        </item>
+    </argument>
+    <settings>
+        <label>Content</label>
+    </settings>
+    <formElements>
+        <wysiwyg>
+            <settings>
+                <rows>8</rows>
+                <wysiwyg>true</wysiwyg>
+            </settings>
+        </wysiwyg>
+    </formElements>
+</field>
+```
+
+#### Điều chỉnh động (PHP Modifiers)
+
+Để sửa meta/config WYSIWYG lúc runtime, dùng **modifier**; data provider nên kế thừa `ModifierPoolDataProvider`. Chi tiết và ví dụ `WysiwygConfigModifier` + `di.xml` xem trang Adobe chính và [PHP Modifiers](./ui-components-modifiers.md).
+
+#### Thêm editor bên thứ ba
+
+Tài liệu: [Add a custom editor](https://developer.adobe.com/commerce/frontend-core/ui-components/components/wysiwyg/add-custom-editor).
+
+Luồng ngắn gọn: đặt thư viện editor vào `view/base/web/js` → đăng ký trong `Magento\Cms\Model\Config\Source\Wysiwyg\Editor` (`adapterOptions`) + `Magento\Ui\Block\Wysiwyg\ActiveEditor` (`availableAdapterPaths`) → tạo **adapter** JS (các method tối thiểu: `getAdapterPrototype`, `setup`, `openFileBrowser`, `toggle`, `onFormValidation`, `encodeContent`, và khi cần variable/widget: `get`, `getContent`, `setContent`, …) → **requirejs-config.js** shim nếu cần.
+
+#### Cấu hình TinyMCE
+
+Tài liệu: [Configure the TinyMCE editor](https://developer.adobe.com/commerce/frontend-core/ui-components/components/wysiwyg/configure-tinymce-editor).
+
+Cấu hình gom qua `CompositeConfigProvider` / `DefaultConfigProvider` (CMS, Page Builder, …). Mở rộng qua `di.xml` (`additionalSettings`, plugin `afterGetConfig`, …). Nếu chỉnh Page Builder TinyMCE: thường cần `sequence` phụ thuộc `Magento_PageBuilder` trong `module.xml`.
+
+#### Extension points (Variable / Widget / Gallery)
+
+Tài liệu: [WYSIWYG extension points](https://developer.adobe.com/commerce/frontend-core/ui-components/components/wysiwyg/extension-points).
+
+Tích hợp entity vào editor tùy: plugin thư mục, icon, JS plugin (TinyMCE / CKEditor mẫu trong doc), đăng ký plugin. Cấu hình tổng: `Magento\Cms\Model\Wysiwyg\Config`, tổng hợp qua `Magento\Cms\Model\Wysiwyg\CompositeConfigProvider` (`variablePluginConfigProvider`, `widgetPluginConfigProvider`, `galleryConfigProvider`, `wysiwygConfigPostProcessor`).
+
+---
+
+### F. UrlInput
+
+Nguồn chi tiết: [urlInput (Adobe Commerce)](https://developer.adobe.com/commerce/frontend-core/ui-components/components/url-input).
+
+Field chọn/khai báo **URL** (nhiều kiểu link: text, category, product, …). PHP: `Magento\Ui\Component\Form\Element\UrlInput`. JS: `Magento_Ui/js/form/element/url-input`, template tổng: `ui/form/element/url-input`.
+
+| Thuộc tính | Ý nghĩa | Mặc định |
+|------------|---------|----------|
+| `class` | Class PHP | `Magento\Ui\Component\Form\Element\UrlInput` |
+| `component` | RequireJS | `Magento_Ui/js/form/element/url-input` |
+| `isDisplayAdditionalSettings` | Hiển thị block cài đặt thêm | `true` |
+| `settingTemplate` | Template cài đặt (vd. mở tab mới) | `ui/form/element/urlInput/setting` |
+| `settingValue` | Giá trị mặc định checkbox “mở tab mới” | `false` |
+| `template` | Template field | `ui/form/element/url-input` |
+| `typeSelectorTemplate` | Template chọn loại link | `ui/form/element/urlInput/typeSelector` |
+| `urlTypes` | Object cấu hình từng loại URL (thường trỏ tới provider) | `{}` |
+
+Mặc định có thể dùng `Magento\Ui\Model\UrlInput\LinksConfigProvider` (nhập URL dạng text); mở rộng qua `di.xml` (`linksConfiguration`). Mỗi loại implement `Magento\Ui\Model\UrlInput\ConfigInterface::getConfig()`. Core có sẵn kiểu **Category** / **Product** (`Magento\Catalog\Ui\Component\UrlInput\Category`, `...\Product`).
+
+**Cấu hình provider (ví dụ):**
+
+```xml
+<type name="Magento\Ui\Model\UrlInput\LinksConfigProvider">
+    <arguments>
+        <argument name="linksConfiguration" xsi:type="array">
+            <item name="default" xsi:type="string">Magento\Ui\Model\UrlInput\DefaultLink</item>
+        </argument>
+    </arguments>
+</type>
+```
+
+**Form XML:**
+
+```xml
+<urlInput name="url_input_example">
+    <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+            <item name="urlTypes" xsi:type="object">Magento\Ui\Model\UrlInput\LinksConfigProvider</item>
+        </item>
+    </argument>
+</urlInput>
+```
+
+---
+
+### G. UI-select
+
+Nguồn chi tiết: [UI-select (Adobe Commerce)](https://developer.adobe.com/commerce/frontend-core/ui-components/components/secondary-ui-select) *(trang doc tên “UI-select / secondary-ui-select”)*.
+
+Select đơn / đa (checkbox hiển thị tùy cấu hình), hỗ trợ **cây**, tìm kiếm, chip. JS: `Magento_Ui/js/form/element/ui-select.js` (kế thừa abstract), template filter grid: `ui/grid/filters/elements/ui-select.html`.
+
+**Bắt buộc (ý chính):** `imports` (nguồn `options`, v.d. `${ $.optionsConfig.name }:options`), `actions` (nhãn cho selectAll, deselectAll, selectPage, deselectPage, …).
+
+**Tùy chọn (một phần):** `chipsEnabled`, `closeBtn`, `filterPlaceholder`, `searchUrl` (cần controller xử lý tìm; có thể override `processRequest`), `pageLimit`, `showCheckbox`, `showTree`, `levelsVisibility`, `emptyOptionsHtml`, `missingValuePlaceholder`, … — bảng đầy đủ trên trang Adobe.
+
+**Chế độ:** `simple` — tắt `showCheckbox`, `chipsEnabled`, `closeBtn`; `optgroup` — tắt checkbox / `openLevelsAction`, bật `lastSelectable`, `optgroupLabels`, `labelsDecoration`.
+
+**Ví dụ filter trên listing** (`filterSelect` — theo `cms_page_listing`):
+
+```xml
+<filterSelect name="uiSelect">
+    <argument name="optionsProvider" xsi:type="configurableObject">
+        <argument name="class" xsi:type="string">Magento\Cms\Model\Page\Source\PageLayout</argument>
+    </argument>
+    <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+            <item name="component" xsi:type="string">Magento_Ui/js/form/element/ui-select</item>
+            <item name="template" xsi:type="string">ui/grid/filters/elements/ui-select</item>
+            <item name="dataScope" xsi:type="string">uiSelect</item>
+            <item name="label" xsi:type="string" translate="true">uiSelect</item>
+        </item>
+    </argument>
+</filterSelect>
+```
+
+**Phím:** Enter / Space mở hoặc chọn, Escape đóng, PageUp / PageDown di chuyển focus — chi tiết trên doc.
 
 ---
 
 ## 25. Cột Grid (Bổ sung cuối)
 
-- **OnOffColumn**: switch bật/tắt trên Grid — chi tiết xem **§22.B**.
-- **SelectColumn**: Hiển thị giá trị của một field Select dưới dạng nhãn (label) thay vì giá trị thô.
-- **ThumbnailColumn**: Hiển thị hình thu nhỏ (thumbnail) cho cột hình ảnh trong Grid.
+### A. SelectColumn
+
+Nguồn chi tiết: [SelectColumn (Adobe Commerce)](https://developer.adobe.com/commerce/frontend-core/ui-components/components/select-column).
+
+Nhận mảng **value → label**: hiển thị trong ô grid đúng nhãn ứng với giá trị bản ghi. JS: `Magento_Ui/js/grid/columns/select.js` (kế thừa Column).
+
+| Thuộc tính | Ý nghĩa | Mặc định |
+|------------|---------|----------|
+| `component` | RequireJS | `Magento_Ui/js/grid/columns/select` |
+| `filter` | Tham chiếu filter (hoặc object mở rộng) trong Filters | — |
+| `label` | Header cột | `''` |
+| `options` | `{ value, label }` (value có thể string/number/array tùy doc) | `[]` |
+| `visible` | Ẩn/hiện | `true` |
+
+Mỗi option cần `value` và `label`.
+
+```xml
+<column name="select_column_example" component="Magento_Ui/js/grid/columns/select">
+    <settings>
+        <filter>select</filter>
+        <dataType>select</dataType>
+        <label translate="true">Select Column</label>
+        <visible>true</visible>
+        <options>
+            <option name="0" xsi:type="array">
+                <item name="value" xsi:type="number">1</item>
+                <item name="label" xsi:type="string" translate="true">Option #1</item>
+            </option>
+            <option name="1" xsi:type="array">
+                <item name="value" xsi:type="number">2</item>
+                <item name="label" xsi:type="string" translate="true">Option #2</item>
+            </option>
+        </options>
+    </settings>
+</column>
+```
+
+Nên đặt `<filters name="listing_filters"/>` trong `listingToolbar` nếu dùng filter trên cột (theo ví dụ Adobe).
+
+### B. ThumbnailColumn
+
+Nguồn chi tiết: [ThumbnailColumn (Adobe Commerce)](https://developer.adobe.com/commerce/frontend-core/ui-components/components/thumbnail-column).
+
+Cột **ảnh preview**; click mở popup xem lớn. JS: `Magento_Ui/js/grid/columns/thumbnail.js` (kế thừa Column). Có thể dùng kèm class PHP (ví dụ Catalog).
+
+| Thuộc tính | Ý nghĩa | Mặc định |
+|------------|---------|----------|
+| `bodyTmpl` | Template ô trong body | `ui/grid/cells/thumbnail` |
+| `fieldClass` | Class ô | `{'data-grid-thumbnail-cell': true}` |
+
+```xml
+<column name="thumbnail" component="Magento_Ui/js/grid/columns/thumbnail"
+        class="Magento\Catalog\Ui\Component\Listing\Columns\Thumbnail">
+    <settings>
+        <hasPreview>1</hasPreview>
+        <addField>true</addField>
+        <label translate="true">Thumbnail</label>
+        <sortable>false</sortable>
+    </settings>
+</column>
+```
+
+### C. TimelineColumns (timeline listing)
+
+Nguồn chi tiết: [TimelineColumns (Adobe Commerce)](https://developer.adobe.com/commerce/frontend-core/ui-components/components/timeline-columns).
+
+**Columns** dạng **timeline** (trục thời gian). `columns` dùng `component="Magento_Ui/js/timeline/timeline"`. JS: `Magento_Ui/js/timeline/timeline.js`, `recordTmpl`: `ui/timeline/record`.
+
+| Thuộc tính | Ý nghĩa | Mặc định |
+|------------|---------|----------|
+| `component` | RequireJS | `Magento_Ui/js/timeline/timeline` |
+| `recordTmpl` | Template một dòng | `ui/timeline/record` |
+| `dateFormat` | Format `start_time` / `end_time` | `YYYY-MM-DD HH:mm:ss` |
+| `headerFormat` | Format header cột | `ddd MM/DD` |
+| `scale` / `scaleStep` / `minScale` / `maxScale` | Phạm vi & bước (ngày) | `7` / `1` / `7` / `28` |
+| `displayMode` / `displayModes` / `viewConfig` | Chế độ hiển thị & cấu hình view | `timeline`, object mặc định theo doc |
+
+```xml
+<columns name="cms_page_columns" component="Magento_Ui/js/timeline/timeline">
+    <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+            <item name="scale" xsi:type="number">7</item>
+        </item>
+    </argument>
+    <column name="name">
+        <settings>
+            <filter>text</filter>
+            <label translate="true">Name</label>
+        </settings>
+    </column>
+    <column name="start_time" class="Magento\Ui\Component\Listing\Columns\Date"
+            component="Magento_Ui/js/grid/columns/date">
+        <settings>
+            <dateFormat>YYYY-MM-DD HH:mm:ss</dateFormat>
+            <label translate="true">Start Time</label>
+        </settings>
+    </column>
+    <column name="end_time" class="Magento\Ui\Component\Listing\Columns\Date"
+            component="Magento_Ui/js/grid/columns/date">
+        <settings>
+            <dateFormat>YYYY-MM-DD HH:mm:ss</dateFormat>
+            <label translate="true">End Time</label>
+        </settings>
+    </column>
+</columns>
+```
+
+### D. Cột khác
+
+- **OnOffColumn**: **§22.B**.
 
 ---
 
@@ -1074,6 +1609,44 @@ Khi chỉ cần nhúng nội dung render bởi **Block PHP** (không dùng cây 
 ```
 
 Hai cách phục vụ bối cảnh khác nhau: **Navigation / tab_group** = tabs thuần UI Component; **htmlContent** = chèn block/layout truyền thống.
+
+### Tab (nội dung từng tab — content area)
+
+Nguồn chi tiết: [Tab (Adobe Commerce)](https://developer.adobe.com/commerce/frontend-core/ui-components/components/tab).
+
+**Tab** là **vùng nội dung** của một tab trong form (khác **Navigation** `tab_group` — thanh điều hướng). UX: [Tabs (Admin Design Pattern Library)](https://developer.adobe.com/commerce/admin-developer/pattern-library/containers/tabs/). JS: `Magento_Ui/js/form/components/area`, template: `templates/layout/tabs/tab/default`.
+
+| Thuộc tính | Ý nghĩa | Mặc định |
+|------------|---------|----------|
+| `component` | RequireJS | `Magento_Ui/js/form/components/area` |
+| `template` | Template tab content | `templates/layout/tabs/tab/default` |
+| `uniqueNs` | Namespace duy nhất | `params.activeArea` |
+
+Tích hợp với **Form**: trong `<settings><layout>` đặt `type` = `tabs`, `navContainerName` (ví dụ `left`); mỗi **fieldset** con đóng vai một tab có `label`:
+
+```xml
+<form>
+    <argument name="data" xsi:type="array">
+        <item name="label" xsi:type="string" translate="true">Tabs</item>
+    </argument>
+    <settings>
+        <layout>
+            <navContainerName>left</navContainerName>
+            <type>tabs</type>
+        </layout>
+    </settings>
+    <fieldset name="tab1">
+        <settings>
+            <label translate="true">Tab 1</label>
+        </settings>
+    </fieldset>
+    <fieldset name="tab2">
+        <settings>
+            <label translate="true">Tab 2</label>
+        </settings>
+    </fieldset>
+</form>
+```
 
 ---
 
