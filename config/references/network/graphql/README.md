@@ -1,6 +1,6 @@
 # GraphQL — Web API (Adobe Commerce)
 
-Tài liệu gốc nằm trên **Adobe Developer — Commerce Web APIs → GraphQL**. Trong spec này, toàn bộ mục **Usage** (endpoint, token, cache, filter, response, headers, introspection, protected mutations, security, staging) gom tại [`usage.md`](./usage.md); **Reference** schema theo phiên bản tại [`reference.md`](./reference.md). Nhánh **Schema (guide)** — mục lục query/mutation theo domain trên Adobe: [`schema-attributes.md`](./schema-attributes.md) (**Attributes**), [`schema-cart.md`](./schema-cart.md) (**Cart** — queries §2–§4; mutations mục lục §5 chi tiết §6–§39; **interfaces** `CartItemInterface` §40), [`schema-catalog-service.md`](./schema-catalog-service.md) (**Catalog Service** + **`productSearch`** Live Search — §1–§7), [`schema-checkout.md`](./schema-checkout.md) (**Checkout** — queries + mutations), [`schema-company.md`](./schema-company.md) (**Company (B2B)** — queries + mutations + unions), [`schema-customer.md`](./schema-customer.md) (**Customer** — queries).
+Tài liệu gốc nằm trên **Adobe Developer — Commerce Web APIs → GraphQL**. Trong spec này, toàn bộ mục **Usage** (endpoint, token, cache, filter, response, headers, introspection, protected mutations, security, staging) gom tại [`usage.md`](./usage.md); **Reference** schema theo phiên bản tại [`reference.md`](./reference.md). Nhánh **Schema (guide)** — mục lục query/mutation theo domain trên Adobe: [`schema-attributes.md`](./schema-attributes.md) (**Attributes**), [`schema-cart.md`](./schema-cart.md) (**Cart** — queries §2–§4; mutations mục lục §5 chi tiết §6–§39; **interfaces** `CartItemInterface` §40), [`schema-catalog-service.md`](./schema-catalog-service.md) (**Catalog Service + Live Search** — §1–§9), [`schema-checkout.md`](./schema-checkout.md) (**Checkout** — queries + mutations), [`schema-company.md`](./schema-company.md) (**Company (B2B)** — queries + mutations + unions), [`schema-customer.md`](./schema-customer.md) (**Customer** — queries + mutations), [`schema-gift-registry.md`](./schema-gift-registry.md) (**Gift registry** — queries + mutations), [`schema-negotiable-quote.md`](./schema-negotiable-quote.md) (**Negotiable quotes (B2B)** — queries).
 
 Nhánh **Development** (định nghĩa `schema.graphqls`, resolver/batch resolver, mở rộng schema, Identity/cache tag, urlResolver tùy chỉnh, debug, exception, functional test): [`development.md`](./development.md).  
 **App Server / resolver stateless** (ràng buộc khi chạy long-lived PHP): [`../graphql-app-server.md`](../graphql-app-server.md) — bổ sung cho doc Adobe, không thay thế.
@@ -135,16 +135,19 @@ Nhánh **Development** (định nghĩa `schema.graphqls`, resolver/batch resolve
 |--------|-------------------|----------------|
 | `CartItemInterface` (implementations) | [Cart — Interfaces](https://developer.adobe.com/commerce/webapi/graphql/schema/cart/interfaces/) | [`schema-cart.md`](./schema-cart.md) §40 |
 
-### Schema — Catalog Service & Live Search (`productSearch`)
+### Schema — Catalog Service & Live Search (queries)
 
 | Chủ đề | Adobe (chính thức) | Trong `.spec` |
 |--------|-------------------|----------------|
 | Catalog Service (tổng quan) | [Catalog Service](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §1 |
-| `categories` | [categories](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/categories/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §3 |
-| `products` | [products](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/products/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §4 |
-| `productSearch` | [productSearch](https://developer.adobe.com/commerce/webapi/graphql/schema/live-search/queries/product-search/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §5 |
-| `refineProduct` | [refineProduct](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/refine-product/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §6 |
-| `variants` | [variants](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/product-variants/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §7 |
+| Live Search (tổng quan + error codes) | [Live Search](https://developer.adobe.com/commerce/webapi/graphql/schema/live-search/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §2 |
+| Danh sách queries | [Live Search queries](https://developer.adobe.com/commerce/webapi/graphql/schema/live-search/queries/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §3 |
+| `categories` | [categories](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/categories/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §4 |
+| `products` | [products](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/products/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §5 |
+| `attributeMetadata` | [attributeMetadata](https://developer.adobe.com/commerce/webapi/graphql/schema/live-search/queries/attribute-metadata/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §6 |
+| `productSearch` | [productSearch](https://developer.adobe.com/commerce/webapi/graphql/schema/live-search/queries/product-search/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §7 |
+| `refineProduct` | [refineProduct](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/refine-product/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §8 |
+| `variants` | [variants](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/product-variants/) | [`schema-catalog-service.md`](./schema-catalog-service.md) §9 |
 
 ### Schema — Checkout (queries)
 
@@ -191,7 +194,7 @@ Nhánh **Development** (định nghĩa `schema.graphqls`, resolver/batch resolve
 | Danh sách unions | [Company unions](https://developer.adobe.com/commerce/webapi/graphql/schema/b2b/company/unions/) | [`schema-company.md`](./schema-company.md) §21 |
 | `CompanyStructureEntity` | [CompanyStructureEntity](https://developer.adobe.com/commerce/webapi/graphql/schema/b2b/company/unions/structure-entity/) | [`schema-company.md`](./schema-company.md) §22 |
 
-### Schema — Customer (queries)
+### Schema — Customer (queries + mutations)
 
 | Chủ đề | Adobe (chính thức) | Trong `.spec` |
 |--------|-------------------|----------------|
@@ -205,6 +208,63 @@ Nhánh **Development** (định nghĩa `schema.graphqls`, resolver/batch resolve
 | `customerSegments` | [customerSegments](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/queries/customer-segments/) | [`schema-customer.md`](./schema-customer.md) §8 |
 | `giftCardAccount` | [giftCardAccount](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/queries/giftcard-account/) | [`schema-customer.md`](./schema-customer.md) §9 |
 | `isEmailAvailable` | [isEmailAvailable](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/queries/is-email-available/) | [`schema-customer.md`](./schema-customer.md) §10 |
+| Danh sách mutations | [Customer mutations](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/) | [`schema-customer.md`](./schema-customer.md) §11 |
+| `updateCustomerV2` | [updateCustomerV2](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/update-v2/) | [`schema-customer.md`](./schema-customer.md) §12 |
+| `updateCustomerEmail` | [updateCustomerEmail](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/update-email/) | [`schema-customer.md`](./schema-customer.md) §13 |
+| `updateCustomerAddressV2` | [updateCustomerAddressV2](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/update-address-v2/) | [`schema-customer.md`](./schema-customer.md) §14 |
+| `updateCustomerAddress` | [updateCustomerAddress](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/update-address/) | [`schema-customer.md`](./schema-customer.md) §15 |
+| `updateCustomer` | [updateCustomer](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/update/) | [`schema-customer.md`](./schema-customer.md) §16 |
+| `subscribeEmailToNewsletter` | [subscribeEmailToNewsletter](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/subscribe-email-to-newsletter/) | [`schema-customer.md`](./schema-customer.md) §17 |
+| `sendEmailToFriend` | [sendEmailToFriend](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/send-email-to-friend/) | [`schema-customer.md`](./schema-customer.md) §18 |
+| `revokeCustomerToken` | [revokeCustomerToken](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/revoke-token/) | [`schema-customer.md`](./schema-customer.md) §19 |
+| `resetPassword` | [resetPassword](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/reset-password/) | [`schema-customer.md`](./schema-customer.md) §20 |
+| `resendConfirmationEmail` | [resendConfirmationEmail](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/resend-confirmation-email/) | [`schema-customer.md`](./schema-customer.md) §21 |
+| `requestPasswordResetEmail` | [requestPasswordResetEmail](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/request-password-reset-email/) | [`schema-customer.md`](./schema-customer.md) §22 |
+| `generateCustomerTokenAsAdmin` | [generateCustomerTokenAsAdmin](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/generate-token-as-admin/) | [`schema-customer.md`](./schema-customer.md) §23 |
+| `generateCustomerToken` | [generateCustomerToken](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/generate-token/) | [`schema-customer.md`](./schema-customer.md) §24 |
+| `exchangeOtpForCustomerToken` | [exchangeOtpForCustomerToken](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/exchange-otp-customer-token/) | [`schema-customer.md`](./schema-customer.md) §25 |
+| `exchangeExternalCustomerToken` | [exchangeExternalCustomerToken](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/exchange-external-customer-token/) | [`schema-customer.md`](./schema-customer.md) §26 |
+| `deleteCustomerAddressV2` | [deleteCustomerAddressV2](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/delete-address-v2/) | [`schema-customer.md`](./schema-customer.md) §27 |
+| `deleteCustomerAddress` | [deleteCustomerAddress](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/delete-address/) | [`schema-customer.md`](./schema-customer.md) §28 |
+| `createCustomerV2` | [createCustomerV2](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/create-v2/) | [`schema-customer.md`](./schema-customer.md) §29 |
+| `createCustomerAddress` | [createCustomerAddress](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/create-address/) | [`schema-customer.md`](./schema-customer.md) §30 |
+| `createCustomer` | [createCustomer](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/create/) | [`schema-customer.md`](./schema-customer.md) §31 |
+| `confirmEmail` | [confirmEmail](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/confirm-email/) | [`schema-customer.md`](./schema-customer.md) §32 |
+| `changeCustomerPassword` | [changeCustomerPassword](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/change-password/) | [`schema-customer.md`](./schema-customer.md) §33 |
+| `assignCompareListToCustomer` | [assignCompareListToCustomer](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/assign-compare-list/) | [`schema-customer.md`](./schema-customer.md) §34 |
+
+### Schema — Gift registry (queries + mutations)
+
+| Chủ đề | Adobe (chính thức) | Trong `.spec` |
+|--------|-------------------|----------------|
+| Gift registry (tổng quan) | [Gift registry](https://developer.adobe.com/commerce/webapi/graphql/schema/gift-registry/) | [`schema-gift-registry.md`](./schema-gift-registry.md) §1 |
+| Danh sách queries | [Gift registry queries](https://developer.adobe.com/commerce/webapi/graphql/schema/gift-registry/queries/) | [`schema-gift-registry.md`](./schema-gift-registry.md) §2 |
+| `giftRegistry` | [giftRegistry](https://developer.adobe.com/commerce/webapi/graphql/schema/gift-registry/queries/gift-registry/) | [`schema-gift-registry.md`](./schema-gift-registry.md) §3 |
+| `giftRegistryEmailSearch` | [giftRegistryEmailSearch](https://developer.adobe.com/commerce/webapi/graphql/schema/gift-registry/queries/email-search/) | [`schema-gift-registry.md`](./schema-gift-registry.md) §4 |
+| `giftRegistryIdSearch` | [giftRegistryIdSearch](https://developer.adobe.com/commerce/webapi/graphql/schema/gift-registry/queries/id-search/) | [`schema-gift-registry.md`](./schema-gift-registry.md) §5 |
+| `giftRegistryTypes` | [giftRegistryTypes](https://developer.adobe.com/commerce/webapi/graphql/schema/gift-registry/queries/types/) | [`schema-gift-registry.md`](./schema-gift-registry.md) §6 |
+| `giftRegistryTypeSearch` | [giftRegistryTypeSearch](https://developer.adobe.com/commerce/webapi/graphql/schema/gift-registry/queries/type-search/) | [`schema-gift-registry.md`](./schema-gift-registry.md) §7 |
+| Danh sách mutations | [Gift registry mutations](https://developer.adobe.com/commerce/webapi/graphql/schema/gift-registry/mutations/) | [`schema-gift-registry.md`](./schema-gift-registry.md) §8 |
+| `addGiftRegistryRegistrants` | [addGiftRegistryRegistrants](https://developer.adobe.com/commerce/webapi/graphql/schema/gift-registry/mutations/add-registrants/) | [`schema-gift-registry.md`](./schema-gift-registry.md) §9 |
+| `createGiftRegistry` | [createGiftRegistry](https://developer.adobe.com/commerce/webapi/graphql/schema/gift-registry/mutations/create/) | [`schema-gift-registry.md`](./schema-gift-registry.md) §10 |
+| `moveCartItemsToGiftRegistry` | [moveCartItemsToGiftRegistry](https://developer.adobe.com/commerce/webapi/graphql/schema/gift-registry/mutations/move-cart-items/) | [`schema-gift-registry.md`](./schema-gift-registry.md) §11 |
+| `removeGiftRegistry` | [removeGiftRegistry](https://developer.adobe.com/commerce/webapi/graphql/schema/gift-registry/mutations/remove/) | [`schema-gift-registry.md`](./schema-gift-registry.md) §12 |
+| `removeGiftRegistryItems` | [removeGiftRegistryItems](https://developer.adobe.com/commerce/webapi/graphql/schema/gift-registry/mutations/remove-items/) | [`schema-gift-registry.md`](./schema-gift-registry.md) §13 |
+| `removeGiftRegistryRegistrants` | [removeGiftRegistryRegistrants](https://developer.adobe.com/commerce/webapi/graphql/schema/gift-registry/mutations/remove-registrants/) | [`schema-gift-registry.md`](./schema-gift-registry.md) §14 |
+| `shareGiftRegistry` | [shareGiftRegistry](https://developer.adobe.com/commerce/webapi/graphql/schema/gift-registry/mutations/share/) | [`schema-gift-registry.md`](./schema-gift-registry.md) §15 |
+| `updateGiftRegistry` | [updateGiftRegistry](https://developer.adobe.com/commerce/webapi/graphql/schema/gift-registry/mutations/update/) | [`schema-gift-registry.md`](./schema-gift-registry.md) §16 |
+| `updateGiftRegistryItems` | [updateGiftRegistryItems](https://developer.adobe.com/commerce/webapi/graphql/schema/gift-registry/mutations/update-items/) | [`schema-gift-registry.md`](./schema-gift-registry.md) §17 |
+| `updateGiftRegistryRegistrants` | [updateGiftRegistryRegistrants](https://developer.adobe.com/commerce/webapi/graphql/schema/gift-registry/mutations/update-registrants/) | [`schema-gift-registry.md`](./schema-gift-registry.md) §18 |
+
+### Schema — Negotiable quotes (B2B) (queries)
+
+| Chủ đề | Adobe (chính thức) | Trong `.spec` |
+|--------|-------------------|----------------|
+| Negotiable quotes (B2B) (tổng quan) | [Negotiable quote (B2B)](https://developer.adobe.com/commerce/webapi/graphql/schema/b2b/negotiable-quote/) | [`schema-negotiable-quote.md`](./schema-negotiable-quote.md) §1 |
+| Danh sách queries | [Negotiable quote (B2B) queries](https://developer.adobe.com/commerce/webapi/graphql/schema/b2b/negotiable-quote/queries/) | [`schema-negotiable-quote.md`](./schema-negotiable-quote.md) §2 |
+| `negotiableQuote` | [negotiableQuote](https://developer.adobe.com/commerce/webapi/graphql/schema/b2b/negotiable-quote/queries/quote/) | [`schema-negotiable-quote.md`](./schema-negotiable-quote.md) §3 |
+| `negotiableQuotes` | [negotiableQuotes](https://developer.adobe.com/commerce/webapi/graphql/schema/b2b/negotiable-quote/queries/quotes/) | [`schema-negotiable-quote.md`](./schema-negotiable-quote.md) §4 |
+| `negotiableQuoteTemplates` | [negotiableQuoteTemplates](https://developer.adobe.com/commerce/webapi/graphql/schema/b2b/negotiable-quote/queries/templates/) | [`schema-negotiable-quote.md`](./schema-negotiable-quote.md) §5 |
 
 ---
 
@@ -216,6 +276,8 @@ Nhánh **Development** (định nghĩa `schema.graphqls`, resolver/batch resolve
 - Schema guide — Checkout: [`schema-checkout.md`](./schema-checkout.md)
 - Schema guide — Company (B2B): [`schema-company.md`](./schema-company.md)
 - Schema guide — Customer: [`schema-customer.md`](./schema-customer.md)
+- Schema guide — Gift registry: [`schema-gift-registry.md`](./schema-gift-registry.md)
+- Schema guide — Negotiable quotes (B2B): [`schema-negotiable-quote.md`](./schema-negotiable-quote.md)
 - Schema guide — Attributes: [`schema-attributes.md`](./schema-attributes.md)
 - Development (tóm tắt Adobe): [`development.md`](./development.md)
 - App Server & resolver stateless: [`../graphql-app-server.md`](../graphql-app-server.md)

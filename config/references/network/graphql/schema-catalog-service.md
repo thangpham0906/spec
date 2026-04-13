@@ -1,6 +1,6 @@
-# GraphQL — Schema (Guide): Catalog Service & Live Search (`productSearch`)
+# GraphQL — Schema (Guide): Catalog Service & Live Search (queries)
 
-Tóm tắt nhóm **Catalog Service** và query **`productSearch`** (tài liệu **Live Search**) trên Adobe. Đây là **schema dịch vụ** (services-only), khác **[core GraphQL schema](https://developer.adobe.com/commerce/webapi/graphql/schema/)** — endpoint và header không trùng GraphQL storefront cố định của Magento. Chi tiết field: từng link **Nguồn**.  
+Tóm tắt nhóm **Catalog Service** và **Live Search** trên Adobe. Đây là **schema dịch vụ** (services-only), khác **[core GraphQL schema](https://developer.adobe.com/commerce/webapi/graphql/schema/)** — endpoint và header không trùng GraphQL storefront cố định của Magento. File này tổng hợp các query liên quan: `categories`, `products`, `attributeMetadata`, `productSearch`, `refineProduct`, `variants`. Chi tiết field: từng link **Nguồn**.  
 **Chữ ký theo bản:** [GraphQL API reference](https://developer.adobe.com/commerce/webapi/graphql/reference/) — xem [`reference.md`](./reference.md).
 
 ---
@@ -24,22 +24,33 @@ Nguồn: [Catalog Service for Adobe Commerce](https://developer.adobe.com/commer
 
 ---
 
-## 2. Catalog Service — danh sách queries (mục lục)
+## 2. Live Search (tổng quan)
 
-Nguồn mục lục: [Catalog Service](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/) (sidebar **Queries**).  
-`productSearch` được mô tả sâu trên trang **Live Search** — xem cột Nguồn.
+Nguồn: [Live Search](https://developer.adobe.com/commerce/webapi/graphql/schema/live-search/)
 
-| Query | Nguồn Adobe | Trong file này |
-|-------|-------------|----------------|
-| `categories` | [categories](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/categories/) | §3 |
-| `products` | [products](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/products/) | §4 |
-| `productSearch` | [productSearch (Live Search)](https://developer.adobe.com/commerce/webapi/graphql/schema/live-search/queries/product-search/) | §5 |
-| `refineProduct` | [refineProduct](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/refine-product/) | §6 |
-| `variants` | [variants](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/product-variants/) | §7 |
+- Live Search là bộ package tách rời, thay thế khả năng search chuẩn và dùng GraphQL endpoint riêng.
+- Khi dùng Live Search qua IDE bên ngoài Admin, cần tự truyền đúng endpoint + required headers cho từng request.
+- Nhóm query chính: `attributeMetadata` và `productSearch`.
+- Error codes phổ biến từ Live Search service: `1000` (generic), `1001` (`index_not_found_exception`), `1002` (`search_phase_execution_exception`), `1003` (`mapper_parsing_exception`), `1004` (`invalid_argument_exception`).
 
 ---
 
-## 3. `categories`
+## 3. Catalog Service & Live Search — danh sách queries (mục lục)
+
+Nguồn mục lục: [Catalog Service](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/) + [Live Search queries](https://developer.adobe.com/commerce/webapi/graphql/schema/live-search/queries/).
+
+| Query | Nguồn Adobe | Trong file này |
+|-------|-------------|----------------|
+| `categories` | [categories](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/categories/) | §4 |
+| `products` | [products](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/products/) | §5 |
+| `attributeMetadata` | [attributeMetadata](https://developer.adobe.com/commerce/webapi/graphql/schema/live-search/queries/attribute-metadata/) | §6 |
+| `productSearch` | [productSearch](https://developer.adobe.com/commerce/webapi/graphql/schema/live-search/queries/product-search/) | §7 |
+| `refineProduct` | [refineProduct](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/refine-product/) | §8 |
+| `variants` | [variants](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/product-variants/) | §9 |
+
+---
+
+## 4. `categories`
 
 Nguồn: [categories](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/categories/)
 
@@ -51,18 +62,29 @@ Nguồn: [categories](https://developer.adobe.com/commerce/webapi/graphql/schema
 
 ---
 
-## 4. `products` (Catalog Service)
+## 5. `products` (Catalog Service)
 
 Nguồn: [products (Catalog Service)](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/products/)
 
 - Cùng **tên** với [`products` trong core **Products**](https://developer.adobe.com/commerce/webapi/graphql/schema/products/queries/products/) nhưng **khác schema / output** — không trộn khi đọc reference.
-- Cần **một hoặc nhiều SKU** làm input; phục vụ **PDP**, **so sánh SP**, … Dùng **[`productSearch`](#5-productsearch-live-search)** cho nội dung kiểu **product listing** (Live Search).
+- Cần **một hoặc nhiều SKU** làm input; phục vụ **PDP**, **so sánh SP**, … Dùng **[`productSearch`](#7-productsearch-live-search)** cho nội dung kiểu **product listing** (Live Search).
 - Cú pháp (theo doc): `products(skus: [String]): [ProductView]`
 - **`ProductView`** (simple vs complex, `SimpleProductView` / `ComplexProductView`, `attributes`, `images`, `inputOptions`, …) — xem đầy đủ trên Adobe.
 
 ---
 
-## 5. `productSearch` (Live Search)
+## 6. `attributeMetadata` (Live Search)
+
+Nguồn: [attributeMetadata](https://developer.adobe.com/commerce/webapi/graphql/schema/live-search/queries/attribute-metadata/)
+
+- Trả về danh sách attribute có thể dùng để **filter** hoặc **sort** trong `productSearch`.
+- Output chính gồm `sortable` và `filterableInSearch`, mỗi phần có `attribute`, `label`, `numeric`.
+- `numeric=true` hữu ích cho range filter/sort (ví dụ price).
+- Cú pháp (theo doc): `attributeMetadata: AttributeMetadataResponse!`
+
+---
+
+## 7. `productSearch` (Live Search)
 
 Nguồn: [productSearch](https://developer.adobe.com/commerce/webapi/graphql/schema/live-search/queries/product-search/)
 
@@ -71,11 +93,12 @@ Nguồn: [productSearch](https://developer.adobe.com/commerce/webapi/graphql/sch
 - Cú pháp (theo doc):  
   `productSearch(phrase: String!, context: QueryContextInput!, current_page: Int = 1, page_size: Int = 20, sort: [ProductSearchSortInput!], filter: [SearchClauseInput!]): ProductSearchResponse!`  
   — **`phrase`** bắt buộc; có thể **chuỗi rỗng** khi chỉ lọc theo category / `categoryPath`. **`context`** (customer group, lịch sử xem, …) áp dụng kiểu **Live Search** (xem doc).
+- Header đáng chú ý: `X-Api-Key` dùng API key môi trường Commerce Services; `Magento-Customer-Group` áp dụng cho Catalog Service flow.
 - Giới hạn / gợi ý (theo Adobe): phân trang tối đa **10.000** sản phẩm mỗi query; merchandising — sort **relevance** hoặc không sort; category merchandising — sort **`position`**, filter **`categoryPath`**, **`phrase`** rỗng. Tham chiếu *Boundaries and Limits* trong Live Search Guide.
 
 ---
 
-## 6. `refineProduct`
+## 8. `refineProduct`
 
 Nguồn: [refineProduct](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/refine-product/)
 
@@ -84,7 +107,7 @@ Nguồn: [refineProduct](https://developer.adobe.com/commerce/webapi/graphql/sch
 
 ---
 
-## 7. `variants`
+## 9. `variants`
 
 Nguồn: [variants](https://developer.adobe.com/commerce/webapi/graphql/schema/catalog-service/queries/product-variants/) (slug URL: `product-variants`)
 

@@ -1,6 +1,6 @@
-# GraphQL — Schema (Guide): Customer (queries)
+# GraphQL — Schema (Guide): Customer (queries + mutations)
 
-Tóm tắt nhóm **Customer** trên Adobe: đây là nhóm query lấy dữ liệu khách hàng đăng nhập (profile, cart, đơn hàng, downloadable products, gift card, customer group/segments...). File này tổng hợp phần **queries** theo danh sách Adobe bạn yêu cầu. Chi tiết field: từng link **Nguồn**.  
+Tóm tắt nhóm **Customer** trên Adobe: đây là nhóm schema cho dữ liệu và thao tác customer account. File này tổng hợp **queries** (§2–§10) và **mutations** (§11–§34) theo danh sách Adobe bạn yêu cầu. Chi tiết field: từng link **Nguồn**.  
 **Chữ ký theo bản:** [GraphQL API reference](https://developer.adobe.com/commerce/webapi/graphql/reference/) — xem [`reference.md`](./reference.md).
 
 ---
@@ -117,6 +117,289 @@ Nguồn: [isEmailAvailable](https://developer.adobe.com/commerce/webapi/graphql/
 - Adobe lưu ý thay đổi từ **2.4.7**: mặc định query luôn trả `true`; hành vi cũ có thể bật lại qua Admin (`Enable Guest Checkout Login`), nhưng có rủi ro lộ thông tin cho user chưa auth.
 - Cú pháp (theo doc): `isEmailAvailable(email: String!): IsEmailAvailableOutput`
 - Lỗi thường gặp: email format sai, hoặc thiếu argument `email`.
+
+---
+
+## 11. Customer — danh sách mutations (mục lục)
+
+Nguồn: [Customer mutations](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/)
+
+| Mutation | Nguồn Adobe | Trong file này |
+|----------|-------------|----------------|
+| `updateCustomerV2` | [updateCustomerV2](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/update-v2/) | §12 |
+| `updateCustomerEmail` | [updateCustomerEmail](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/update-email/) | §13 |
+| `updateCustomerAddressV2` | [updateCustomerAddressV2](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/update-address-v2/) | §14 |
+| `updateCustomerAddress` | [updateCustomerAddress](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/update-address/) | §15 |
+| `updateCustomer` | [updateCustomer](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/update/) | §16 |
+| `subscribeEmailToNewsletter` | [subscribeEmailToNewsletter](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/subscribe-email-to-newsletter/) | §17 |
+| `sendEmailToFriend` | [sendEmailToFriend](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/send-email-to-friend/) | §18 |
+| `revokeCustomerToken` | [revokeCustomerToken](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/revoke-token/) | §19 |
+| `resetPassword` | [resetPassword](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/reset-password/) | §20 |
+| `resendConfirmationEmail` | [resendConfirmationEmail](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/resend-confirmation-email/) | §21 |
+| `requestPasswordResetEmail` | [requestPasswordResetEmail](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/request-password-reset-email/) | §22 |
+| `generateCustomerTokenAsAdmin` | [generateCustomerTokenAsAdmin](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/generate-token-as-admin/) | §23 |
+| `generateCustomerToken` | [generateCustomerToken](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/generate-token/) | §24 |
+| `exchangeOtpForCustomerToken` | [exchangeOtpForCustomerToken](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/exchange-otp-customer-token/) | §25 |
+| `exchangeExternalCustomerToken` | [exchangeExternalCustomerToken](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/exchange-external-customer-token/) | §26 |
+| `deleteCustomerAddressV2` | [deleteCustomerAddressV2](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/delete-address-v2/) | §27 |
+| `deleteCustomerAddress` | [deleteCustomerAddress](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/delete-address/) | §28 |
+| `createCustomerV2` | [createCustomerV2](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/create-v2/) | §29 |
+| `createCustomerAddress` | [createCustomerAddress](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/create-address/) | §30 |
+| `createCustomer` | [createCustomer](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/create/) | §31 |
+| `confirmEmail` | [confirmEmail](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/confirm-email/) | §32 |
+| `changeCustomerPassword` | [changeCustomerPassword](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/change-password/) | §33 |
+| `assignCompareListToCustomer` | [assignCompareListToCustomer](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/assign-compare-list/) | §34 |
+
+---
+
+## 12. `updateCustomerV2`
+
+Nguồn: [updateCustomerV2](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/update-v2/)
+
+- Mutation cập nhật thông tin customer hiện có; Adobe khuyến nghị dùng mutation này thay cho `updateCustomer`.
+- Dùng input `CustomerUpdateInput` (khác với `CustomerInput` ở luồng create/update cũ).
+- Từ 2.4.7 có thể cập nhật thêm `custom_attributes`.
+- Cú pháp (theo doc): `updateCustomerV2(input: CustomerUpdateInput!): CustomerOutput`
+- Cần customer token/session auth.
+
+---
+
+## 13. `updateCustomerEmail`
+
+Nguồn: [updateCustomerEmail](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/update-email/)
+
+- Dùng để đổi email của customer đang đăng nhập.
+- Yêu cầu truyền email mới + password hiện tại của customer.
+- Cú pháp (theo doc): `updateCustomerEmail(email: String!, password: String!): CustomerOutput`
+
+---
+
+## 14. `updateCustomerAddressV2`
+
+Nguồn: [updateCustomerAddressV2](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/update-address-v2/)
+
+- **SaaS only** và thuộc **Storefront Compatibility Package** (sẽ có trong 2.4.9).
+- Cập nhật địa chỉ customer theo `uid` (ID dạng encoded).
+- Hỗ trợ cập nhật `custom_attributesV2`.
+- Cú pháp (theo doc): `updateCustomerAddressV2(uid: ID!, input: CustomerAddressInput): CustomerAddress`
+- Lỗi thường gặp: thiếu/sai `uid`, không có quyền trên address, thiếu `input`, chưa auth.
+
+---
+
+## 15. `updateCustomerAddress`
+
+Nguồn: [updateCustomerAddress](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/update-address/)
+
+- Đã deprecated trên Adobe Commerce as a Cloud Service và sẽ deprecated trên Adobe Commerce 2.4.9; Adobe khuyến nghị chuyển sang `updateCustomerAddressV2`.
+- Cập nhật địa chỉ customer theo `id` kiểu số nguyên.
+- Cú pháp (theo doc): `updateCustomerAddress(id: Int!, input: CustomerAddressInput): CustomerAddress`
+- Lỗi thường gặp: thiếu/sai `id`, không có quyền, thiếu `input`, chưa auth.
+
+---
+
+## 16. `updateCustomer`
+
+Nguồn: [updateCustomer](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/update/)
+
+- **PaaS only**.
+- Mutation cập nhật thông tin cá nhân customer; Adobe khuyến nghị ưu tiên `updateCustomerV2`.
+- Cú pháp (theo doc): `updateCustomer(input: CustomerInput!): CustomerOutput`
+- Nếu đổi email trong input thì cần password hiện tại.
+
+---
+
+## 17. `subscribeEmailToNewsletter`
+
+Nguồn: [subscribeEmailToNewsletter](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/subscribe-email-to-newsletter/)
+
+- Cho phép guest hoặc customer đăng ký newsletter.
+- Kết quả thường là `SUBSCRIBED` hoặc `NOT_ACTIVE` theo cấu hình xác nhận.
+- Cú pháp (theo doc): `subscribeEmailToNewsletter(email: String!): SubscribeEmailToNewsletterOutput`
+- Lỗi thường gặp: email sai format, email đã subscribe, guest subscription bị tắt.
+
+---
+
+## 18. `sendEmailToFriend`
+
+Nguồn: [sendEmailToFriend](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/send-email-to-friend/)
+
+- **PaaS only**.
+- Cho phép gửi email giới thiệu sản phẩm cho bạn bè.
+- Cần bật cấu hình Admin: **Catalog > Email to a friend > Enabled = Yes**.
+- Cú pháp (theo doc): `sendEmailToFriend(input: SendEmailToFriendInput): SendEmailToFriendOutput`
+- Có giới hạn theo giờ và có thể yêu cầu auth tùy cấu hình cho guest.
+
+---
+
+## 19. `revokeCustomerToken`
+
+Nguồn: [revokeCustomerToken](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/revoke-token/)
+
+- Thu hồi customer token hiện tại; trả `result: true` nếu thành công.
+- Cú pháp (theo doc): `revokeCustomerToken: RevokeCustomerTokenOutput`
+- Lỗi thường gặp: customer chưa đăng nhập/token không hợp lệ.
+
+---
+
+## 20. `resetPassword`
+
+Nguồn: [resetPassword](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/reset-password/)
+
+- Đặt mật khẩu mới bằng `resetPasswordToken` + email, sau bước `requestPasswordResetEmail`.
+- Trả boolean (`true`/`false`).
+- Cú pháp (theo doc): `resetPassword(email: String!, resetPasswordToken: String!, newPassword: String!): Boolean`
+- Token reset có trong email reset (và có thể tra từ DB theo doc Adobe).
+
+---
+
+## 21. `resendConfirmationEmail`
+
+Nguồn: [resendConfirmationEmail](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/resend-confirmation-email/)
+
+- Gửi lại email confirm cho account chưa kích hoạt.
+- Trả boolean (`true`/`false`).
+- Cú pháp (theo doc): `resendConfirmationEmail(email: String!): Boolean`
+- Lỗi thường gặp: email không tồn tại, customer đã confirm, lỗi gửi mail hệ thống.
+
+---
+
+## 22. `requestPasswordResetEmail`
+
+Nguồn: [requestPasswordResetEmail](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/request-password-reset-email/)
+
+- Khởi tạo luồng reset password bằng cách gửi email chứa reset link/token.
+- Trả boolean (`true`/`false`).
+- Cú pháp (theo doc): `requestPasswordResetEmail(email: String!): Boolean`
+- Dùng token từ link để gọi `resetPassword`.
+
+---
+
+## 23. `generateCustomerTokenAsAdmin`
+
+Nguồn: [generateCustomerTokenAsAdmin](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/generate-token-as-admin/)
+
+- Admin tạo customer token để hỗ trợ mua hàng từ xa thay cho customer.
+- Chỉ hoạt động khi customer bật `allow_remote_shopping_assistance`.
+- Cú pháp (theo doc): `generateCustomerTokenAsAdmin(input: GenerateCustomerTokenAsAdminInput!): GenerateCustomerTokenAsAdminOutput`
+
+---
+
+## 24. `generateCustomerToken`
+
+Nguồn: [generateCustomerToken](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/generate-token/)
+
+- **SaaS only** theo trang doc hiện tại.
+- Tạo customer access token cho luồng đăng nhập.
+- Adobe mô tả có thể dùng `password` theo các kiểu credential hợp lệ (customer password / reset token / OTC trong luồng login-as-customer, tùy cấu hình).
+- Cú pháp (theo doc): `generateCustomerToken(email: String!, password: String!): CustomerToken`
+
+---
+
+## 25. `exchangeOtpForCustomerToken`
+
+Nguồn: [exchangeOtpForCustomerToken](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/exchange-otp-customer-token/)
+
+- **SaaS only**.
+- Đổi email + OTP thành customer token; OTP bị invalidate sau khi dùng.
+- Có tích hợp reCAPTCHA để giảm abuse tự động.
+- Cú pháp (theo doc): `exchangeOtpForCustomerToken(email: String!, otp: String!): CustomerToken`
+
+---
+
+## 26. `exchangeExternalCustomerToken`
+
+Nguồn: [exchangeExternalCustomerToken](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/exchange-external-customer-token/)
+
+- Thuộc **Storefront Compatibility Package**, sẽ có trong Adobe Commerce **2.4.9**.
+- Hỗ trợ social/external login qua App Builder; có thể tạo mới customer nếu chưa tồn tại và trả token.
+- Yêu cầu integration với external auth system (OAuth 1.0) và credentials integration tương ứng.
+- Cú pháp (theo doc): `exchangeExternalCustomerToken(input: ExchangeExternalCustomerTokenInput!): ExchangeExternalCustomerTokenOutput`
+
+---
+
+## 27. `deleteCustomerAddressV2`
+
+Nguồn: [deleteCustomerAddressV2](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/delete-address-v2/)
+
+- **SaaS only** và thuộc **Storefront Compatibility Package** (2.4.9).
+- Xóa địa chỉ customer theo `uid`; trả boolean thành công/thất bại.
+- Không thể xóa địa chỉ đang là default billing/shipping.
+- Cú pháp (theo doc): `deleteCustomerAddressV2(uid: ID!): Boolean`
+
+---
+
+## 28. `deleteCustomerAddress`
+
+Nguồn: [deleteCustomerAddress](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/delete-address/)
+
+- Đã deprecated trên Adobe Commerce as a Cloud Service và sẽ deprecated trên Adobe Commerce 2.4.9; Adobe khuyến nghị dùng `deleteCustomerAddressV2`.
+- Xóa địa chỉ theo `id: Int!`; trả boolean.
+- Không thể xóa địa chỉ default billing/shipping.
+- Cú pháp (theo doc): `deleteCustomerAddress(id: Int!): Boolean`
+
+---
+
+## 29. `createCustomerV2`
+
+Nguồn: [createCustomerV2](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/create-v2/)
+
+- Mutation chuẩn để tạo customer account mới; thay thế `createCustomer`.
+- Dùng input `CustomerCreateInput` (không dùng chung object với update v2).
+- Từ 2.4.7 có thể truyền `custom_attributes`.
+- Cú pháp (theo doc): `createCustomerV2(input: CustomerCreateInput!): CustomerOutput`
+
+---
+
+## 30. `createCustomerAddress`
+
+Nguồn: [createCustomerAddress](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/create-address/)
+
+- Tạo địa chỉ customer mới từ `CustomerAddressInput`.
+- Hỗ trợ custom attributes cho address; trong SaaS có thêm case custom file upload.
+- Cú pháp (theo doc): `createCustomerAddress(input: CustomerAddressInput!): CustomerAddress`
+- Lỗi thường gặp: thiếu field bắt buộc, `street` vượt số dòng cho phép, chưa auth.
+
+---
+
+## 31. `createCustomer`
+
+Nguồn: [createCustomer](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/create/)
+
+- **PaaS only**.
+- Mutation tạo customer kiểu cũ; Adobe khuyến nghị dùng `createCustomerV2`.
+- Cú pháp (theo doc): `createCustomer(input: CustomerInput!): CustomerOutput`
+- Lỗi thường gặp: email trùng, email sai format, thiếu firstname/email.
+
+---
+
+## 32. `confirmEmail`
+
+Nguồn: [confirmEmail](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/confirm-email/)
+
+- Hoàn tất kích hoạt account bằng `email` + `confirmation_key`.
+- Cú pháp (theo doc): `confirmEmail(input: ConfirmEmailInput!): CustomerOutput`
+- Lỗi thường gặp: token xác nhận không hợp lệ, account đã active, email không hợp lệ.
+
+---
+
+## 33. `changeCustomerPassword`
+
+Nguồn: [changeCustomerPassword](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/change-password/)
+
+- Đổi password cho customer đang đăng nhập.
+- Cần truyền `currentPassword` và `newPassword`.
+- Cú pháp (theo doc): `changeCustomerPassword(currentPassword: String!, newPassword: String!): Customer`
+- Lỗi thường gặp: chưa auth, current password sai, account bị khóa.
+
+---
+
+## 34. `assignCompareListToCustomer`
+
+Nguồn: [assignCompareListToCustomer](https://developer.adobe.com/commerce/webapi/graphql/schema/customer/mutations/assign-compare-list/)
+
+- Gán compare list (thường tạo khi guest) cho customer đã đăng nhập.
+- Yêu cầu customer authentication token hợp lệ.
+- Cú pháp (theo doc): `assignCompareListToCustomer(uid: ID!): AssignCompareListToCustomerOutput`
 
 ---
 
