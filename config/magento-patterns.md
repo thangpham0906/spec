@@ -81,6 +81,26 @@ Tham khảo chi tiết: xem [network/message-queues.md](./references/network/mes
 
 ---
 
+## 7. Carrier (Shipping Method) Pattern
+
+Áp dụng khi tạo custom shipping carrier kế thừa `Magento\Shipping\Model\Carrier\AbstractCarrier`.
+
+### Quy tắc bắt buộc:
+- Constructor của class carrier **phải khớp đúng type-hint** với constructor parent theo phiên bản Magento hiện tại.
+- Không suy đoán namespace factory; luôn đối chiếu trực tiếp với file core trước khi code.
+- Với Magento 2.4.8, `AbstractCarrier` dùng:
+  - `\Magento\Framework\App\Config\ScopeConfigInterface`
+  - `\Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory`
+  - `\Psr\Log\LoggerInterface`
+- `collectRates` trả `false` khi không áp dụng method; chỉ append method khi đủ điều kiện nghiệp vụ.
+- Nếu method chỉ áp dụng subset sản phẩm, phải có guard rõ ràng để không ảnh hưởng carrier khác.
+
+### Verify tối thiểu:
+- Chạy `bin/magento setup:di:compile` sau khi thêm/sửa constructor DI.
+- Chạy flow checkout để xác nhận method hiển thị/ẩn đúng điều kiện.
+
+---
+
 ## 8. UI Components & Data Sources
 
 Tham khảo chi tiết: xem [frontend/ui-components.md](./references/frontend/ui-components.md)

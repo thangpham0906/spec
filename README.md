@@ -69,11 +69,36 @@ Chỉ khi tôi trả lời "OK implement" mới được code.
 Implement task số <N>.
 ```
 
+Dùng block này khi:
+- Feature đã có `tasks.md` rõ ràng.
+- Bạn muốn implement 1 task cụ thể.
+- Không dùng cho trường hợp chỉ review code.
+
 ### Review/check
 
 ```text
 Đọc `.spec/config/checklist.md`.
 Kiểm tra code của module <tên-module> theo checklist.
+```
+
+Dùng block này khi:
+- Mục tiêu là review/audit code hiện có.
+- Không dùng để yêu cầu implement feature mới.
+
+### Làm lại từ đầu (code đã bị xoá)
+
+```text
+Follow .spec workflow in this repo.
+Feature: <tên ngắn>
+Bối cảnh/vấn đề: <đau ở đâu>
+Kết quả mong muốn: <muốn đạt gì>
+Phạm vi biết chắc: <module/file, business rules đã chốt>
+```
+
+Nếu muốn implement lại nhanh theo spec cũ, thêm:
+
+```text
+Dùng lại spec tại `.spec/features/<tên-feature>/spec.md` và implement lại từ đầu.
 ```
 
 ## File tham chiếu

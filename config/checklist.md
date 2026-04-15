@@ -12,6 +12,7 @@ Tham khảo từ: constitution.md, magento-patterns.md
 - [ ] Không có code chết, code comment out
 - [ ] Không có `exit`, `die`, `var_dump`, `print_r`
 - [ ] Dependency inject qua constructor, không `new` trực tiếp
+- [ ] Type-hint constructor DI khớp chính xác với parent class/interface đang kế thừa (đúng namespace class)
 - [ ] Exception cụ thể, không dùng \Exception chung
 
 ## 2. Cấu trúc Module
@@ -60,6 +61,8 @@ Tham khảo từ: constitution.md, magento-patterns.md
 - [ ] Unit test cho logic phức tạp
 - [ ] Integration test cho repository
 - [ ] Test đặt trong `Test/Unit/` hoặc `Test/Integration/`
+- [ ] Nếu có thay đổi constructor DI/module wiring: chạy `bin/magento setup:di:compile`
+- [ ] Nếu có custom carrier: verify checkout method xuất hiện/biến mất đúng điều kiện
 
 ---
 
