@@ -1,5 +1,7 @@
 # Feature Spec - <tên-feature>
 
+> Quy tắc: ngắn gọn, không lặp ý với `plan.md`/`tasks.md`, chỉ ghi quyết định đã chốt.
+
 ## 1) Feature input
 - Feature: `<tên ngắn>`
 - Bối cảnh/vấn đề: `<đau ở đâu>`
@@ -19,6 +21,9 @@
 
 ## 4) Xác nhận trước khi code
 - Requirement understanding: `<3 bullet>`
+- Risks/assumptions: `<2-3 bullet>`
+- Options + recommendation: `<tối đa 2 options + 1 khuyến nghị>`
+- Decision đã chốt: `<option được chọn + business rule chính>`
 - Phạm vi được phép sửa: `<files/module>`
 - Điểm cần xác nhận thêm: `<...>`
 

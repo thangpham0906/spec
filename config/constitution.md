@@ -12,6 +12,7 @@
 ## 1. Coding Standard
 
 ### PHP
+
 - PHP 8.3, sử dụng typed properties, union types, named arguments khi cần
 - Tuân theo PSR-1, PSR-4, PSR-12
 - Strict types bắt buộc: `declare(strict_types=1);` ở mọi file PHP
@@ -20,6 +21,7 @@
 - Docblock chỉ khi cần giải thích logic phức tạp, không lặp lại type hint
 
 ### Nguyên tắc thiết kế (Technical Guidelines)
+
 - **SOLID bắt buộc:**
   - S: Mỗi class chỉ làm 1 việc.
   - O: Mở rộng bằng plugin/event, không sửa core.
@@ -54,7 +56,8 @@
 
 ## 3. Cấu trúc Module bắt buộc
 
-Mỗi module <Vendor> phải có tối thiểu:
+Mỗi module  phải có tối thiểu:
+
 ```
 app/code/<Vendor>/<TênModule>/
 ├── registration.php
@@ -72,12 +75,12 @@ Chỉ tính năng nào cần, mới thêm folder tương ứng. Không tạo fol
 - Tên class, method, variable: tiếng Anh
 - Comment giải thích logic: tiếng Anh
 - Commit message: tiếng Anh
-- Spec, plan, task: tiếng Việt
+- Spec, plan, task: tiếng Việt có dấu
 - **Document Tags (PHPDoc):**
-    - `@api`: Bắt buộc cho mọi Public Interface (`Api/`).
-    - `@since`: Bắt buộc cho Interface và Method trong Api folder (ví dụ: `@since 1.0.0`).
-    - `@inheritdoc`: Dùng trong class thực thi (Implementation) để kế thừa docblock từ interface.
-    - **Lưu ý đặc biệt cho Web API:** Mọi `@param` và `@return` trong Public Interface phải sử dụng **Fully Qualified Class Name** (ví dụ: `\Vendor\Module\Api\Data\MyInterface` thay vì `Data\MyInterface`) để hệ thống REST/SOAP tự động nhận diện đúng kiểu dữ liệu.
+  - `@api`: Bắt buộc cho mọi Public Interface (`Api/`).
+  - `@since`: Bắt buộc cho Interface và Method trong Api folder (ví dụ: `@since 1.0.0`).
+  - `@inheritdoc`: Dùng trong class thực thi (Implementation) để kế thừa docblock từ interface.
+  - **Lưu ý đặc biệt cho Web API:** Mọi `@param` và `@return` trong Public Interface phải sử dụng **Fully Qualified Class Name** (ví dụ: `\Vendor\Module\Api\Data\MyInterface` thay vì `Data\MyInterface`) để hệ thống REST/SOAP tự động nhận diện đúng kiểu dữ liệu.
 
 ---
 
@@ -144,10 +147,10 @@ Task chỉ được xem là hoàn thành khi đạt đủ:
 2. Không vi phạm rule trong constitution + magento-patterns.
 3. Đã chạy verify steps và báo kết quả rõ ràng.
 4. Báo cáo cuối có đủ:
-   - Files changed
-   - Lý do thay đổi
-   - Verify steps đã chạy
-   - Kết quả testcase
+  - Files changed
+  - Lý do thay đổi
+  - Verify steps đã chạy
+  - Kết quả testcase
 
 ---
 
@@ -198,3 +201,4 @@ Task chỉ được xem là hoàn thành khi đạt đủ:
 
 - Các pattern chi tiết Magento: xem [magento-patterns.md](./magento-patterns.md)
 - Checklist trước khi hoàn thành: xem [checklist.md](./checklist.md)
+
