@@ -19,13 +19,26 @@ Phạm vi biết chắc: <module/file nếu có, không có thì để trống>
 - Với mọi task `implement/review/debug`: bắt buộc chọn ít nhất 1 skill từ `.spec/skills/skills-list.md` trước khi thực hiện.
 - Chỉ khi bạn override (ví dụ: "không dùng skills", "chỉ sửa module X"), AI mới đổi cách làm theo yêu cầu đó.
 
+## Proactive behavior (bắt buộc)
+
+- AI không chỉ thi hành; phải phân tích độc lập và đề xuất phương án tốt hơn khi phù hợp.
+- Trước khi implement, AI phải nêu:
+  1. Requirement understanding
+  2. Risks/assumptions
+  3. 1-2 options + recommendation
+- Nếu phát hiện rủi ro business/technical (khả năng lỗi, khó scale, chi phí vận hành cao), AI phải cảnh báo và đề xuất điều chỉnh.
+- Nếu thiếu thông tin quan trọng, AI phải hỏi lại; không tự suy đoán để code.
+- Cuối mỗi bước, AI phải đề xuất `next best action`.
+
 ## AI sẽ làm theo thứ tự
 
 1. Đọc `.spec/config/constitution.md` và `.spec/config/magento-patterns.md`.
 2. Tạo/cập nhật spec tại `.spec/features/<tên-feature>/spec.md`.
-3. Xác nhận requirement + nêu rõ scope file/module trước khi code (theo Scope Governance).
-4. Nếu thiếu thông tin quan trọng: hỏi lại trước khi sửa code.
-5. Implement + verify theo testcase, rồi báo cáo kết quả theo DoD.
+3. **Dừng bắt buộc để xác nhận** requirement + scope file/module (theo Scope Governance) + gợi ý 1-2 hướng giải pháp.
+4. Nếu thiếu thông tin quan trọng: hỏi lại trước khi làm bước tiếp theo.
+5. Chỉ khi user trả lời `OK spec` mới tạo `.spec/features/<tên-feature>/plan.md` và `.spec/features/<tên-feature>/tasks.md`.
+6. Cập nhật trạng thái tại `.spec/features/<tên-feature>/status.md` sau mỗi bước lớn.
+7. Chỉ khi user trả lời `OK implement` mới implement + verify theo testcase, rồi báo cáo kết quả theo DoD.
 
 ## Output bắt buộc
 
@@ -41,10 +54,11 @@ Phạm vi biết chắc: <module/file nếu có, không có thì để trống>
 
 ```text
 Đọc `.spec/config/constitution.md` và `.spec/config/magento-patterns.md`.
-Đọc spec tại `.spec/features/<tên-feature>/spec.md`.
+Tạo/cập nhật spec tại `.spec/features/<tên-feature>/spec.md`.
 Nếu task cần review/implement/debug, chọn skill phù hợp theo `.spec/skills/skills-list.md`.
-Tạo plan tại `.spec/features/<tên-feature>/plan.md` và tasks tại `.spec/features/<tên-feature>/tasks.md`.
-Trước khi implement: xác nhận requirement + scope sửa.
+DỪNG và hỏi xác nhận bắt buộc: requirement understanding + scope sửa + điểm còn thiếu + gợi ý 1-2 hướng + khuyến nghị hướng nên chọn.
+Chỉ khi tôi trả lời "OK spec" mới tạo plan/tasks.
+Chỉ khi tôi trả lời "OK implement" mới được code.
 ```
 
 ### Làm task đã có sẵn
@@ -72,6 +86,7 @@ Kiểm tra code của module <tên-module> theo checklist.
 - Spec template (feature workspace): `.spec/features/_template/spec.md`
 - Plan template (feature workspace): `.spec/features/_template/plan.md`
 - Tasks template (feature workspace): `.spec/features/_template/tasks.md`
+- Status template (feature workspace): `.spec/features/_template/status.md`
 - Spec template (legacy): `.spec/specs/_template.md`
 - Task contracts: `.spec/templates/task-contract*.md`
 - Feature workspace (mới): `.spec/features/<tên-feature>/`

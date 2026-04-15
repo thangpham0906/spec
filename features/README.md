@@ -9,6 +9,7 @@ Tối thiểu gồm:
 - `spec.md`
 - `plan.md`
 - `tasks.md`
+- `status.md`
 
 Bạn có thể copy nhanh từ:
 
