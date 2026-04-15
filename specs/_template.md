@@ -1,4 +1,4 @@
-# Template Spec - Business First + Testcase First
+# Template Spec (Full) - Business First + Testcase First
 
 > Dùng file này khi bắt đầu feature mới trong `.spec/specs/`.
 > Mục tiêu: chốt nghiệp vụ + scope + testcase trước khi implement.
@@ -161,23 +161,3 @@ Files/module dự kiến thay đổi:
    - `<why>`
 3. Verify steps đã chạy:
    - `<command/step + result>`
-
----
-
-## 10) Prompt mẫu để giao cho AI
-
-```text
-Đọc `.spec/config/constitution.md` và `.spec/config/magento-patterns.md`.
-Đọc spec tại `.spec/specs/<ten-feature>.md`.
-Nếu task cần review/implement/debug, chọn skill phù hợp theo `.spec/skills/skills-list.md`.
-
-Trước khi làm:
-1) Xác nhận lại bạn hiểu đúng requirements.
-2) Nêu rõ review scope và phạm vi được phép sửa: <files/module>.
-3) Nêu các điểm còn thiếu cần mình xác nhận.
-4) Đề xuất 1-2 hướng giải pháp và khuyến nghị hướng tốt nhất.
-
-Sau đó mới implement.
-Báo cáo cuối gồm: (1) files changed, (2) lý do thay đổi, (3) verify steps đã chạy và kết quả testcase.
-Nếu thiếu thông tin quan trọng, hỏi lại trước khi sửa code.
-```

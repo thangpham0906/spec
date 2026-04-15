@@ -1,130 +1,70 @@
-# Spec-Driven Development cho Magento 2.4.8
+# Spec Workflow (Quick)
 
-## Cấu trúc thư mục
+## 30s Quick Start
 
-```
-.spec/
-├── README.md                    # File này - hướng dẫn sử dụng
-├── config/
-│   ├── constitution.md          # Quy tắc chung, coding standard, conventions
-│   ├── magento-patterns.md      # Các pattern Magento bắt buộc tuân theo
-│   └── checklist.md             # Checklist kiểm tra trước khi hoàn thành
-│
-├── specs/
-│   └── <tên-feature>.md         # Spec của từng feature (bạn viết)
-│
-├── plans/
-│   └── <tên-feature>.md         # Plan kỹ thuật (AI tạo)
-│
-└── tasks/
-    └── <tên-feature>.md         # Danh sách task (AI tạo)
-│
-└── skills/
-    ├── README.md                # Danh sách skills dùng cho project
-    └── skills-list.md           # Skill registry + lệnh cài + cách dùng
-│
-└── templates/
-    ├── task-contract.md                 # Template chung anti-vibe coding
-    ├── task-contract-crud-module.md     # Mẫu task CRUD admin module
-    ├── task-contract-graphql-field.md   # Mẫu task GraphQL field
-    └── task-contract-rest-endpoint.md   # Mẫu task REST endpoint
-```
-
-## Quy trình làm việc
-
-1. Bạn viết spec trong `specs/<tên-feature>.md`
-2. Nói AI: "Đọc .spec/config/constitution.md rồi đọc .spec/specs/<tên-feature>.md"
-3. AI tạo plan trong `plans/<tên-feature>.md`
-4. AI chia task trong `tasks/<tên-feature>.md`
-5. AI implement từng task
-
-## Quy tắc đặt tên file
-
-- Dùng kebab-case: `customer-phone.md`, `custom-shipping.md`
-- Tên file trùng nhau giữa specs/, plans/, tasks/ để dễ theo dõi
-- Ví dụ: specs/customer-phone.md -> plans/customer-phone.md -> tasks/customer-phone.md
-
-## Quick Start (dễ tiếp cận)
-
-Nếu chưa quen spec dài, bắt đầu bằng yêu cầu business ngắn:
+Copy block này khi mở chat mới:
 
 ```text
+Follow .spec workflow in this repo.
 Feature: <tên ngắn>
 Bối cảnh/vấn đề: <đau ở đâu>
 Kết quả mong muốn: <muốn đạt gì>
 Phạm vi biết chắc: <module/file nếu có, không có thì để trống>
-Deadline/Priority: <nếu có>
 ```
 
-AI sẽ đi cùng bạn theo từng bước ngắn:
+## Default behavior
 
-1. Hỏi lại thông tin quan trọng để chốt scope.
-2. Dựng spec theo thứ tự: business -> acceptance criteria -> testcase -> plan.
-3. Chờ bạn xác nhận rồi mới implement.
-4. Test lại theo testcase và báo cáo kết quả.
+- Mặc định AI tự động áp dụng `.spec workflow` trong repo này, bạn không cần nhắc lại mỗi chat.
+- AI luôn đọc `constitution` + `magento-patterns`, xác nhận scope trước khi code, và báo cáo theo output bắt buộc.
+- Với mọi task `implement/review/debug`: bắt buộc chọn ít nhất 1 skill từ `.spec/skills/skills-list.md` trước khi thực hiện.
+- Chỉ khi bạn override (ví dụ: "không dùng skills", "chỉ sửa module X"), AI mới đổi cách làm theo yêu cầu đó.
 
-## Cách nói chuyện với AI
+## AI sẽ làm theo thứ tự
 
-## Task Contract (để AI làm đúng output)
+1. Đọc `.spec/config/constitution.md` và `.spec/config/magento-patterns.md`.
+2. Tạo/cập nhật spec tại `.spec/specs/<ten-feature>.md`.
+3. Xác nhận requirement + nêu rõ scope file/module trước khi code.
+4. Nếu thiếu thông tin quan trọng: hỏi lại trước khi sửa code.
+5. Implement + verify theo testcase, rồi báo cáo kết quả.
 
-- Khi task quan trọng, tạo 1 contract từ `.spec/templates/task-contract.md`.
-- Nếu là task Magento cụ thể, copy từ 1 trong 3 mẫu:
-  - `.spec/templates/task-contract-crud-module.md`
-  - `.spec/templates/task-contract-graphql-field.md`
-  - `.spec/templates/task-contract-rest-endpoint.md`
-- Sau đó prompt AI đọc contract trước khi sửa code.
+## Output bắt buộc
 
-Prompt gợi ý:
+1. `files changed`
+2. `lý do thay đổi`
+3. `verify steps đã chạy`
+4. `kết quả testcase`
+
+## Prompt nhanh theo ngữ cảnh
+
+### Bắt đầu feature mới
 
 ```text
-Đọc `.spec/config/constitution.md` và đọc task contract tại `<path-contract>`.
-Chỉ sửa trong phạm vi được phép.
-Implement theo Acceptance Criteria.
-Báo cáo đúng Output contract.
-Nếu thiếu thông tin quan trọng, hỏi lại trước khi sửa code.
+Đọc `.spec/config/constitution.md` và `.spec/config/magento-patterns.md`.
+Đọc spec tại `.spec/specs/<tên-feature>.md`.
+Nếu task cần review/implement/debug, chọn skill phù hợp theo `.spec/skills/skills-list.md`.
+Trước khi làm: xác nhận requirement + scope sửa.
 ```
 
-### Lần đầu (hoặc khi bắt đầu feature mới):
+### Làm task đã có sẵn
 
-```
-Đọc file .spec/config/constitution.md và .spec/config/magento-patterns.md
-Sau đó đọc spec tại .spec/specs/<tên-feature>.md
-Nếu task cần review/implement/debug, chọn skill phù hợp theo hướng dẫn trong `.spec/skills/skills-list.md`.
-
-Trước khi làm:
-1) Xác nhận bạn hiểu đúng requirements + review scope.
-2) Nêu rõ phạm vi được phép sửa: <files/module>.
-3) Nếu thiếu thông tin quan trọng, hỏi lại trước khi sửa code.
-4) Đề xuất ngắn 1-2 hướng giải pháp và khuyến nghị hướng phù hợp theo business impact.
-
-Khi thực hiện:
-- Ưu tiên business analysis trước, viết testcase (happy/edge/negative) trước hoặc song song.
-
-Khi báo cáo:
-(1) files changed, (2) lý do thay đổi, (3) verify steps đã chạy, (4) kết quả theo testcase.
-```
-
-### Khi đã có plan và tasks:
-
-```
-Đọc .spec/config/constitution.md
-Đọc .spec/tasks/<tên-feature>.md
+```text
+Đọc `.spec/config/constitution.md`.
+Đọc `.spec/tasks/<tên-feature>.md`.
 Implement task số <N>.
 ```
 
-### Khi cần kiểm tra:
+### Review/check
 
-```
-Đọc .spec/config/checklist.md
+```text
+Đọc `.spec/config/checklist.md`.
 Kiểm tra code của module <tên-module> theo checklist.
 ```
 
-"Dựa theo quy chuẩn trong thư mục .spec/, hãy tạo data patch..."
-https://experienceleague.adobe.com/en/docs/commerce
+## File tham chiếu
 
-## Skills cho project
-
-Quản lý skill theo project tại:
-
-- `.spec/skills/README.md`
-- `.spec/skills/skills-list.md`
+- Rules: `.spec/config/constitution.md`
+- Magento patterns: `.spec/config/magento-patterns.md`
+- Checklist: `.spec/config/checklist.md`
+- Skills map: `.spec/skills/skills-list.md`
+- Spec template: `.spec/specs/_template.md`
+- Task contracts: `.spec/templates/task-contract*.md`
