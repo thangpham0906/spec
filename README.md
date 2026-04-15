@@ -22,6 +22,12 @@
 └── skills/
     ├── README.md                # Danh sách skills dùng cho project
     └── skills-list.md           # Skill registry + lệnh cài + cách dùng
+│
+└── templates/
+    ├── task-contract.md                 # Template chung anti-vibe coding
+    ├── task-contract-crud-module.md     # Mẫu task CRUD admin module
+    ├── task-contract-graphql-field.md   # Mẫu task GraphQL field
+    └── task-contract-rest-endpoint.md   # Mẫu task REST endpoint
 ```
 
 ## Quy trình làm việc
@@ -39,6 +45,25 @@
 - Ví dụ: specs/customer-phone.md -> plans/customer-phone.md -> tasks/customer-phone.md
 
 ## Cách nói chuyện với AI
+
+## Task Contract (để AI làm đúng output)
+
+- Khi task quan trọng, tạo 1 contract từ `.spec/templates/task-contract.md`.
+- Nếu là task Magento cụ thể, copy từ 1 trong 3 mẫu:
+  - `.spec/templates/task-contract-crud-module.md`
+  - `.spec/templates/task-contract-graphql-field.md`
+  - `.spec/templates/task-contract-rest-endpoint.md`
+- Sau đó prompt AI đọc contract trước khi sửa code.
+
+Prompt gợi ý:
+
+```text
+Đọc `.spec/config/constitution.md` và đọc task contract tại `<path-contract>`.
+Chỉ sửa trong phạm vi được phép.
+Implement theo Acceptance Criteria.
+Báo cáo đúng Output contract.
+Nếu thiếu thông tin quan trọng, hỏi lại trước khi sửa code.
+```
 
 ### Lần đầu (hoặc khi bắt đầu feature mới):
 
