@@ -27,7 +27,8 @@
     ├── task-contract.md                 # Template chung anti-vibe coding
     ├── task-contract-crud-module.md     # Mẫu task CRUD admin module
     ├── task-contract-graphql-field.md   # Mẫu task GraphQL field
-    └── task-contract-rest-endpoint.md   # Mẫu task REST endpoint
+    ├── task-contract-rest-endpoint.md   # Mẫu task REST endpoint
+    └── spec-business-testcase-first.md  # Mẫu spec: business-first + testcase-first
 ```
 
 ## Quy trình làm việc
