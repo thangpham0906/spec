@@ -22,7 +22,7 @@ Phạm vi biết chắc: <module/file nếu có, không có thì để trống>
 ## AI sẽ làm theo thứ tự
 
 1. Đọc `.spec/config/constitution.md` và `.spec/config/magento-patterns.md`.
-2. Tạo/cập nhật spec tại `.spec/specs/<ten-feature>.md`.
+2. Tạo/cập nhật spec tại `.spec/features/<tên-feature>/spec.md`.
 3. Xác nhận requirement + nêu rõ scope file/module trước khi code (theo Scope Governance).
 4. Nếu thiếu thông tin quan trọng: hỏi lại trước khi sửa code.
 5. Implement + verify theo testcase, rồi báo cáo kết quả theo DoD.
@@ -41,16 +41,17 @@ Phạm vi biết chắc: <module/file nếu có, không có thì để trống>
 
 ```text
 Đọc `.spec/config/constitution.md` và `.spec/config/magento-patterns.md`.
-Đọc spec tại `.spec/specs/<tên-feature>.md`.
+Đọc spec tại `.spec/features/<tên-feature>/spec.md`.
 Nếu task cần review/implement/debug, chọn skill phù hợp theo `.spec/skills/skills-list.md`.
-Trước khi làm: xác nhận requirement + scope sửa.
+Tạo plan tại `.spec/features/<tên-feature>/plan.md` và tasks tại `.spec/features/<tên-feature>/tasks.md`.
+Trước khi implement: xác nhận requirement + scope sửa.
 ```
 
 ### Làm task đã có sẵn
 
 ```text
 Đọc `.spec/config/constitution.md`.
-Đọc `.spec/tasks/<tên-feature>.md`.
+Đọc `.spec/features/<tên-feature>/tasks.md`.
 Implement task số <N>.
 ```
 
@@ -68,5 +69,10 @@ Kiểm tra code của module <tên-module> theo checklist.
 - DoD + Scope Governance: xem trong `.spec/config/constitution.md`
 - Checklist: `.spec/config/checklist.md`
 - Skills map: `.spec/skills/skills-list.md`
-- Spec template: `.spec/specs/_template.md`
+- Spec template (feature workspace): `.spec/features/_template/spec.md`
+- Plan template (feature workspace): `.spec/features/_template/plan.md`
+- Tasks template (feature workspace): `.spec/features/_template/tasks.md`
+- Spec template (legacy): `.spec/specs/_template.md`
 - Task contracts: `.spec/templates/task-contract*.md`
+- Feature workspace (mới): `.spec/features/<tên-feature>/`
+- Legacy path (vẫn hỗ trợ): `.spec/specs/`, `.spec/plans/`, `.spec/tasks/`
