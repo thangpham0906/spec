@@ -1,6 +1,6 @@
 # Constitution - Quy tắc phát triển chung
 
-> version: 1.1.3 | last_updated: 2026-04-16
+> version: 1.1.4 | last_updated: 2026-04-16
 
 ## Thông tin project
 
@@ -139,6 +139,28 @@ Chỉ tính năng nào cần, mới thêm folder tương ứng. Không tạo fol
 
 ## 10. Testing Policy
 
+### Unit Test (TDD — bắt buộc cho task có business logic)
+
+- Áp dụng TDD: **viết test trước (sẽ fail) → implement → chạy lại test (phải pass) → code review**.
+- Sau khi test pass: bắt buộc review bằng skill `magento-code-reviewer` + đối chiếu `config/checklist.md` trước khi báo task hoàn thành.
+
+### Blocking rules (không được bỏ qua)
+
+- Test fail → **DỪNG**. Phân tích nguyên nhân fail: nếu logic sai thì sửa implementation, nếu test sai thì sửa test (ghi rõ lý do). Chạy lại đến khi pass. Không được sửa test chỉ để cho pass mà không fix root cause.
+- Review còn Critical/High issue → **DỪNG**. Fix implementation theo từng issue, chạy lại test sau khi sửa, review lại cho đến khi sạch Critical/High.
+- Chỉ được báo task hoàn thành khi: test pass **VÀ** không còn Critical/High issue từ review.
+- Framework: Magento's `\PHPUnit\Framework\TestCase` (extend từ `\Magento\TestFramework\TestCase\AbstractController` hoặc `\PHPUnit\Framework\TestCase` tùy loại).
+- Đặt test tại: `Test/Unit/<mirror-path-của-class>.php`.
+- **Bắt buộc unit test** cho các class có business logic:
+  - `Service/`, `Model/` (logic), `Validator/`, `Plugin/`, `Observer/`, `Carrier/collectRates`
+  - Config reader có transform/normalize logic
+- **Không bắt buộc unit test** cho:
+  - Scaffold (registration, module.xml), Controller routing, Layout/Template, i18n, Data Patch đơn giản
+- Mỗi unit test phải cover tối thiểu: happy path + 1 edge/negative case.
+- Mock dependency qua `createMock()` / `getMockBuilder()`; không dùng ObjectManager trong test.
+
+### Verify steps (mọi task)
+
 - Mỗi task phải có verify steps rõ ràng (command + manual steps nếu có).
 - Với feature thay đổi behavior nghiệp vụ, bắt buộc có testcase tối thiểu theo nhóm:
   - Happy path
@@ -154,8 +176,10 @@ Task chỉ được xem là hoàn thành khi đạt đủ:
 
 1. Đúng acceptance criteria trong spec/task contract.
 2. Không vi phạm rule trong constitution + magento-patterns.
-3. Đã chạy verify steps và báo kết quả rõ ràng.
-4. Báo cáo cuối có đủ:
+3. Unit test đã viết (nếu task thuộc nhóm bắt buộc) và pass.
+4. Code review bằng skill `magento-code-reviewer` + checklist.md đã chạy — không còn issue Critical/High.
+5. Đã chạy verify steps và báo kết quả rõ ràng.
+6. Báo cáo cuối có đủ:
   - Files changed
   - Lý do thay đổi
   - Verify steps đã chạy

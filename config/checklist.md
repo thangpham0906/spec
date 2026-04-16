@@ -67,6 +67,10 @@
 
 ## 8. Testing
 
+- [ ] Task có business logic: unit test viết trước (TDD), đặt tại `Test/Unit/`
+- [ ] Unit test cover happy path + ít nhất 1 edge/negative case
+- [ ] Mock dependency qua `createMock()`, không dùng ObjectManager trong test
+- [ ] Chạy `./vendor/bin/phpunit` cho test liên quan — tất cả pass
 - [ ] Chạy `setup:di:compile` sau khi sửa DI
 - [ ] Custom carrier: verify checkout method hiển thị đúng
 - [ ] Custom thay core: verify so sánh behavior
