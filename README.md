@@ -7,15 +7,15 @@
 ## Flow tổng thể
 
 ```
-1. SPEC      Mô tả feature → AI tạo spec.md → bạn review → "OK spec"
-2. PLAN      AI tạo plan.md + tasks.md → bạn review → "OK implement"
-3. IMPLEMENT Với mỗi task có business logic:
-               a. AI viết unit test trước (test sẽ fail)
-               b. AI implement code
-               c. Chạy test → phải pass (max 3 lần retry, sau đó escalate)
-               d. Code review bằng skill + checklist (max 3 lần retry)
-               e. Báo done + completion report
-4. STATUS    AI cập nhật status.md sau mỗi bước lớn
+1. SPEC [vai BA]      Mô tả feature → AI phân tích business → spec.md → "OK spec"
+2. PLAN [vai Dev]     AI thiết kế technical → plan.md + tasks.md → "OK implement"
+3. IMPLEMENT [Dev+QA] Với mỗi task có business logic:
+                        a. AI viết unit test trước (test sẽ fail)
+                        b. AI implement code
+                        c. Chạy test → phải pass (max 3 lần retry)
+                        d. Code review bằng skill + checklist (max 3 lần retry)
+                        e. Báo done + completion report
+4. STATUS             AI cập nhật status.md sau mỗi bước lớn
 ```
 
 > Task không có business logic (scaffold, layout, i18n): bỏ qua bước unit test, chỉ cần verify + review.
@@ -101,7 +101,16 @@ Implement task số <N>.
 Kiểm tra code của module <tên-module> theo checklist.
 ```
 
-### Làm lại từ đầu (code đã bị xoá)
+### Hotfix (production urgent)
+
+```text
+HOTFIX: <mô tả lỗi ngắn gọn>
+Scope: <file/module bị ảnh hưởng>
+```
+
+> AI sẽ bỏ qua "OK spec", fix ngay. Vẫn giữ unit test + code review.
+> Bắt buộc cleanup spec/plan đầy đủ trong vòng 1-2 ngày sau.
+
 
 ```text
 Follow .spec workflow in this repo.
