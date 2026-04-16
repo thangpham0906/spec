@@ -85,6 +85,8 @@ Tham khảo chi tiết: xem [network/message-queues.md](./references/network/mes
 
 ## 7. Admin System Config Pattern (`etc/adminhtml/system.xml`)
 
+- Ưu tiên dùng **config core Magento đã có** cho cùng domain; chỉ tạo config mới khi core không đáp ứng đủ nghiệp vụ.
+- Trước khi tạo field mới, phải rà soát config path core liên quan để tránh duplicate/overlap cấu hình.
 - Ưu tiên tạo section riêng theo module (`<vendor>_<module>`) và gắn vào tab vendor (vd: `secomm`), thay vì nhét group mới vào section core như `sales`.
 - Không mặc định dùng `type="text"` cho mọi field. Ưu tiên chọn type theo nghiệp vụ:
   - `select` / `multiselect` khi dữ liệu thuộc tập option hữu hạn.

@@ -52,6 +52,8 @@ Tham khảo từ: constitution.md, magento-patterns.md
 
 ## 7. Config
 
+- [ ] Đã ưu tiên dùng config core Magento cho domain tương ứng trước khi tạo config mới
+- [ ] Nếu tạo config mới: có lý do rõ ràng vì sao config core không đáp ứng
 - [ ] Section trong system.xml: `<vendor>_<module>`
 - [ ] **Không gắn group mới trực tiếp vào section core** (`sales`, `catalog`, ...) nếu không thật sự cần; ưu tiên section riêng + tab riêng của vendor
 - [ ] Nếu buộc phải đặt field ở section core, phải có verify hiển thị UI ngay sau khi deploy
