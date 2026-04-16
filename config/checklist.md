@@ -1,6 +1,6 @@
 # Checklist - Kiểm tra trước khi hoàn thành
 
-Tham khảo từ: constitution.md, magento-patterns.md
+> Tham khảo chi tiết: `constitution.md`, `magento-patterns.md`
 
 ---
 
@@ -11,13 +11,11 @@ Tham khảo từ: constitution.md, magento-patterns.md
 - [ ] Không có ObjectManager::getInstance()
 - [ ] Không có code chết, code comment out
 - [ ] Không có `exit`, `die`, `var_dump`, `print_r`
-- [ ] Dependency inject qua constructor, không `new` trực tiếp trong code nghiệp vụ
-- [ ] Không có `new` trong `Model/Service/Plugin/Observer/Controller/Resolver/ViewModel`; nếu cần tạo object động thì qua DI factory/wrapper
-- [ ] Nếu có third-party object (vd reCAPTCHA validator): đã tạo qua DI factory/wrapper, không `new` ngay trong service
-- [ ] Type-hint constructor DI khớp chính xác với parent class/interface đang kế thừa (đúng namespace class)
-- [ ] Logger: inject `Psr\Log\LoggerInterface`, **không** dùng `Magento\Psr\Log\LoggerInterface` (tránh lỗi compile DI)
+- [ ] Dependency inject qua constructor, không `new` trong business code
+- [ ] Logger: inject `Psr\Log\LoggerInterface`
+- [ ] Type-hint constructor DI khớp với parent class
 - [ ] Exception cụ thể, không dùng \Exception chung
-- [ ] Đã kiểm tra khả năng core/module có sẵn trước khi tạo class/module custom mới
+- [ ] Đã kiểm tra core capability trước khi tạo custom
 
 ## 2. Cấu trúc Module
 
@@ -30,7 +28,7 @@ Tham khảo từ: constitution.md, magento-patterns.md
 
 - [ ] Dùng `db_schema.xml`, không dùng InstallSchema
 - [ ] Có `db_schema_whitelist.json`
-- [ ] Tên bảng theo convention: `<vendor>_<module>_<entity>`
+- [ ] Tên bảng: `<vendor>_<module>_<entity>`
 - [ ] Data Patch cho dữ liệu mặc định
 
 ## 4. API / Service Contract
@@ -42,7 +40,7 @@ Tham khảo từ: constitution.md, magento-patterns.md
 
 ## 5. Frontend
 
-- [ ] Logic nằm trong ViewModel, không nằm trong template
+- [ ] Logic nằm trong ViewModel, không trong template
 - [ ] Layout XML khai báo block đúng
 - [ ] JS dùng RequireJS
 - [ ] CSS dùng LESS
@@ -50,42 +48,32 @@ Tham khảo từ: constitution.md, magento-patterns.md
 ## 6. Plugin / Observer
 
 - [ ] Plugin có sortOrder
-- [ ] Plugin tên đúng convention: `<vendor>_<module>_<mô_tả>`
+- [ ] Plugin tên đúng convention
 - [ ] Hạn chế dùng `around` plugin
-- [ ] `before` plugin: nếu `return` mảng tham số → **không** `unset()` các biến đó (tránh `Undefined variable` / lỗi GraphQL)
+- [ ] `before` plugin: không `unset()` tham số trong return array
 - [ ] Observer chỉ làm 1 việc
 
 ## 7. Config
 
-- [ ] Đã ưu tiên dùng config core Magento cho domain tương ứng trước khi tạo config mới
-- [ ] Nếu tạo config mới: có lý do rõ ràng vì sao config core không đáp ứng
-- [ ] Section trong system.xml: `<vendor>_<module>`
-- [ ] **Không gắn group mới trực tiếp vào section core** (`sales`, `catalog`, ...) nếu không thật sự cần; ưu tiên section riêng + tab riêng của vendor
-- [ ] Nếu buộc phải đặt field ở section core, phải có verify hiển thị UI ngay sau khi deploy
-- [ ] `system.xml` có `resource` hợp lệ và role admin test có quyền tương ứng
-- [ ] Nếu đổi cấu trúc section/group nhưng giữ config key cũ, dùng `config_path` để đảm bảo backward compatibility
-- [ ] Không lạm dụng `type="text"`: đã chọn input type phù hợp nghiệp vụ (`select`, `multiselect`, `obscure`, ...)
-- [ ] Với field dạng option/list: đã ưu tiên `source_model` core trước khi tạo custom source model
-- [ ] Với `multiselect`: backend model lưu mảng + code đọc config parse đúng format dữ liệu
+- [ ] Ưu tiên dùng config core trước khi tạo mới
+- [ ] Section riêng: `<vendor>_<module>`, không nhét vào section core
+- [ ] `system.xml` có `resource` hợp lệ
+- [ ] Nếu đổi vị trí UI nhưng giữ key cũ: dùng `config_path`
+- [ ] Input type phù hợp nghiệp vụ (không mặc định `text`)
+- [ ] Ưu tiên `source_model` core
 - [ ] Có giá trị mặc định trong `config.xml`
-- [ ] Đọc config qua Helper/Config model
-- [ ] Verify thủ công đường dẫn config trong Admin (ghi rõ menu path)
-- [ ] Chạy cache refresh cho config sau khi đổi `system.xml`:
-  - `bin/magento cache:clean config`
-  - `bin/magento cache:flush`
+- [ ] Verify UI trong Admin sau khi sửa
+- [ ] Chạy `cache:clean config` + `cache:flush`
 
-## 8. Testing (khi cần)
+## 8. Testing
 
-- [ ] Unit test cho logic phức tạp
-- [ ] Integration test cho repository
-- [ ] Test đặt trong `Test/Unit/` hoặc `Test/Integration/`
-- [ ] Nếu có thay đổi constructor DI/module wiring: chạy `bin/magento setup:di:compile`
-- [ ] Nếu có custom carrier: verify checkout method xuất hiện/biến mất đúng điều kiện
-- [ ] Nếu có tạo custom thay cho core: có ghi chú verify so sánh behavior core vs custom (để chứng minh cần custom)
+- [ ] Chạy `setup:di:compile` sau khi sửa DI
+- [ ] Custom carrier: verify checkout method hiển thị đúng
+- [ ] Custom thay core: verify so sánh behavior
 
 ---
 
 ## Liên kết
 
-- Quy tắc chung: xem [constitution.md](./constitution.md)
-- Các pattern: xem [magento-patterns.md](./magento-patterns.md)
+- Quy tắc chi tiết: [constitution.md](./constitution.md)
+- Patterns: [magento-patterns.md](./magento-patterns.md)

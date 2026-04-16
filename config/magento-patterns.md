@@ -1,6 +1,6 @@
 # Magento Patterns - Các pattern bắt buộc tuân theo
 
-> version: 1.1.3 | last_updated: 2026-04-16
+> version: 1.1.4 | last_updated: 2026-04-16
 
 Tham khảo từ: [constitution.md](../constitution.md)
 
@@ -127,7 +127,7 @@ Tham khảo chi tiết: xem [network/message-queues.md](./references/network/mes
 
 ---
 
-## 7. Carrier (Shipping Method) Pattern
+## 8. Carrier (Shipping Method) Pattern
 
 Áp dụng khi tạo custom shipping carrier kế thừa `Magento\Shipping\Model\Carrier\AbstractCarrier`.
 
@@ -147,7 +147,7 @@ Tham khảo chi tiết: xem [network/message-queues.md](./references/network/mes
 
 ---
 
-## 8. UI Components & Data Sources
+## 9. UI Components & Data Sources
 
 Tham khảo chi tiết: xem [frontend/ui-components.md](./references/frontend/ui-components.md)
 
@@ -159,7 +159,7 @@ Tham khảo chi tiết: xem [frontend/ui-components.md](./references/frontend/ui
 
 ---
 
-## 7. Cấu trúc thư mục Module chuẩn
+## 10. Cấu trúc thư mục Module chuẩn
 
 ```text
 Vendor/Module/

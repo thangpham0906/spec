@@ -1,6 +1,6 @@
 # Constitution - Quy tắc phát triển chung
 
-> version: 1.1.2 | last_updated: 2026-04-16
+> version: 1.1.3 | last_updated: 2026-04-16
 
 ## Thông tin project
 
@@ -197,14 +197,9 @@ Task chỉ được xem là hoàn thành khi đạt đủ:
 
 ## 15. Proactive Analysis & Advisory (bắt buộc)
 
-- AI/Dev phải phân tích độc lập, không chỉ thi hành mệnh lệnh theo checklist.
-- Trước khi implement/review/debug, bắt buộc nêu rõ:
-  1. Requirement understanding
-  2. Risks/assumptions
-  3. Ít nhất 1-2 phương án + khuyến nghị phương án nên chọn
-- Nếu phát hiện yêu cầu có rủi ro về business/technical/security/performance, phải cảnh báo và đề xuất điều chỉnh.
-- Nếu thiếu thông tin quan trọng, phải hỏi lại trước khi code; không tự đoán để triển khai.
-- Sau mỗi bước lớn (spec, plan, task, implement), phải đề xuất next best action.
+> Quy tắc đầy đủ: xem `AGENTS.md` — mục "Hành vi chủ động".
+
+Tóm tắt: phân tích độc lập, nêu rõ requirement understanding + risks + options trước khi code, cảnh báo rủi ro, hỏi lại khi thiếu thông tin, đề xuất next best action sau mỗi bước lớn.
 
 ## Liên kết
 
