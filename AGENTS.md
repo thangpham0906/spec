@@ -116,6 +116,8 @@ Xem `skills/skills-list.md` để tra cứu task → skill.
 
 1. Files changed (đường dẫn cụ thể)
 2. Lý do thay đổi
-3. Verify steps đã chạy + kết quả
-4. Kết quả testcase (Pass/Fail)
-5. Xác nhận đạt Definition of Done (DoD)
+3. Unit test results (pass/fail — nếu task có business logic)
+4. Code review results (Critical/High issues nếu có)
+5. Verify steps đã chạy + kết quả
+6. Kết quả testcase (Pass/Fail)
+7. Xác nhận đạt Definition of Done (DoD)

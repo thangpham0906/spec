@@ -4,6 +4,24 @@
 
 ---
 
+## Flow tổng thể
+
+```
+1. SPEC      Mô tả feature → AI tạo spec.md → bạn review → "OK spec"
+2. PLAN      AI tạo plan.md + tasks.md → bạn review → "OK implement"
+3. IMPLEMENT Với mỗi task có business logic:
+               a. AI viết unit test trước (test sẽ fail)
+               b. AI implement code
+               c. Chạy test → phải pass (max 3 lần retry, sau đó escalate)
+               d. Code review bằng skill + checklist (max 3 lần retry)
+               e. Báo done + completion report
+4. STATUS    AI cập nhật status.md sau mỗi bước lớn
+```
+
+> Task không có business logic (scaffold, layout, i18n): bỏ qua bước unit test, chỉ cần verify + review.
+
+---
+
 ## Quick Start (30 giây)
 
 Copy block này khi mở chat mới:

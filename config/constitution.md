@@ -146,8 +146,8 @@ Chỉ tính năng nào cần, mới thêm folder tương ứng. Không tạo fol
 
 ### Blocking rules (không được bỏ qua)
 
-- Test fail → **DỪNG**. Phân tích nguyên nhân fail: nếu logic sai thì sửa implementation, nếu test sai thì sửa test (ghi rõ lý do). Chạy lại đến khi pass. Không được sửa test chỉ để cho pass mà không fix root cause.
-- Review còn Critical/High issue → **DỪNG**. Fix implementation theo từng issue, chạy lại test sau khi sửa, review lại cho đến khi sạch Critical/High.
+- Test fail → **DỪNG**. Phân tích root cause → sửa implementation (không sửa test để "cheat") → chạy lại. Tối đa **3 lần**; nếu vẫn fail thì dừng hẳn, báo người dùng kèm phân tích nguyên nhân.
+- Review còn Critical/High issue → **DỪNG**. Sửa implementation → chạy lại test → review lại. Tối đa **3 lần**; nếu vẫn còn issue thì dừng hẳn, báo người dùng kèm danh sách issue còn lại.
 - Chỉ được báo task hoàn thành khi: test pass **VÀ** không còn Critical/High issue từ review.
 - Framework: Magento's `\PHPUnit\Framework\TestCase` (extend từ `\Magento\TestFramework\TestCase\AbstractController` hoặc `\PHPUnit\Framework\TestCase` tùy loại).
 - Đặt test tại: `Test/Unit/<mirror-path-của-class>.php`.

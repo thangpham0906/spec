@@ -3,8 +3,8 @@
 > Không lặp business context. Mỗi task: scope + AC + unit test + verify.
 > TDD flow bắt buộc với task có business logic: **viết test trước → implement → test pass → code review**.
 > Nếu test fail hoặc review còn Critical/High issue: **DỪNG, không được báo task hoàn thành**.
-> - Test fail → phân tích root cause → sửa implementation (không sửa test để "cheat") → chạy lại.
-> - Review Critical/High → sửa implementation → chạy lại test → review lại.
+> - Test fail → phân tích root cause → sửa implementation (không sửa test để "cheat") → chạy lại. Tối đa **3 lần**; nếu vẫn fail sau 3 lần thì DỪNG, báo người dùng kèm phân tích nguyên nhân.
+> - Review Critical/High → sửa implementation → chạy lại test → review lại. Tối đa **3 lần**; nếu vẫn còn issue thì DỪNG, báo người dùng kèm danh sách issue còn lại.
 
 ## Task 1 - <tên>
 - Scope: `<path>`
