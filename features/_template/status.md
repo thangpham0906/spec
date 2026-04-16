@@ -1,17 +1,13 @@
-# Feature Status - <tên-feature>
+# Status - <tên-feature>
 
-> Quy tắc: chỉ giữ thông tin hiện tại. Không ghi lại toàn bộ lịch sử thảo luận.
-
-- Current stage: `<draft | spec-approved | planning | implementing | review | done>`
-- Spec version: `<1.0.0>`
-- Owner: `<name/team>`
+- Stage: `<draft | spec-approved | planning | implementing | review | done>`
 - Last updated: `<YYYY-MM-DD>`
 
 ## Last decision
-- `<quyết định mới nhất>`
+`<quyết định mới nhất>`
 
 ## Blockers
-- `<nếu không có, ghi: None>`
+`None`
 
-## Next best action
-- `<hành động kế tiếp rõ ràng>`
+## Next action
+`<hành động kế tiếp>`
