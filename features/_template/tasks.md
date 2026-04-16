@@ -4,20 +4,28 @@
 
 ## Task 1 - <tên>
 - Scope: `<path>`
-- AC: `<...>`
-- Verify: `<command hoặc manual step>`
+- Acceptance criteria:
+  - `<AC 1>`
+  - `<AC 2>`
+- Verify:
+  - `<command hoặc manual step>`
+  - `<expected result>`
 
 ## Task 2 - <tên>
 - Scope: `<path>`
-- AC: `<...>`
-- Verify: `<command hoặc manual step>`
+- Acceptance criteria:
+  - `<AC 1>`
+  - `<AC 2>`
+- Verify:
+  - `<command hoặc manual step>`
+  - `<expected result>`
 
 ---
 
-> Rules bổ sung áp dụng khi liên quan — xem `constitution.md` + `magento-patterns.md`:
+> Rules bổ sung — áp dụng khi liên quan, xem chi tiết trong `constitution.md` + `magento-patterns.md`:
 > - `before` plugin return array → không `unset()` tham số
 > - Logger → `Psr\Log\LoggerInterface`
-> - `system.xml` → verify `cache:clean config` + menu path Admin
+> - `system.xml` → `cache:clean config` + verify menu path Admin
 
 ## Completion report
 1. Files changed

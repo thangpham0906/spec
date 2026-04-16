@@ -1,46 +1,75 @@
-# Tasks - customer-order-edit
+# Feature Tasks - customer-order-edit
 
-## Task 1 - Scaffold module
-- Scope: `Secomm/CustomerOrderEdit/{registration.php, etc/module.xml, etc/di.xml}`
-- AC: Module enable được; sequence đúng; `declare(strict_types=1)` mọi file PHP.
-- Verify: `bin/magento module:status Secomm_CustomerOrderEdit` → enabled; `setup:di:compile` không lỗi.
+> Tham chiếu AC/testcase: `spec.md`. Tham chiếu thiết kế: `plan.md`.
 
-## Task 2 - System config + Model/Config
-- Scope: `etc/config.xml`, `etc/adminhtml/{system.xml,acl.xml}`, `Model/Config.php`
-- AC: Default `pending`; multiselect store scope; `Model/Config` inject được và trả đúng giá trị.
-- Verify: Admin > Stores > Configuration → lưu thành công; đổi giá trị → `Model/Config` trả đúng.
+## Task 1 - Scaffold module Secomm_CustomerOrderEdit
+- Scope: `app/code/Secomm/CustomerOrderEdit/`
+- Acceptance criteria:
+  - Module enable được; `sequence` khai báo đúng dependency (`Magento_Sales`, `Magento_Customer`, `Magento_Catalog`, và MSI nếu dùng API reservation).
+  - Không có ObjectManager trực tiếp; `declare(strict_types=1);` mọi file PHP mới.
+- Verify:
+  - `bin/magento module:status Secomm_CustomerOrderEdit` → `Module is enabled`
+  - `bin/magento setup:di:compile` (hoặc `setup:upgrade` nếu có schema) không lỗi fatal liên quan module.
 
-## Task 3 - Guard / Validator
-- Scope: `Model/Validator.php`
-- AC: Từ chối đúng 4 điều kiện (ownership, status whitelist, có chứng từ, 0 item còn lại).
-- Verify: Manual TC-06 (account khác), TC-04 (status ngoài whitelist) → redirect/message đúng.
+## Task 2 - System config: trạng thái cho phép sửa
+- Scope: `etc/config.xml`, `etc/adminhtml/system.xml`, `etc/adminhtml/acl.xml`, `Model/Config.php`
+- Acceptance criteria:
+  - Default chỉ `pending`; merchant có thể mở rộng danh sách status (định dạng rõ ràng trong UI comment hoặc field multiselect/text).
+  - Config scope store view hoạt động; đọc config qua class inject được.
+- Verify:
+  - Admin: Stores > Configuration → tìm section module → lưu thành công.
+  - Đổi giá trị và xác nhận `Model/Config` trả đúng trên store đang test.
 
-## Task 4 - OrderItemEditService + MSI reservation
-- Scope: `Model/Service/OrderItemEditService.php`, `etc/di.xml`
-- AC: Đổi qty/xóa/thêm SKU (simple+virtual); validate salable trước save; `collectTotals` + `OrderRepository::save`; reservation delta đúng sau save.
-- Verify: Manual TC-01, TC-02, TC-03, TC-05; kiểm tra `inventory_reservation` table sau edit.
+## Task 3 - Validator + quyền truy cập đơn
+- Scope: `Model/*Validator*.php` hoặc service guard
+- Acceptance criteria:
+  - Từ chối khi customer không sở hữu order.
+  - Từ chối khi status không thuộc whitelist config.
+  - Từ chối khi có invoice/shipment/credit memo (theo `plan.md`).
+- Verify:
+  - Manual: đăng nhập user A, mở increment_id của user B → không được edit (404/redirect/message).
+  - Manual: đơn `processing` (không trong whitelist mặc định) → không hiện / save từ chối.
 
-## Task 5 - Audit comment
-- Scope: trong `OrderItemEditService` hoặc service riêng
-- AC: Mỗi save thành công có order comment CS đọc được, mô tả thay đổi SKU/qty.
-- Verify: Admin > Sales > Order > Comments → thấy dòng mới sau edit.
+## Task 4 - OrderItemEditService (nghiệp vụ cốt lõi)
+- Scope: `Model/Service/*.php`, `etc/di.xml`
+- Acceptance criteria:
+  - Hỗ trợ đổi qty, xóa dòng, thêm SKU (Phase 1: simple + virtual); từ chối type khác với message rõ.
+  - Validate salable/stock trước khi persist; không để order ở trạng thái không nhất quán khi lỗi.
+  - Sau thay đổi: `collectTotals` + `OrderRepository::save` thành công; totals khớp hiển thị storefront.
+  - Đồng bộ MSI reservation với delta thay đổi (không lệch so với qty mới sau khi save).
+- Verify:
+  - Manual TC-01..TC-03 (`spec.md`) trên đơn `pending`, chỉ simple products.
+  - Manual TC-05: thêm qty vượt salable → từ chối, order không đổi.
 
-## Task 6 - Storefront UI + Controller
-- Scope: `Controller/Order/`, `ViewModel/`, `view/frontend/`
-- AC: Link "Chỉnh sửa" chỉ hiện khi `canEdit()`; form key bắt buộc; lỗi qua message manager, không leak exception; redirect đúng sau save.
-- Verify: Manual TC-07 (form key sai), TC-08 (SKU không hợp lệ); `cache:flush` sau deploy layout.
+## Task 5 - Audit: order status history / comment
+- Scope: service hoặc method trong `OrderItemEditService`
+- Acceptance criteria:
+  - Mỗi lần save thành công có ít nhất một bản ghi history/comment CS đọc được trong Admin (order Comments).
+  - Nội dung mô tả thay đổi (trước/sau hoặc tóm tắt SKU/qty).
+- Verify:
+  - Manual: sau edit, Admin > Sales > Order > Comments thấy dòng mới đúng nội dung.
 
-## Task 7 - i18n + full regression
-- Scope: `i18n/vi_VN.csv`, toàn luồng
-- AC: Chuỗi user-facing qua `__()`; TC-01..TC-08 có kết quả Pass/Fail.
-- Verify: Chạy lại toàn bộ testcase, ghi kết quả vào completion report.
+## Task 6 - Storefront: route, ViewModel, layout, template, Save controller
+- Scope: `Controller/Order/`, `ViewModel/`, `view/frontend/*`
+- Acceptance criteria:
+  - Trang order view hiển thị entry "Chỉnh sửa" chỉ khi `canEdit`.
+  - Form có form key; POST validate; lỗi hiển thị qua message manager, không leak exception.
+  - Sau save redirect về order view hoặc edit page và thấy item/total mới.
+- Verify:
+  - Manual TC-04, TC-06, TC-07, TC-08.
+  - `bin/magento cache:flush` sau deploy layout.
 
----
+## Task 7 - i18n + regression theo spec
+- Scope: `i18n/*.csv`, rà soát toàn luồng
+- Acceptance criteria:
+  - Chuỗi user-facing qua `__()`; có bản `vi_VN` tối thiểu cho message chính (nếu project dùng locale này).
+  - Bảng testcase `spec.md` có cột Pass/Fail + ghi chú môi trường.
+- Verify:
+  - Chạy lại toàn bộ TC-01..TC-08; ghi kết quả vào báo cáo hoàn thành.
 
-> Rules: `before` plugin → không `unset()` tham số; Logger → `Psr\Log\LoggerInterface`; `system.xml` → `cache:clean config` + verify menu path.
-
-## Completion report
+## Completion report format
 1. Files changed
 2. Lý do thay đổi
-3. Verify steps + kết quả testcase
-4. Xác nhận DoD
+3. Verify steps đã chạy
+4. Kết quả testcase
+5. Xác nhận đạt DoD

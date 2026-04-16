@@ -1,8 +1,12 @@
 # Spec - <tên-feature>
 
-## Business
+## Input
+- Feature: `<tên ngắn>`
 - Vấn đề: `<1 câu>`
 - Mục tiêu: `<1 câu>`
+- Module/scope biết chắc: `<nếu có>`
+
+## Business + scope
 - In-scope: `<bullet ngắn>`
 - Out-of-scope: `<bullet ngắn>`
 
@@ -11,10 +15,11 @@
 - AC-02: `<...>`
 
 ## Decision
-- Approach: `<option đã chọn>`
-- Business rules: `<rule chính, 1-2 bullet>`
+- Requirement understanding: `<2-3 bullet — AI xác nhận hiểu đúng>`
+- Risks/assumptions: `<1-2 bullet>`
+- Approach đã chốt: `<option + lý do ngắn>`
+- Business rules chính: `<1-2 bullet>`
 - Scope được phép sửa: `<module/path>`
-- Risks: `<1-2 bullet ngắn>`
 
 ## Testcase
 - Happy: TC-01 `<...>`, TC-02 `<...>`
