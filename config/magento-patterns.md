@@ -86,6 +86,11 @@ Tham khảo chi tiết: xem [network/message-queues.md](./references/network/mes
 ## 7. Admin System Config Pattern (`etc/adminhtml/system.xml`)
 
 - Ưu tiên tạo section riêng theo module (`<vendor>_<module>`) và gắn vào tab vendor (vd: `secomm`), thay vì nhét group mới vào section core như `sales`.
+- Không mặc định dùng `type="text"` cho mọi field. Ưu tiên chọn type theo nghiệp vụ:
+  - `select` / `multiselect` khi dữ liệu thuộc tập option hữu hạn.
+  - `text` chỉ dùng khi thật sự là free-text.
+- Ưu tiên tái sử dụng `source_model` có sẵn của Magento trước; chỉ tạo source model custom khi core không đáp ứng đúng domain.
+- Với field dạng list (`multiselect`), ưu tiên backend model chuẩn để lưu mảng (ví dụ `Magento\Config\Model\Config\Backend\Serialized\ArraySerialized`) và cập nhật class đọc config để parse đúng format.
 - Với field có thể đổi vị trí UI nhưng cần giữ key cũ, bắt buộc dùng `<config_path>` để giữ tương thích dữ liệu.
 - Luôn khai báo `<resource>` đúng ACL resource của module; nếu thiếu quyền, config sẽ không hiện dù XML đúng.
 - Sau khi đổi `system.xml`, verify theo thứ tự:

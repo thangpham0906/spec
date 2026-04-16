@@ -57,6 +57,9 @@ Tham khảo từ: constitution.md, magento-patterns.md
 - [ ] Nếu buộc phải đặt field ở section core, phải có verify hiển thị UI ngay sau khi deploy
 - [ ] `system.xml` có `resource` hợp lệ và role admin test có quyền tương ứng
 - [ ] Nếu đổi cấu trúc section/group nhưng giữ config key cũ, dùng `config_path` để đảm bảo backward compatibility
+- [ ] Không lạm dụng `type="text"`: đã chọn input type phù hợp nghiệp vụ (`select`, `multiselect`, `obscure`, ...)
+- [ ] Với field dạng option/list: đã ưu tiên `source_model` core trước khi tạo custom source model
+- [ ] Với `multiselect`: backend model lưu mảng + code đọc config parse đúng format dữ liệu
 - [ ] Có giá trị mặc định trong `config.xml`
 - [ ] Đọc config qua Helper/Config model
 - [ ] Verify thủ công đường dẫn config trong Admin (ghi rõ menu path)
