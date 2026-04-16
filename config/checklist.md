@@ -17,6 +17,7 @@ Tham khảo từ: constitution.md, magento-patterns.md
 - [ ] Type-hint constructor DI khớp chính xác với parent class/interface đang kế thừa (đúng namespace class)
 - [ ] Logger: inject `Psr\Log\LoggerInterface`, **không** dùng `Magento\Psr\Log\LoggerInterface` (tránh lỗi compile DI)
 - [ ] Exception cụ thể, không dùng \Exception chung
+- [ ] Đã kiểm tra khả năng core/module có sẵn trước khi tạo class/module custom mới
 
 ## 2. Cấu trúc Module
 
@@ -80,6 +81,7 @@ Tham khảo từ: constitution.md, magento-patterns.md
 - [ ] Test đặt trong `Test/Unit/` hoặc `Test/Integration/`
 - [ ] Nếu có thay đổi constructor DI/module wiring: chạy `bin/magento setup:di:compile`
 - [ ] Nếu có custom carrier: verify checkout method xuất hiện/biến mất đúng điều kiện
+- [ ] Nếu có tạo custom thay cho core: có ghi chú verify so sánh behavior core vs custom (để chứng minh cần custom)
 
 ---
 

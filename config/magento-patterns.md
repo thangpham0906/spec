@@ -96,6 +96,16 @@ Tham khảo chi tiết: xem [network/message-queues.md](./references/network/mes
 - Với thư viện bên thứ ba cần input runtime (vd reCAPTCHA secret key), tạo qua factory/wrapper inject bằng DI.
 - Khi code review, phải rà direct instantiation và thay bằng factory/wrapper trước khi merge.
 
+### Core capability first
+
+- Trước khi đề xuất tạo module/feature mới, bắt buộc kiểm tra khả năng có sẵn của Magento core và các module đã enable trong project.
+- Thứ tự ưu tiên kỹ thuật:
+  1) Dùng chức năng core có sẵn
+  2) Cấu hình hoặc wiring nhẹ trên nền core
+  3) Chỉ build custom khi 1) và 2) không đáp ứng đủ
+- Khi chọn phương án custom, tài liệu `spec.md` hoặc `plan.md` phải nêu rõ gap: `core thiếu gì`, `vì sao không thể dùng lại`.
+- Với task API/headless: bắt buộc kiểm tra module core liên quan (Webapi/GraphQl/Customer/Security...) trước khi tạo guard/service riêng.
+
 ---
 
 ## 7. Admin System Config Pattern (`etc/adminhtml/system.xml`)

@@ -1,6 +1,6 @@
 # Constitution - Quy tắc phát triển chung
 
-> version: 1.1.1 | last_updated: 2026-04-16
+> version: 1.1.2 | last_updated: 2026-04-16
 
 ## Thông tin project
 
@@ -131,6 +131,9 @@ Chỉ tính năng nào cần, mới thêm folder tương ứng. Không tạo fol
 - Trước khi code, phải chốt rõ phạm vi file/module được phép sửa.
 - KHÔNG sửa ngoài scope đã chốt nếu chưa được xác nhận lại.
 - Nếu phát sinh sửa ngoài scope (do dependency/bug liên quan), phải báo và xin xác nhận trước khi sửa.
+- Core-first rule: trước khi tạo module mới / plugin mới / API mới, bắt buộc kiểm tra Magento core hoặc module đã cài có hỗ trợ sẵn hay không.
+- Nếu core đã hỗ trợ đủ yêu cầu, ưu tiên cấu hình/tích hợp lại thay vì build mới.
+- Nếu vẫn cần custom mới, phải ghi rõ trong spec/plan: `vì sao core không đáp ứng` + phạm vi phần cần custom thêm.
 
 ---
 
