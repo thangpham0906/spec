@@ -11,8 +11,9 @@
 - `Không có blueprint phù hợp trực tiếp trong examples/integration; áp dụng pattern core Data Patch + Sales status mapping.`
 
 ## References sử dụng
-- `config/magento-patterns.md` -> `Data Patch` (seed dữ liệu status + mapping state).
-- `config/magento-patterns.md` -> `DI & Code Generation` (wire dependency cho patch/service nếu cần).
+- `config/references/core/data-schema-patch.md` (Data Patch lifecycle, idempotent setup logic).
+- `config/references/core/di-codegen.md` (DI/factory conventions cho patch dependencies).
+- `config/references/ops/unit-testing.md` (test strategy cho class có business logic).
 - `config/constitution.md` -> `Scope Governance`, `Testing Policy`, `Definition of Done`.
 
 ## Thiết kế

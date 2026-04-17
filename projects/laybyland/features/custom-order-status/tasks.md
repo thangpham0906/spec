@@ -10,7 +10,7 @@
   - Module `Secomm_CustomOrderStatus` enable được.
   - `module.xml` có sequence tối thiểu với `Magento_Sales`.
   - Không vi phạm rule constitution (`strict_types`, không sửa core).
-- Reference đọc trước khi implement: `config/magento-patterns.md` (Core & Architecture).
+- Reference đọc trước khi implement: `config/references/core/architectural-patterns.md`.
 - Verify:
   - `bin/magento module:enable Secomm_CustomOrderStatus`
   - `bin/magento setup:upgrade`
@@ -26,7 +26,7 @@
   - `testApplyCreatesStatusAndPendingMapping`
   - `testApplyIsIdempotentWhenStatusAlreadyExists`
 - Implement: data patch + dependency cần thiết (resource/connection/repositories theo thiết kế).
-- Reference đọc trước khi implement: `config/magento-patterns.md` -> `Data Patch`.
+- Reference đọc trước khi implement: `config/references/core/data-schema-patch.md` + `config/references/ops/unit-testing.md`.
 - Verify sau implement:
   - `./vendor/bin/phpunit app/code/Secomm/CustomOrderStatus/Test/Unit/Setup/Patch/Data/AddAwaitingSupplierOrderStatusTest.php`
   - `bin/magento setup:upgrade`
@@ -40,7 +40,7 @@
 - Acceptance criteria:
   - Admin set thủ công status `Awaiting Supplier` được trên order hợp lệ.
   - Admin order grid hiển thị đúng label sau khi đổi status.
-- Reference đọc trước khi implement: `config/magento-patterns.md` -> `UI Components (Admin Grid/Form)` *(chỉ khi phát sinh custom grid code)*.
+- Reference đọc trước khi implement: `config/references/frontend/ui-components.md` *(chỉ khi phát sinh custom grid code)*.
 - Verify:
   - Manual: Sales > Orders > mở order > Order Comments > đổi status `Awaiting Supplier` > Submit
   - Manual: quay lại Sales > Orders grid, xác nhận cột Status hiển thị `Awaiting Supplier`
@@ -51,7 +51,7 @@
 - Acceptance criteria:
   - `order update email` hiển thị đúng status label `Awaiting Supplier`.
   - `order comment notify email` hiển thị đúng status label `Awaiting Supplier`.
-- Reference đọc trước khi implement: `config/constitution.md` (Scope Governance) + `config/checklist.md`.
+- Reference đọc trước khi implement: `config/references/ops/configuration-management.md` + `config/checklist.md`.
 - Verify:
   - Trigger gửi `order update email` sau khi set status, kiểm tra nội dung email.
   - Trigger gửi `order comment notify email`, kiểm tra nội dung email.
