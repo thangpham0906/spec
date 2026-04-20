@@ -67,6 +67,7 @@
 | Logging | Custom logger, Monolog channel | [infrastructure/logging.md](./references/infrastructure/logging.md) |
 | Cron Job | Tác vụ định kỳ | [infrastructure/cron-jobs.md](./references/infrastructure/cron-jobs.md) |
 | Shipping Carrier | Custom shipping method | [infrastructure/shipping-carrier.md](./references/infrastructure/shipping-carrier.md) |
+| Import/Export | Custom import entity CSV | [infrastructure/import-export.md](./references/infrastructure/import-export.md) |
 | CLI Command | Console command `bin/magento` | [ops/maintenance-cli.md](./references/ops/maintenance-cli.md) |
 | Config Paths | Đọc/ghi system config | [ops/config-paths.md](./references/ops/config-paths.md) |
 | Configuration Management | Scope, deploy config | [ops/configuration-management.md](./references/ops/configuration-management.md) |
