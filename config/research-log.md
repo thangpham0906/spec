@@ -287,3 +287,143 @@
 - Blueprint: Custom report với chart (admin dashboard)
 - Blueprint: Webhook outbound với retry queue
 - Blueprint: Custom search adapter (OpenSearch)
+
+### PHP / OOP Deep Dive (Magento context)
+- Abstract class vs Interface: khi nào dùng cái nào trong Magento
+- Trait: dùng trong Magento có hợp lệ không, use case thực tế
+- PHP 8.x features: named arguments, match expression, nullsafe operator, fibers
+- Readonly properties: PHP 8.1+, dùng trong DTO/Data Object
+- Enum: PHP 8.1+, dùng thay constant trong Magento
+- First-class callable: PHP 8.1+, array_map với method reference
+- Intersection types: PHP 8.1+, type safety nâng cao
+- Generator: yield, lazy collection, memory-efficient iteration
+- Closure binding: Closure::bind, Closure::fromCallable
+- Anonymous class: test double, inline implementation
+
+### Magento Code Patterns (thực chiến)
+- Fluent interface: method chaining trong Builder/Query
+- Builder pattern: SearchCriteriaBuilder, FilterBuilder deep dive
+- Registry pattern: Magento\Framework\Registry — legacy, cách thay thế
+- Action pool: array of actions, dynamic dispatch
+- Modifier pattern: UI Component modifier, pool modifier
+- Converter pattern: toDataModel, toArray, hydrator
+- Validator chain: ValidatorInterface, CompositeValidator
+- Processor chain: ProcessorInterface, sorted processor pool
+- Mapper pattern: DB row → Data Object mapping
+- Hydrator pattern: populate object từ array data
+
+### Debugging & Troubleshooting (thực chiến)
+- Xdebug step debug: breakpoint, watch, call stack trong PhpStorm
+- Magento profiler: enable/disable, HTML output, custom profiler
+- Query log: enable query log, slow query, EXPLAIN trong Magento
+- DI compile error: common errors, how to fix, regenerate
+- Plugin conflict: debug interceptor chain, identify conflicting plugin
+- Observer infinite loop: detect, prevent, area restriction
+- Memory leak: detect với Blackfire, common causes trong Magento
+- 500 error debug: exception.log, system.log, display_errors
+- White screen of death: common causes, recovery steps
+- Cache corruption: symptoms, flush strategy, cache backend check
+
+### Code Generation & Tooling
+- Pestle: module scaffold, di.xml generation, common commands
+- Mage2Gen: online generator, module skeleton
+- n98-magerun2: common commands, custom commands, scripting
+- PHPStorm Magento plugin: DI navigation, plugin generation, inspections
+- PHP CS Fixer: Magento ruleset, auto-fix, CI integration
+- PHPStan: Magento extension, level config, baseline
+- Rector: automated refactoring, Magento-specific rules
+- GrumPHP: pre-commit hooks, quality gates
+- Composer scripts: post-install, post-update automation
+- Makefile: common Magento dev tasks automation
+
+### Event / Observer Patterns (thực chiến)
+- sales_order_place_after: common use cases, data available
+- catalog_product_save_after: product save hook, reindex trigger
+- customer_login: session data, redirect logic
+- checkout_cart_add_product_complete: cart modification
+- controller_action_predispatch: request intercept, redirect
+- layout_generate_blocks_after: dynamic block injection
+- adminhtml_block_html_before: admin block modification
+- clean_cache_by_tags: custom cache invalidation
+- magento_customer_authenticated: post-auth hook
+- Custom event dispatch: best practices, naming convention, area
+
+### Plugin Patterns (thực chiến)
+- Before plugin: modify arguments, add validation
+- After plugin: modify return value, add data
+- Around plugin: conditional execution, skip original
+- Plugin on interface vs class: best practice
+- Plugin disabled: di.xml disabled="true", area-specific disable
+- Plugin sortOrder conflict: debug, resolve
+- Plugin on Repository: common patterns (add filter, transform result)
+- Plugin on Controller: redirect, modify response
+- Plugin on Block: modify template, add data
+- Plugin on Model: intercept save/load/delete
+
+### Repository & Collection Patterns (thực chiến)
+- Custom filter: addFilter với custom condition
+- Join extension attribute: joinField, joinTable
+- Custom sort: addOrder, custom sort direction
+- Aggregate query: group by, count, sum trong collection
+- Subquery: correlated subquery trong Magento collection
+- Raw query: getConnection()->query() khi nào dùng
+- Batch processing: load collection in chunks, memory management
+- Collection cache: setPageSize, setCurPage, pagination
+- Custom resource model: _getLoadSelect override
+- Multi-table join: joinLeft, joinInner, alias
+
+### GraphQL Deep Dive (thực chiến)
+- Custom query: schema.graphqls, resolver, di.xml
+- Custom mutation: input type, output type, validator
+- Custom type: interface type, union type
+- Resolver chain: ResolverInterface, composite resolver
+- Context: UserContext, StoreContext, custom context
+- Cache: @cache directive, cache identity, invalidation
+- Error handling: GraphQlInputException, GraphQlNoSuchEntityException
+- Authorization: isAllowed, customer context check
+- Pagination: PageInfo, currentPage, pageSize
+- Custom scalar type: custom scalar resolver
+
+### REST API Deep Dive (thực chiến)
+- Custom endpoint: webapi.xml, interface, implementation
+- Request validation: custom validator, input filter
+- Response transformation: custom response builder
+- Bulk endpoint: /async/bulk, operation status
+- Custom search criteria: custom filter, custom sort
+- File upload via REST: multipart/form-data handling
+- Streaming response: large data export
+- Custom error response: WebapiException, HTTP status codes
+- API versioning: V1/V2 coexistence
+- Custom authentication: custom token provider
+
+### Blueprint (dev-focused, code đầy đủ)
+- Blueprint: Plugin trên OrderRepository (add custom filter)
+- Blueprint: Before plugin validate input + throw exception
+- Blueprint: After plugin transform response data
+- Blueprint: Observer gửi email sau order place
+- Blueprint: Observer sync data sang external API
+- Blueprint: Custom collection với join + filter
+- Blueprint: Repository với custom SearchCriteria filter
+- Blueprint: Custom GraphQL query với auth check
+- Blueprint: Custom GraphQL mutation với input validation
+- Blueprint: Custom REST endpoint với file upload
+- Blueprint: Custom REST bulk endpoint
+- Blueprint: Custom CLI command với progress bar + batch
+- Blueprint: Custom cron job với lock mechanism
+- Blueprint: Custom message queue consumer với retry
+- Blueprint: Custom validator chain (CompositeValidator)
+- Blueprint: Custom price modifier plugin
+- Blueprint: Custom checkout total collector
+- Blueprint: Custom shipping rate provider
+- Blueprint: Custom payment method (offline, simple)
+- Blueprint: Custom product attribute với source model
+- Blueprint: Custom customer attribute với frontend input
+- Blueprint: Custom admin notification
+- Blueprint: Custom system config field với custom renderer
+- Blueprint: Custom ACL resource + check trong controller
+- Blueprint: Custom layout handle + block injection
+- Blueprint: Custom UI Component field type
+- Blueprint: Custom DataProvider cho admin grid
+- Blueprint: Custom mass action với confirmation
+- Blueprint: Custom inline edit trong admin grid
+- Blueprint: Debug plugin: log all method calls
