@@ -31,6 +31,12 @@ Tôi cần ví dụ về <chủ đề>.
 | `custom-shipping-carrier-blueprint.md` | Custom shipping carrier (AbstractCarrier) | Tạo shipping method mới với collectRates |
 | `custom-payment-offline-blueprint.md` | Offline payment method (Adapter pattern) | Tạo payment method không cần gateway API |
 | `transactional-email-blueprint.md` | Transactional email + TransportBuilder | Gửi email từ custom module |
+| `custom-product-type-blueprint.md` | Custom product type + price model | Tạo product type mới với logic riêng |
+| `extension-attributes-join-blueprint.md` | Extension attributes + join directive + plugin | Thêm extension attribute với bảng riêng |
+| `custom-widget-blueprint.md` | Widget với parameters cấu hình từ Admin | Tạo CMS widget tái sử dụng |
+| `integration-test-module-blueprint.md` | Integration test + PHP Attributes fixtures | Viết integration test cho custom module |
+| `console-command-progress-bar-blueprint.md` | CLI command + Symfony ProgressBar | Tạo CLI command với progress bar |
+| `custom-price-modifier-blueprint.md` | Catalog rule condition + final price modifier | Custom giá theo logic riêng |
 
 ---
 

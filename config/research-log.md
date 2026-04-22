@@ -52,25 +52,23 @@
 | Upgrade: upgrade_compatibility_tool, breaking changes, deprecation | 2026-04-22 | Tạo mới `config/references/ops/upgrade.md`; cập nhật `config/magento-patterns.md` |
 | Composer: module versioning, metapackage, patches (cweagans) | 2026-04-22 | Tích hợp vào `config/references/ops/upgrade.md` (§3-4) |
 | Testing: PHPUnit mock, integration test fixtures, MFTF basics | 2026-04-22 | Đã có đầy đủ trong `config/references/ops/testing-guide.md` + `unit-testing.md` — không cần update thêm |
+| Two-Factor Authentication: provider, config, bypass for API | 2026-04-22 | Tạo mới `config/references/security/two-factor-auth.md`; cập nhật `config/magento-patterns.md` |
+| Rate Limiting & Throttling: API rate limit, DDoS protection | 2026-04-22 | Tạo mới `config/references/security/rate-limiting.md`; cập nhật `config/magento-patterns.md` |
+| Custom product type: TypeInterface, price model, stock handling | 2026-04-22 | Tạo mới `config/references/business/custom-product-type.md`; tạo `examples/integration/custom-product-type-blueprint.md`; cập nhật `config/magento-patterns.md` |
+| Adobe I/O Events: webhook, event provider, Commerce eventing | 2026-04-22 | Tạo mới `config/references/network/adobe-io-events.md`; cập nhật `config/magento-patterns.md` |
+| API Mesh: resolver composition, transform, rate limiting | 2026-04-22 | Tạo mới `config/references/network/api-mesh.md`; cập nhật `config/magento-patterns.md` |
+| PWA/Headless: GraphQL coverage, storefront compatibility, CORS | 2026-04-22 | Tạo mới `config/references/network/pwa-headless.md`; cập nhật `config/magento-patterns.md` |
+| B2B: company, shared catalog, negotiable quote, purchase order | 2026-04-22 | Tạo mới `config/references/ops/b2b-modules.md`; cập nhật `config/magento-patterns.md` |
+| Blueprint: Custom product type | 2026-04-22 | Tạo `examples/integration/custom-product-type-blueprint.md`; cập nhật `examples/INDEX.md` |
+| Blueprint: Extension attributes với join | 2026-04-22 | Tạo `examples/integration/extension-attributes-join-blueprint.md`; cập nhật `examples/INDEX.md` |
+| Blueprint: Custom widget | 2026-04-22 | Tạo `examples/integration/custom-widget-blueprint.md`; cập nhật `examples/INDEX.md` |
+| Blueprint: Integration test module | 2026-04-22 | Tạo `examples/integration/integration-test-module-blueprint.md`; cập nhật `examples/INDEX.md` |
+| Blueprint: Console command với progress bar | 2026-04-22 | Tạo `examples/integration/console-command-progress-bar-blueprint.md`; cập nhật `examples/INDEX.md` |
+| Blueprint: Custom price modifier (catalog rule) | 2026-04-22 | Tạo `examples/integration/custom-price-modifier-blueprint.md`; cập nhật `examples/INDEX.md` |
 
 ---
 
 ## Chưa research
 
-### Nâng cao / chuyên sâu
-- Custom product type: TypeInterface, price model, stock handling
+### Nâng cao / chuyên sâu (Adobe Commerce only)
 - Staging & Preview (Commerce): version, update, campaign (nếu dùng Adobe Commerce)
-- B2B: company, shared catalog, negotiable quote, purchase order (nếu dùng B2B)
-- PWA/Headless: GraphQL coverage, storefront compatibility, CORS
-- Adobe I/O Events: webhook, event provider, Commerce eventing
-- API Mesh: resolver composition, transform, rate limiting
-- Two-Factor Authentication: provider, config, bypass for API
-- Rate Limiting & Throttling: API rate limit, DDoS protection
-
-### Ví dụ blueprint còn thiếu
-- Blueprint: Custom product type
-- Blueprint: Extension attributes với join (đã có reference, chưa có blueprint riêng)
-- Blueprint: Custom widget (đã có reference, chưa có blueprint riêng)
-- Blueprint: Integration test module
-- Blueprint: Console command với progress bar
-- Blueprint: Custom price modifier (catalog rule)

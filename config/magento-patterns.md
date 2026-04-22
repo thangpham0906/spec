@@ -48,6 +48,9 @@
 | GraphQL App Server | Stateless resolver | [network/graphql-app-server.md](./references/network/graphql-app-server.md) |
 | Message Queue (RabbitMQ) | Xử lý bất đồng bộ, tác vụ nặng | [network/message-queues.md](./references/network/message-queues.md) |
 | HTTP Client | Gọi external API | [network/http-client.md](./references/network/http-client.md) |
+| Adobe I/O Events | Emit events đến App Builder, event-driven integration | [network/adobe-io-events.md](./references/network/adobe-io-events.md) |
+| API Mesh | Compose nhiều API sources thành 1 GraphQL endpoint | [network/api-mesh.md](./references/network/api-mesh.md) |
+| PWA/Headless | GraphQL storefront, CORS, authentication | [network/pwa-headless.md](./references/network/pwa-headless.md) |
 
 ### Frontend
 
@@ -92,6 +95,8 @@
 | Payment Gateway | Tích hợp payment method (online) | [security/payment-gateway.md](./references/security/payment-gateway.md) |
 | Vault & Token | Lưu token thanh toán | [security/payment-vault.md](./references/security/payment-vault.md) |
 | CSP | Content Security Policy, whitelist, nonce | [security/csp.md](./references/security/csp.md) |
+| Two-Factor Authentication | 2FA provider, bypass dev, REST API token | [security/two-factor-auth.md](./references/security/two-factor-auth.md) |
+| Rate Limiting | Chống carding attack, API throttling, DDoS | [security/rate-limiting.md](./references/security/rate-limiting.md) |
 
 ### Business & Sales
 
@@ -101,9 +106,11 @@
 | Order Lifecycle | State/status flow, invoice, shipment, creditmemo | [business/order-lifecycle.md](./references/business/order-lifecycle.md) |
 | Customer Management | CustomerRepository, address, group, session | [business/customer-management.md](./references/business/customer-management.md) |
 | Catalog Product Types | Product types, price hierarchy, EAV attributes | [business/catalog-product-types.md](./references/business/catalog-product-types.md) |
+| Custom Product Type | Tạo product type mới với price model riêng | [business/custom-product-type.md](./references/business/custom-product-type.md) |
 | Quote & Totals | Tính giá, totals collector | [business/quote-totals.md](./references/business/quote-totals.md) |
 | Catalog Price Rules | Rule giảm giá catalog | [business/catalog-price-rules.md](./references/business/catalog-price-rules.md) |
 | Reporting | Advanced reporting, grid report | [business/advanced-reporting.md](./references/business/advanced-reporting.md) |
+| B2B Modules | Company, shared catalog, negotiable quote, purchase order | [ops/b2b-modules.md](./references/ops/b2b-modules.md) |
 
 ---
 
