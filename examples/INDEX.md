@@ -37,6 +37,8 @@ Tôi cần ví dụ về <chủ đề>.
 | `integration-test-module-blueprint.md` | Integration test + PHP Attributes fixtures | Viết integration test cho custom module |
 | `console-command-progress-bar-blueprint.md` | CLI command + Symfony ProgressBar | Tạo CLI command với progress bar |
 | `custom-price-modifier-blueprint.md` | Catalog rule condition + final price modifier | Custom giá theo logic riêng |
+| `custom-rest-api-pagination-blueprint.md` | Custom REST API + SearchCriteria + pagination | Tạo REST endpoint với filter/sort/page chuẩn |
+| `graphql-mutation-input-validation-blueprint.md` | GraphQL mutation + input validation + auth check | Tạo GraphQL mutation với validation đầy đủ |
 
 ---
 

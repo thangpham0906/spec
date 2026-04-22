@@ -27,11 +27,18 @@
 | Pattern | Dùng khi | Reference |
 |---|---|---|
 | Plugin (Interceptor) | Thêm logic before/after/around method có sẵn | [core/plugins.md](./references/core/plugins.md) |
+| Plugin Patterns (thực chiến) | Around plugin, interceptor chain, sortOrder conflict, debug | [core/plugin-patterns.md](./references/core/plugin-patterns.md) |
 | Observer (Event) | React với event Magento dispatch | [core/events-observers.md](./references/core/events-observers.md) |
+| Event/Observer Patterns (thực chiến) | sales_order_place_after, catalog_product_save_after, custom event | [core/event-observer-patterns.md](./references/core/event-observer-patterns.md) |
 | Repository + Service Contract | CRUD entity, public API của module | [core/service-contracts.md](./references/core/service-contracts.md) |
+| SearchCriteria & Data Layer | FilterGroup AND/OR, bulk ops, soft delete, transaction | [core/search-criteria-data-layer.md](./references/core/search-criteria-data-layer.md) |
 | Declarative Schema | Tạo/sửa bảng DB | [core/declarative-schema.md](./references/core/declarative-schema.md) |
 | Data Patch | Seed dữ liệu mặc định, migration data | [core/data-schema-patch.md](./references/core/data-schema-patch.md) |
 | DI & Code Generation | Virtual type, proxy, factory, preference | [core/di-codegen.md](./references/core/di-codegen.md) |
+| Object Manager & Generated Code | Shared/non-shared, Interceptor/Factory/Proxy, area config | [core/object-manager-generated.md](./references/core/object-manager-generated.md) |
+| AbstractModel & Collection | DataObject vs AbstractModel, magic getter, ResourceModel hooks | [core/model-collection-patterns.md](./references/core/model-collection-patterns.md) |
+| Advanced Patterns | Command pool, Strategy, Composite, Pipeline, PHP 8.x | [core/advanced-patterns.md](./references/core/advanced-patterns.md) |
+| Debugging & Troubleshooting | 500 error, WSOD, DI compile error, plugin conflict, memory leak | [core/debugging-troubleshooting.md](./references/core/debugging-troubleshooting.md) |
 | Routing & Controllers | Tạo route frontend/adminhtml | [core/routing-controllers.md](./references/core/routing-controllers.md) |
 | Architectural Patterns | SOLID, composition, design patterns | [core/architectural-patterns.md](./references/core/architectural-patterns.md) |
 | Extension Attributes | Mở rộng API Data Interface, expose qua REST | [core/extension-attributes.md](./references/core/extension-attributes.md) |
@@ -58,6 +65,7 @@
 |---|---|---|
 | ViewModel | Logic cho phtml, thay Block cũ | [frontend/frontend-view-models.md](./references/frontend/frontend-view-models.md) |
 | Layout XML | Khai báo cấu trúc trang, blocks, containers | [frontend/layout-xml.md](./references/frontend/layout-xml.md) |
+| RequireJS & KnockoutJS | AMD module, mixins, map/paths/shim, KO observable, component lifecycle | [frontend/requirejs-knockoutjs.md](./references/frontend/requirejs-knockoutjs.md) |
 | UI Components (Admin Grid/Form) | Admin listing, form CRUD | [frontend/ui-components.md](./references/frontend/ui-components.md) |
 | Admin UI Grid | Admin grid với filter/sort/action | [frontend/admin-ui-grid.md](./references/frontend/admin-ui-grid.md) |
 | Admin Form Save and Continue | Admin form giữ lại trang edit sau save | [frontend/admin-save-and-continue.md](./references/frontend/admin-save-and-continue.md) |
@@ -69,6 +77,7 @@
 | Pattern | Dùng khi | Reference |
 |---|---|---|
 | Cache Management | Redis/Valkey, cache type custom | [infrastructure/cache-management.md](./references/infrastructure/cache-management.md) |
+| Varnish & Full Page Cache | VCL config, ESI, private content, hole punching | [infrastructure/varnish-fpc.md](./references/infrastructure/varnish-fpc.md) |
 | Indexer & Mview | Custom indexer, reindex strategy, schedule mode | [infrastructure/indexing-mview.md](./references/infrastructure/indexing-mview.md) |
 | Performance | N+1 query, eager loading, profiler, Varnish | [infrastructure/performance.md](./references/infrastructure/performance.md) |
 | Storage (S3) | Upload/lưu file trên S3 | [infrastructure/storage-media.md](./references/infrastructure/storage-media.md) |
@@ -108,7 +117,7 @@
 | Catalog Product Types | Product types, price hierarchy, EAV attributes | [business/catalog-product-types.md](./references/business/catalog-product-types.md) |
 | Custom Product Type | Tạo product type mới với price model riêng | [business/custom-product-type.md](./references/business/custom-product-type.md) |
 | Quote & Totals | Tính giá, totals collector | [business/quote-totals.md](./references/business/quote-totals.md) |
-| Catalog Price Rules | Rule giảm giá catalog | [business/catalog-price-rules.md](./references/business/catalog-price-rules.md) |
+| Catalog Price, Cart Rules & Tax | Price waterfall, custom price modifier, tier price, cart rule, FPT | [business/catalog-price-rules.md](./references/business/catalog-price-rules.md) |
 | Reporting | Advanced reporting, grid report | [business/advanced-reporting.md](./references/business/advanced-reporting.md) |
 | B2B Modules | Company, shared catalog, negotiable quote, purchase order | [ops/b2b-modules.md](./references/ops/b2b-modules.md) |
 

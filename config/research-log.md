@@ -65,6 +65,71 @@
 | Blueprint: Integration test module | 2026-04-22 | Tạo `examples/integration/integration-test-module-blueprint.md`; cập nhật `examples/INDEX.md` |
 | Blueprint: Console command với progress bar | 2026-04-22 | Tạo `examples/integration/console-command-progress-bar-blueprint.md`; cập nhật `examples/INDEX.md` |
 | Blueprint: Custom price modifier (catalog rule) | 2026-04-22 | Tạo `examples/integration/custom-price-modifier-blueprint.md`; cập nhật `examples/INDEX.md` |
+| Around plugin: khi nào dùng, performance cost, callable pattern đúng | 2026-04-22 | Tạo mới `config/references/core/plugin-patterns.md` (§1-2: around plugin, interceptor chain) |
+| Interceptor chain: thứ tự thực thi khi nhiều plugin cùng target 1 method | 2026-04-22 | Tích hợp vào `config/references/core/plugin-patterns.md` (§2: execution flow scenarios) |
+| Object Manager pool: shared vs non-shared instance, scope | 2026-04-22 | Tạo mới `config/references/core/object-manager-generated.md` (§1: shared/transient) |
+| Generated code: Interceptor, Factory, Proxy — khi nào regenerate, troubleshoot | 2026-04-22 | Tích hợp vào `config/references/core/object-manager-generated.md` (§2-4) |
+| Config XML merge: load order, area (global/frontend/adminhtml/webapi_rest/cron) | 2026-04-22 | Tích hợp vào `config/references/core/object-manager-generated.md` (§5: Config XML merge) |
+| Module sequence: `<sequence>` trong module.xml, circular dependency | 2026-04-22 | Tích hợp vào `config/references/core/object-manager-generated.md` (§6: Module sequence) |
+| Area code: frontend/adminhtml/webapi_rest/webapi_soap/graphql/cron — ảnh hưởng DI | 2026-04-22 | Tích hợp vào `config/references/core/object-manager-generated.md` (§7: Area code) |
+| AbstractModel vs DataObject: khi nào dùng cái nào, magic getter/setter | 2026-04-22 | Tạo mới `config/references/core/model-collection-patterns.md` (§1-2) |
+| Collection: addFieldToFilter, join, group, having — performance pitfalls | 2026-04-22 | Tích hợp vào `config/references/core/model-collection-patterns.md` (§4) |
+| ResourceModel: _beforeSave/_afterSave, connection, table prefix | 2026-04-22 | Tích hợp vào `config/references/core/model-collection-patterns.md` (§3) |
+| RequireJS: mixins, map, shim, bundles, async loading | 2026-04-22 | Tạo mới `config/references/frontend/requirejs-knockoutjs.md` (§1-4) |
+| KnockoutJS: observable, computed, custom binding, component lifecycle | 2026-04-22 | Tích hợp vào `config/references/frontend/requirejs-knockoutjs.md` (§2) |
+| Luma theme: parent theme override, _module.less, _extend.less | 2026-04-22 | Tích hợp vào `config/references/frontend/requirejs-knockoutjs.md` (§4) |
+| Catalog price: price waterfall, custom price modifier, group price | 2026-04-22 | Tạo mới `config/references/business/catalog-price-rules.md` (§1-3) |
+| Cart rules: condition combine, action types, coupon generation | 2026-04-22 | Tích hợp vào `config/references/business/catalog-price-rules.md` (§4-5) |
+| Tax: tax class, tax rule, FPT, display settings, store config | 2026-04-22 | Tích hợp vào `config/references/business/catalog-price-rules.md` (§6) |
+| Varnish: VCL config, ESI, cache purge, X-Magento-Tags | 2026-04-22 | Tạo mới `config/references/infrastructure/varnish-fpc.md` (§1-2) |
+| Full Page Cache: hole punching, private content, ESI | 2026-04-22 | Tích hợp vào `config/references/infrastructure/varnish-fpc.md` (§3-5) |
+| SearchCriteria deep dive: FilterGroup logic (AND/OR), SortOrder, PageSize | 2026-04-22 | Tạo mới `config/references/core/search-criteria-data-layer.md` (§1) |
+| Custom SearchResults: SearchResultsInterface, TotalCount | 2026-04-22 | Tích hợp vào `config/references/core/search-criteria-data-layer.md` (§2) |
+| Database transaction: beginTransaction, commit, rollback trong ResourceModel | 2026-04-22 | Tích hợp vào `config/references/core/search-criteria-data-layer.md` (§3) |
+| Bulk operations: insertMultiple, insertOnDuplicate, deleteByIds | 2026-04-22 | Tích hợp vào `config/references/core/search-criteria-data-layer.md` (§4) |
+| Soft delete: is_active flag, filter trong collection | 2026-04-22 | Tích hợp vào `config/references/core/search-criteria-data-layer.md` (§5) |
+| Database connection: read/write split, slave connection | 2026-04-22 | Tích hợp vào `config/references/core/search-criteria-data-layer.md` (§6) |
+| Schema migration: alter column safely, zero-downtime migration | 2026-04-22 | Tích hợp vào `config/references/core/search-criteria-data-layer.md` (§7) |
+| Command pattern: Command bus, CommandInterface, CommandPoolInterface | 2026-04-22 | Tạo mới `config/references/core/advanced-patterns.md` (§1) |
+| Strategy pattern: pool of strategies, dynamic selection via DI | 2026-04-22 | Tích hợp vào `config/references/core/advanced-patterns.md` (§2) |
+| Composite pattern: CompositeInterface, chaining processors | 2026-04-22 | Tích hợp vào `config/references/core/advanced-patterns.md` (§3) |
+| Pipeline pattern: processor chain, SortedList, PipelineInterface | 2026-04-22 | Tích hợp vào `config/references/core/advanced-patterns.md` (§4) |
+| Modifier pattern: UI Component modifier, pool modifier | 2026-04-22 | Tích hợp vào `config/references/core/advanced-patterns.md` (§5) |
+| Validator chain: ValidatorInterface, CompositeValidator | 2026-04-22 | Tích hợp vào `config/references/core/advanced-patterns.md` (§6) |
+| Builder pattern: SearchCriteriaBuilder, FilterBuilder deep dive | 2026-04-22 | Tích hợp vào `config/references/core/advanced-patterns.md` (§7) |
+| Null Object pattern: tránh null check, default implementation | 2026-04-22 | Tích hợp vào `config/references/core/advanced-patterns.md` (§8) |
+| Registry pattern: Magento\Framework\Registry — legacy, cách thay thế | 2026-04-22 | Tích hợp vào `config/references/core/advanced-patterns.md` (§9) |
+| PHP 8.x features: named arguments, match expression, nullsafe operator, fibers | 2026-04-22 | Tích hợp vào `config/references/core/advanced-patterns.md` (§10) |
+| Readonly properties: PHP 8.1+, dùng trong DTO/Data Object | 2026-04-22 | Tích hợp vào `config/references/core/advanced-patterns.md` (§10) |
+| Enum: PHP 8.1+, dùng thay constant trong Magento | 2026-04-22 | Tích hợp vào `config/references/core/advanced-patterns.md` (§10) |
+| First-class callable: PHP 8.1+, array_map với method reference | 2026-04-22 | Tích hợp vào `config/references/core/advanced-patterns.md` (§10) |
+| Generator: yield, lazy collection, memory-efficient iteration | 2026-04-22 | Tích hợp vào `config/references/core/advanced-patterns.md` (§10) |
+| DI compile error: common errors, how to fix, regenerate | 2026-04-22 | Tạo mới `config/references/core/debugging-troubleshooting.md` (§4) |
+| Plugin conflict: debug interceptor chain, identify conflicting plugin | 2026-04-22 | Tích hợp vào `config/references/core/debugging-troubleshooting.md` (§5) |
+| Observer infinite loop: detect, prevent, area restriction | 2026-04-22 | Tích hợp vào `config/references/core/debugging-troubleshooting.md` (§6) |
+| 500 error debug: exception.log, system.log, display_errors | 2026-04-22 | Tích hợp vào `config/references/core/debugging-troubleshooting.md` (§2) |
+| White screen of death: common causes, recovery steps | 2026-04-22 | Tích hợp vào `config/references/core/debugging-troubleshooting.md` (§3) |
+| Cache corruption: symptoms, flush strategy, cache backend check | 2026-04-22 | Tích hợp vào `config/references/core/debugging-troubleshooting.md` (§7) |
+| Query log: enable query log, slow query, EXPLAIN trong Magento | 2026-04-22 | Tích hợp vào `config/references/core/debugging-troubleshooting.md` (§8) |
+| Magento profiler: enable/disable, HTML output, custom profiler | 2026-04-22 | Tích hợp vào `config/references/core/debugging-troubleshooting.md` (§9) |
+| Memory leak: detect với Blackfire, common causes trong Magento | 2026-04-22 | Tích hợp vào `config/references/core/debugging-troubleshooting.md` (§10) |
+| sales_order_place_after: common use cases, data available | 2026-04-22 | Tạo mới `config/references/core/event-observer-patterns.md` (§2) |
+| catalog_product_save_after: product save hook, reindex trigger | 2026-04-22 | Tích hợp vào `config/references/core/event-observer-patterns.md` (§3) |
+| customer_login: session data, redirect logic | 2026-04-22 | Tích hợp vào `config/references/core/event-observer-patterns.md` (§4) |
+| checkout_cart_add_product_complete: cart modification | 2026-04-22 | Tích hợp vào `config/references/core/event-observer-patterns.md` (§5) |
+| controller_action_predispatch: request intercept, redirect | 2026-04-22 | Tích hợp vào `config/references/core/event-observer-patterns.md` (§6) |
+| layout_generate_blocks_after: dynamic block injection | 2026-04-22 | Tích hợp vào `config/references/core/event-observer-patterns.md` (§7) |
+| clean_cache_by_tags: custom cache invalidation | 2026-04-22 | Tích hợp vào `config/references/core/event-observer-patterns.md` (§8) |
+| Custom event dispatch: best practices, naming convention, area | 2026-04-22 | Tích hợp vào `config/references/core/event-observer-patterns.md` (§9) |
+| Before plugin: modify arguments, add validation | 2026-04-22 | Tích hợp vào `config/references/core/plugin-patterns.md` (§3) |
+| After plugin: modify return value, add data | 2026-04-22 | Tích hợp vào `config/references/core/plugin-patterns.md` (§4) |
+| Plugin on Repository: common patterns (add filter, transform result) | 2026-04-22 | Tích hợp vào `config/references/core/plugin-patterns.md` (§5) |
+| Plugin on Controller: redirect, modify response | 2026-04-22 | Tích hợp vào `config/references/core/plugin-patterns.md` (§6) |
+| Plugin on Block: modify template, add data | 2026-04-22 | Tích hợp vào `config/references/core/plugin-patterns.md` (§7) |
+| Plugin disabled: di.xml disabled="true", area-specific disable | 2026-04-22 | Tích hợp vào `config/references/core/plugin-patterns.md` (§8) |
+| Plugin on interface vs class: best practice | 2026-04-22 | Tích hợp vào `config/references/core/plugin-patterns.md` (§9) |
+| Blueprint: Custom REST API với pagination + filtering | 2026-04-22 | Tạo `examples/integration/custom-rest-api-pagination-blueprint.md`; cập nhật `examples/INDEX.md` |
+| Blueprint: GraphQL mutation với input validation | 2026-04-22 | Tạo `examples/integration/graphql-mutation-input-validation-blueprint.md`; cập nhật `examples/INDEX.md` |
 
 ---
 
@@ -74,31 +139,31 @@
 - Staging & Preview (Commerce): version, update, campaign, timeline
 
 ### Core / Architecture
-- Around plugin: khi nào dùng, performance cost, callable pattern đúng
-- Interceptor chain: thứ tự thực thi khi nhiều plugin cùng target 1 method
-- Object Manager pool: shared vs non-shared instance, scope
-- Generated code: Interceptor, Factory, Proxy — khi nào regenerate, troubleshoot
-- Config XML merge: load order, area (global/frontend/adminhtml/webapi_rest/cron)
-- Module sequence: `<sequence>` trong module.xml, circular dependency
-- Area code: frontend/adminhtml/webapi_rest/webapi_soap/graphql/cron — ảnh hưởng DI
-- AbstractModel vs DataObject: khi nào dùng cái nào, magic getter/setter
-- Collection: addFieldToFilter, join, group, having — performance pitfalls
-- ResourceModel: _beforeSave/_afterSave, connection, table prefix
+- ~~Around plugin: khi nào dùng, performance cost, callable pattern đúng~~ ✅ Done
+- ~~Interceptor chain: thứ tự thực thi khi nhiều plugin cùng target 1 method~~ ✅ Done
+- ~~Object Manager pool: shared vs non-shared instance, scope~~ ✅ Done
+- ~~Generated code: Interceptor, Factory, Proxy — khi nào regenerate, troubleshoot~~ ✅ Done
+- ~~Config XML merge: load order, area (global/frontend/adminhtml/webapi_rest/cron)~~ ✅ Done
+- ~~Module sequence: `<sequence>` trong module.xml, circular dependency~~ ✅ Done
+- ~~Area code: frontend/adminhtml/webapi_rest/webapi_soap/graphql/cron — ảnh hưởng DI~~ ✅ Done
+- ~~AbstractModel vs DataObject: khi nào dùng cái nào, magic getter/setter~~ ✅ Done
+- ~~Collection: addFieldToFilter, join, group, having — performance pitfalls~~ ✅ Done
+- ~~ResourceModel: _beforeSave/_afterSave, connection, table prefix~~ ✅ Done
 
 ### Frontend
-- RequireJS: mixins, map, shim, bundles, async loading
-- KnockoutJS: observable, computed, custom binding, component lifecycle
+- ~~RequireJS: mixins, map, shim, bundles, async loading~~ ✅ Done
+- ~~KnockoutJS: observable, computed, custom binding, component lifecycle~~ ✅ Done
 - Checkout steps: custom step, payment renderer, shipping method renderer
 - Admin form: fieldset, field types, dependencies, dynamic rows
 - Admin grid: filters, mass actions, inline edit, bookmarks
 - LESS/CSS: extend, mixin, variables, critical CSS, theme inheritance
-- Luma theme: parent theme override, _module.less, _extend.less
+- ~~Luma theme: parent theme override, _module.less, _extend.less~~ ✅ Done
 - Pager/Toolbar: product list toolbar, sort, limit, custom toolbar
 
 ### Business / Domain
-- Catalog price: price waterfall, custom price modifier, group price
-- Cart rules: condition combine, action types, coupon generation
-- Tax: tax class, tax rule, FPT, display settings, store config
+- ~~Catalog price: price waterfall, custom price modifier, group price~~ ✅ Done
+- ~~Cart rules: condition combine, action types, coupon generation~~ ✅ Done
+- ~~Tax: tax class, tax rule, FPT, display settings, store config~~ ✅ Done
 - Shipping: rate request, rate result, free shipping, table rates
 - Order management: hold/unhold, cancel, reorder, partial invoice/ship
 - Return/RMA: return request, item condition, resolution (Commerce)
@@ -108,7 +173,7 @@
 - Catalog permission: category/product access by customer group (Commerce)
 
 ### Infrastructure / DevOps
-- Varnish: VCL config, ESI, cache purge, X-Magento-Tags
+- ~~Varnish: VCL config, ESI, cache purge, X-Magento-Tags~~ ✅ Done
 - RabbitMQ: exchange, queue, binding, dead letter, management UI
 - MySQL: query optimization, EXPLAIN, slow query log, connection pool
 - New Relic: APM integration, custom attributes, transaction naming
@@ -142,8 +207,8 @@
 - Blueprint: Custom cart price rule condition
 - Blueprint: Varnish VCL cho Magento
 - Blueprint: RabbitMQ consumer với retry/dead letter
-- Blueprint: Custom REST API với pagination + filtering
-- Blueprint: GraphQL mutation với input validation
+- ~~Blueprint: Custom REST API với pagination + filtering~~ ✅ Done
+- ~~Blueprint: GraphQL mutation với input validation~~ ✅ Done
 - Blueprint: Custom report / grid với custom DataProvider
 - Blueprint: Module với unit test + integration test đầy đủ
 - Blueprint: Custom attribute (product/customer/category) với frontend renderer
@@ -152,28 +217,28 @@
 - Blueprint: Multi-store config với store-specific override
 
 ### Advanced Patterns / Architecture
-- Command pattern: Command bus, CommandInterface, CommandPoolInterface
-- Strategy pattern: pool of strategies, dynamic selection via DI
-- Composite pattern: CompositeInterface, chaining processors
-- Pipeline pattern: processor chain, SortedList, PipelineInterface
+- ~~Command pattern: Command bus, CommandInterface, CommandPoolInterface~~ ✅ Done
+- ~~Strategy pattern: pool of strategies, dynamic selection via DI~~ ✅ Done
+- ~~Composite pattern: CompositeInterface, chaining processors~~ ✅ Done
+- ~~Pipeline pattern: processor chain, SortedList, PipelineInterface~~ ✅ Done
 - Specification pattern: business rule objects, isSatisfiedBy
 - Event Sourcing: domain events, event store, replay
 - CQRS: separate read/write models trong Magento context
 - Saga pattern: distributed transaction, compensating actions
 - Decorator pattern: wrapping service với extra behavior
-- Null Object pattern: tránh null check, default implementation
+- ~~Null Object pattern: tránh null check, default implementation~~ ✅ Done
 
 ### Data Layer
 - Collection vs Repository: khi nào dùng cái nào, performance trade-off
-- SearchCriteria deep dive: FilterGroup logic (AND/OR), SortOrder, PageSize
-- Custom SearchResults: SearchResultsInterface, TotalCount
-- Database transaction: beginTransaction, commit, rollback trong ResourceModel
+- ~~SearchCriteria deep dive: FilterGroup logic (AND/OR), SortOrder, PageSize~~ ✅ Done
+- ~~Custom SearchResults: SearchResultsInterface, TotalCount~~ ✅ Done
+- ~~Database transaction: beginTransaction, commit, rollback trong ResourceModel~~ ✅ Done
 - Optimistic locking: version field, conflict detection
-- Soft delete: is_active flag, filter trong collection
-- Bulk operations: insertMultiple, insertOnDuplicate, deleteByIds
-- Database connection: read/write split, slave connection
+- ~~Soft delete: is_active flag, filter trong collection~~ ✅ Done
+- ~~Bulk operations: insertMultiple, insertOnDuplicate, deleteByIds~~ ✅ Done
+- ~~Database connection: read/write split, slave connection~~ ✅ Done
 - Custom DB function: MySQL stored procedure từ Magento
-- Schema migration: alter column safely, zero-downtime migration
+- ~~Schema migration: alter column safely, zero-downtime migration~~ ✅ Done
 
 ### API / Integration
 - Async REST API: bulk endpoint, /async/bulk, UUID tracking
@@ -248,7 +313,7 @@
 - Split order: multiple shipments, partial fulfillment
 
 ### Performance Advanced
-- Full Page Cache: hole punching, private content, ESI
+- ~~Full Page Cache: hole punching, private content, ESI~~ ✅ Done
 - HTTP/2: server push, multiplexing, header compression
 - Image optimization: WebP, lazy load, srcset, CDN
 - JS bundling: RequireJS bundle, critical JS, defer
@@ -279,7 +344,7 @@
 - Blueprint: Custom customer attribute với frontend renderer
 - Blueprint: Async bulk REST API endpoint
 - Blueprint: Custom GraphQL subscription
-- Blueprint: Full Page Cache hole punching (private content)
+- ~~Blueprint: Full Page Cache hole punching (private content)~~ ✅ Done (trong varnish-fpc.md §3)
 - Blueprint: Custom configurable product swatch
 - Blueprint: Zero-downtime deployment script
 - Blueprint: Custom fraud detection plugin
@@ -291,38 +356,38 @@
 ### PHP / OOP Deep Dive (Magento context)
 - Abstract class vs Interface: khi nào dùng cái nào trong Magento
 - Trait: dùng trong Magento có hợp lệ không, use case thực tế
-- PHP 8.x features: named arguments, match expression, nullsafe operator, fibers
-- Readonly properties: PHP 8.1+, dùng trong DTO/Data Object
-- Enum: PHP 8.1+, dùng thay constant trong Magento
-- First-class callable: PHP 8.1+, array_map với method reference
+- ~~PHP 8.x features: named arguments, match expression, nullsafe operator, fibers~~ ✅ Done
+- ~~Readonly properties: PHP 8.1+, dùng trong DTO/Data Object~~ ✅ Done
+- ~~Enum: PHP 8.1+, dùng thay constant trong Magento~~ ✅ Done
+- ~~First-class callable: PHP 8.1+, array_map với method reference~~ ✅ Done
 - Intersection types: PHP 8.1+, type safety nâng cao
-- Generator: yield, lazy collection, memory-efficient iteration
+- ~~Generator: yield, lazy collection, memory-efficient iteration~~ ✅ Done
 - Closure binding: Closure::bind, Closure::fromCallable
 - Anonymous class: test double, inline implementation
 
 ### Magento Code Patterns (thực chiến)
 - Fluent interface: method chaining trong Builder/Query
-- Builder pattern: SearchCriteriaBuilder, FilterBuilder deep dive
-- Registry pattern: Magento\Framework\Registry — legacy, cách thay thế
+- ~~Builder pattern: SearchCriteriaBuilder, FilterBuilder deep dive~~ ✅ Done
+- ~~Registry pattern: Magento\Framework\Registry — legacy, cách thay thế~~ ✅ Done
 - Action pool: array of actions, dynamic dispatch
-- Modifier pattern: UI Component modifier, pool modifier
+- ~~Modifier pattern: UI Component modifier, pool modifier~~ ✅ Done
 - Converter pattern: toDataModel, toArray, hydrator
-- Validator chain: ValidatorInterface, CompositeValidator
-- Processor chain: ProcessorInterface, sorted processor pool
+- ~~Validator chain: ValidatorInterface, CompositeValidator~~ ✅ Done
+- ~~Processor chain: ProcessorInterface, sorted processor pool~~ ✅ Done
 - Mapper pattern: DB row → Data Object mapping
 - Hydrator pattern: populate object từ array data
 
 ### Debugging & Troubleshooting (thực chiến)
 - Xdebug step debug: breakpoint, watch, call stack trong PhpStorm
-- Magento profiler: enable/disable, HTML output, custom profiler
-- Query log: enable query log, slow query, EXPLAIN trong Magento
-- DI compile error: common errors, how to fix, regenerate
-- Plugin conflict: debug interceptor chain, identify conflicting plugin
-- Observer infinite loop: detect, prevent, area restriction
-- Memory leak: detect với Blackfire, common causes trong Magento
-- 500 error debug: exception.log, system.log, display_errors
-- White screen of death: common causes, recovery steps
-- Cache corruption: symptoms, flush strategy, cache backend check
+- ~~Magento profiler: enable/disable, HTML output, custom profiler~~ ✅ Done
+- ~~Query log: enable query log, slow query, EXPLAIN trong Magento~~ ✅ Done
+- ~~DI compile error: common errors, how to fix, regenerate~~ ✅ Done
+- ~~Plugin conflict: debug interceptor chain, identify conflicting plugin~~ ✅ Done
+- ~~Observer infinite loop: detect, prevent, area restriction~~ ✅ Done
+- ~~Memory leak: detect với Blackfire, common causes trong Magento~~ ✅ Done
+- ~~500 error debug: exception.log, system.log, display_errors~~ ✅ Done
+- ~~White screen of death: common causes, recovery steps~~ ✅ Done
+- ~~Cache corruption: symptoms, flush strategy, cache backend check~~ ✅ Done
 
 ### Code Generation & Tooling
 - Pestle: module scaffold, di.xml generation, common commands
@@ -337,27 +402,27 @@
 - Makefile: common Magento dev tasks automation
 
 ### Event / Observer Patterns (thực chiến)
-- sales_order_place_after: common use cases, data available
-- catalog_product_save_after: product save hook, reindex trigger
-- customer_login: session data, redirect logic
-- checkout_cart_add_product_complete: cart modification
-- controller_action_predispatch: request intercept, redirect
-- layout_generate_blocks_after: dynamic block injection
+- ~~sales_order_place_after: common use cases, data available~~ ✅ Done
+- ~~catalog_product_save_after: product save hook, reindex trigger~~ ✅ Done
+- ~~customer_login: session data, redirect logic~~ ✅ Done
+- ~~checkout_cart_add_product_complete: cart modification~~ ✅ Done
+- ~~controller_action_predispatch: request intercept, redirect~~ ✅ Done
+- ~~layout_generate_blocks_after: dynamic block injection~~ ✅ Done
 - adminhtml_block_html_before: admin block modification
-- clean_cache_by_tags: custom cache invalidation
+- ~~clean_cache_by_tags: custom cache invalidation~~ ✅ Done
 - magento_customer_authenticated: post-auth hook
-- Custom event dispatch: best practices, naming convention, area
+- ~~Custom event dispatch: best practices, naming convention, area~~ ✅ Done
 
 ### Plugin Patterns (thực chiến)
-- Before plugin: modify arguments, add validation
-- After plugin: modify return value, add data
-- Around plugin: conditional execution, skip original
-- Plugin on interface vs class: best practice
-- Plugin disabled: di.xml disabled="true", area-specific disable
-- Plugin sortOrder conflict: debug, resolve
-- Plugin on Repository: common patterns (add filter, transform result)
-- Plugin on Controller: redirect, modify response
-- Plugin on Block: modify template, add data
+- ~~Before plugin: modify arguments, add validation~~ ✅ Done
+- ~~After plugin: modify return value, add data~~ ✅ Done
+- ~~Around plugin: conditional execution, skip original~~ ✅ Done
+- ~~Plugin on interface vs class: best practice~~ ✅ Done
+- ~~Plugin disabled: di.xml disabled="true", area-specific disable~~ ✅ Done
+- ~~Plugin sortOrder conflict: debug, resolve~~ ✅ Done
+- ~~Plugin on Repository: common patterns (add filter, transform result)~~ ✅ Done
+- ~~Plugin on Controller: redirect, modify response~~ ✅ Done
+- ~~Plugin on Block: modify template, add data~~ ✅ Done
 - Plugin on Model: intercept save/load/delete
 
 ### Repository & Collection Patterns (thực chiến)
@@ -367,29 +432,29 @@
 - Aggregate query: group by, count, sum trong collection
 - Subquery: correlated subquery trong Magento collection
 - Raw query: getConnection()->query() khi nào dùng
-- Batch processing: load collection in chunks, memory management
-- Collection cache: setPageSize, setCurPage, pagination
+- ~~Batch processing: load collection in chunks, memory management~~ ✅ Done
+- ~~Collection cache: setPageSize, setCurPage, pagination~~ ✅ Done
 - Custom resource model: _getLoadSelect override
 - Multi-table join: joinLeft, joinInner, alias
 
 ### GraphQL Deep Dive (thực chiến)
-- Custom query: schema.graphqls, resolver, di.xml
-- Custom mutation: input type, output type, validator
+- ~~Custom query: schema.graphqls, resolver, di.xml~~ ✅ Done (trong graphql-mutation blueprint)
+- ~~Custom mutation: input type, output type, validator~~ ✅ Done
 - Custom type: interface type, union type
 - Resolver chain: ResolverInterface, composite resolver
 - Context: UserContext, StoreContext, custom context
-- Cache: @cache directive, cache identity, invalidation
-- Error handling: GraphQlInputException, GraphQlNoSuchEntityException
-- Authorization: isAllowed, customer context check
-- Pagination: PageInfo, currentPage, pageSize
+- ~~Cache: @cache directive, cache identity, invalidation~~ ✅ Done
+- ~~Error handling: GraphQlInputException, GraphQlNoSuchEntityException~~ ✅ Done
+- ~~Authorization: isAllowed, customer context check~~ ✅ Done
+- ~~Pagination: PageInfo, currentPage, pageSize~~ ✅ Done
 - Custom scalar type: custom scalar resolver
 
 ### REST API Deep Dive (thực chiến)
-- Custom endpoint: webapi.xml, interface, implementation
+- ~~Custom endpoint: webapi.xml, interface, implementation~~ ✅ Done (trong custom-rest-api blueprint)
 - Request validation: custom validator, input filter
 - Response transformation: custom response builder
 - Bulk endpoint: /async/bulk, operation status
-- Custom search criteria: custom filter, custom sort
+- ~~Custom search criteria: custom filter, custom sort~~ ✅ Done
 - File upload via REST: multipart/form-data handling
 - Streaming response: large data export
 - Custom error response: WebapiException, HTTP status codes
@@ -400,18 +465,18 @@
 - Blueprint: Plugin trên OrderRepository (add custom filter)
 - Blueprint: Before plugin validate input + throw exception
 - Blueprint: After plugin transform response data
-- Blueprint: Observer gửi email sau order place
-- Blueprint: Observer sync data sang external API
+- ~~Blueprint: Observer gửi email sau order place~~ ✅ Done (trong event-observer-patterns.md §10)
+- ~~Blueprint: Observer sync data sang external API~~ ✅ Done (trong event-observer-patterns.md §11)
 - Blueprint: Custom collection với join + filter
 - Blueprint: Repository với custom SearchCriteria filter
 - Blueprint: Custom GraphQL query với auth check
-- Blueprint: Custom GraphQL mutation với input validation
+- ~~Blueprint: Custom GraphQL mutation với input validation~~ ✅ Done
 - Blueprint: Custom REST endpoint với file upload
 - Blueprint: Custom REST bulk endpoint
 - Blueprint: Custom CLI command với progress bar + batch
 - Blueprint: Custom cron job với lock mechanism
 - Blueprint: Custom message queue consumer với retry
-- Blueprint: Custom validator chain (CompositeValidator)
+- ~~Blueprint: Custom validator chain (CompositeValidator)~~ ✅ Done (trong advanced-patterns.md §6)
 - Blueprint: Custom price modifier plugin
 - Blueprint: Custom checkout total collector
 - Blueprint: Custom shipping rate provider
@@ -426,4 +491,4 @@
 - Blueprint: Custom DataProvider cho admin grid
 - Blueprint: Custom mass action với confirmation
 - Blueprint: Custom inline edit trong admin grid
-- Blueprint: Debug plugin: log all method calls
+- ~~Blueprint: Debug plugin: log all method calls~~ ✅ Done (trong plugin-patterns.md §10)
