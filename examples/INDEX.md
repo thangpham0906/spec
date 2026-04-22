@@ -28,6 +28,9 @@ Tôi cần ví dụ về <chủ đề>.
 | `magento-module-csp-whitelist-blueprint.md` | CSP Whitelist config | Thêm CSP whitelist cho external resource |
 | `magento-module-custom-logger-blueprint.md` | Custom Monolog logger riêng cho module | Tạo file log riêng, tránh ghi vào system.log |
 | `magento-modules-catalog.md` | Index tổng hợp các module NullTraceX | Tra cứu nhanh module nào có blueprint |
+| `custom-shipping-carrier-blueprint.md` | Custom shipping carrier (AbstractCarrier) | Tạo shipping method mới với collectRates |
+| `custom-payment-offline-blueprint.md` | Offline payment method (Adapter pattern) | Tạo payment method không cần gateway API |
+| `transactional-email-blueprint.md` | Transactional email + TransportBuilder | Gửi email từ custom module |
 
 ---
 

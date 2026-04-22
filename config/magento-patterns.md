@@ -34,6 +34,7 @@
 | DI & Code Generation | Virtual type, proxy, factory, preference | [core/di-codegen.md](./references/core/di-codegen.md) |
 | Routing & Controllers | Tạo route frontend/adminhtml | [core/routing-controllers.md](./references/core/routing-controllers.md) |
 | Architectural Patterns | SOLID, composition, design patterns | [core/architectural-patterns.md](./references/core/architectural-patterns.md) |
+| Extension Attributes | Mở rộng API Data Interface, expose qua REST | [core/extension-attributes.md](./references/core/extension-attributes.md) |
 
 ### Network & API
 
@@ -58,6 +59,7 @@
 | Admin UI Grid | Admin grid với filter/sort/action | [frontend/admin-ui-grid.md](./references/frontend/admin-ui-grid.md) |
 | Admin Form Save and Continue | Admin form giữ lại trang edit sau save | [frontend/admin-save-and-continue.md](./references/frontend/admin-save-and-continue.md) |
 | Hyvä Theme | Alpine.js, Magewire, Tailwind CSS frontend | [frontend/hyva-theme.md](./references/frontend/hyva-theme.md) |
+| Widget | Reusable CMS component cấu hình từ Admin | [frontend/widget.md](./references/frontend/widget.md) |
 
 ### Infrastructure & Ops
 
@@ -67,17 +69,19 @@
 | Indexer & Mview | Custom indexer, reindex strategy, schedule mode | [infrastructure/indexing-mview.md](./references/infrastructure/indexing-mview.md) |
 | Performance | N+1 query, eager loading, profiler, Varnish | [infrastructure/performance.md](./references/infrastructure/performance.md) |
 | Storage (S3) | Upload/lưu file trên S3 | [infrastructure/storage-media.md](./references/infrastructure/storage-media.md) |
-| Search & Navigation | Elasticsearch, layered nav | [infrastructure/search-navigation.md](./references/infrastructure/search-navigation.md) |
+| Search & Navigation | OpenSearch, layered nav | [infrastructure/search-navigation.md](./references/infrastructure/search-navigation.md) |
 | Logging | Custom logger, Monolog channel | [infrastructure/logging.md](./references/infrastructure/logging.md) |
 | Cron Job | Tác vụ định kỳ | [infrastructure/cron-jobs.md](./references/infrastructure/cron-jobs.md) |
 | Shipping Carrier | Custom shipping method | [infrastructure/shipping-carrier.md](./references/infrastructure/shipping-carrier.md) |
 | Import/Export | Custom import entity CSV | [infrastructure/import-export.md](./references/infrastructure/import-export.md) |
+| Redis | Session storage, cache backend, Sentinel | [infrastructure/redis.md](./references/infrastructure/redis.md) |
 | CLI Command | Console command `bin/magento` | [ops/maintenance-cli.md](./references/ops/maintenance-cli.md) |
 | Multi-Store | Scope, store_view, config inheritance | [ops/multi-store.md](./references/ops/multi-store.md) |
 | Config Paths | Đọc/ghi system config | [ops/config-paths.md](./references/ops/config-paths.md) |
 | Configuration Management | Scope, deploy config | [ops/configuration-management.md](./references/ops/configuration-management.md) |
 | Deployment Pipeline | Deploy flow, setup commands | [ops/deployment-pipeline.md](./references/ops/deployment-pipeline.md) |
 | Unit Testing | PHPUnit, mock, test structure | [ops/unit-testing.md](./references/ops/unit-testing.md) |
+| Upgrade & Compatibility | UCT, cweagans patches, Composer versioning | [ops/upgrade.md](./references/ops/upgrade.md) |
 
 ### Security & Payments
 
@@ -85,8 +89,9 @@
 |---|---|---|
 | Security Best Practices | Input validation, XSS, CSRF, SQL injection | [security/security-best-practices.md](./references/security/security-best-practices.md) |
 | ACL | Phân quyền Admin, API, block | [security/acl.md](./references/security/acl.md) |
-| Payment Gateway | Tích hợp payment method | [security/payment-gateway.md](./references/security/payment-gateway.md) |
+| Payment Gateway | Tích hợp payment method (online) | [security/payment-gateway.md](./references/security/payment-gateway.md) |
 | Vault & Token | Lưu token thanh toán | [security/payment-vault.md](./references/security/payment-vault.md) |
+| CSP | Content Security Policy, whitelist, nonce | [security/csp.md](./references/security/csp.md) |
 
 ### Business & Sales
 

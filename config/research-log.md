@@ -40,41 +40,37 @@
 | CLI Command: InputInterface, OutputInterface, naming convention | 2026-04-22 | Đã có đầy đủ trong `config/references/ops/maintenance-cli.md` — không cần update thêm |
 | Multi-store: scope, store_view, config inheritance | 2026-04-22 | Đã có trong `config/references/ops/multi-store.md` — không cần update thêm |
 | Deployment: setup:upgrade, di:compile, static-content:deploy | 2026-04-22 | Đã có trong `config/references/ops/deployment-pipeline.md` — không cần update thêm |
+| Payment method: integration, offline vs online, vault token, 3DS | 2026-04-22 | Cập nhật `config/references/security/payment-gateway.md` (thêm §14: offline Adapter pattern); tạo `examples/integration/custom-payment-offline-blueprint.md` |
+| Shipping carrier: AbstractCarrier, collectRates, tracking, multi-warehouse | 2026-04-22 | Cập nhật `config/references/infrastructure/shipping-carrier.md` (thêm system.xml, tracking); tạo `examples/integration/custom-shipping-carrier-blueprint.md` |
+| Email template: transactional email, variables, transport, inline CSS | 2026-04-22 | Tạo `examples/integration/transactional-email-blueprint.md` |
+| Import/Export: ImportModel, CSV format, behavior (add/update/delete/replace) | 2026-04-22 | Đã có đầy đủ trong `config/references/infrastructure/import-export.md` — không cần update thêm |
+| Widget: WidgetInterface, instance types, layout XML integration | 2026-04-22 | Tạo mới `config/references/frontend/widget.md`; cập nhật `config/magento-patterns.md` |
+| Extension Attributes: ExtensionAttributesInterface, join directive, search | 2026-04-22 | Tạo mới `config/references/core/extension-attributes.md`; cập nhật `config/magento-patterns.md` |
+| CSP: Content Security Policy, whitelist, nonce, report-only mode | 2026-04-22 | Tạo mới `config/references/security/csp.md`; cập nhật `config/magento-patterns.md` |
+| Redis: session storage, cache backend, sentinel, cluster config | 2026-04-22 | Tạo mới `config/references/infrastructure/redis.md`; cập nhật `config/magento-patterns.md` |
+| Elasticsearch/OpenSearch: index mapping, analyzer, relevance tuning | 2026-04-22 | Cập nhật `config/references/infrastructure/search-navigation.md` (note: OpenSearch là default từ 2.4.8, Elasticsearch bị loại bỏ) |
+| Upgrade: upgrade_compatibility_tool, breaking changes, deprecation | 2026-04-22 | Tạo mới `config/references/ops/upgrade.md`; cập nhật `config/magento-patterns.md` |
+| Composer: module versioning, metapackage, patches (cweagans) | 2026-04-22 | Tích hợp vào `config/references/ops/upgrade.md` (§3-4) |
+| Testing: PHPUnit mock, integration test fixtures, MFTF basics | 2026-04-22 | Đã có đầy đủ trong `config/references/ops/testing-guide.md` + `unit-testing.md` — không cần update thêm |
 
 ---
 
 ## Chưa research
 
 ### Nâng cao / chuyên sâu
-- Payment method: integration, offline vs online, vault token, 3DS
-- Shipping carrier: AbstractCarrier, collectRates, tracking, multi-warehouse
-- Email template: transactional email, variables, transport, inline CSS
-- Import/Export: ImportModel, CSV format, behavior (add/update/delete/replace)
-- Widget: WidgetInterface, instance types, layout XML integration
 - Custom product type: TypeInterface, price model, stock handling
-- Extension Attributes: ExtensionAttributesInterface, join directive, search
 - Staging & Preview (Commerce): version, update, campaign (nếu dùng Adobe Commerce)
 - B2B: company, shared catalog, negotiable quote, purchase order (nếu dùng B2B)
 - PWA/Headless: GraphQL coverage, storefront compatibility, CORS
 - Adobe I/O Events: webhook, event provider, Commerce eventing
 - API Mesh: resolver composition, transform, rate limiting
-- Composer: module versioning, metapackage, patches (cweagans)
-- Testing: PHPUnit mock, integration test fixtures, MFTF basics
-- Upgrade: upgrade_compatibility_tool, breaking changes, deprecation
-- CSP: Content Security Policy, whitelist, nonce, report-only mode
 - Two-Factor Authentication: provider, config, bypass for API
 - Rate Limiting & Throttling: API rate limit, DDoS protection
-- Redis: session storage, cache backend, sentinel, cluster config
-- Elasticsearch/OpenSearch: index mapping, analyzer, relevance tuning
 
 ### Ví dụ blueprint còn thiếu
-- Blueprint: Custom shipping carrier (AbstractCarrier đầy đủ)
-- Blueprint: Custom payment method (offline)
-- Blueprint: Import CSV custom entity
 - Blueprint: Custom product type
-- Blueprint: Extension attributes với join
-- Blueprint: Transactional email template
-- Blueprint: Custom widget
+- Blueprint: Extension attributes với join (đã có reference, chưa có blueprint riêng)
+- Blueprint: Custom widget (đã có reference, chưa có blueprint riêng)
 - Blueprint: Integration test module
 - Blueprint: Console command với progress bar
 - Blueprint: Custom price modifier (catalog rule)

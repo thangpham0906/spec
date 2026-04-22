@@ -6,9 +6,11 @@ Nguồn: https://experienceleague.adobe.com/en/docs/commerce-operations/configur
 
 ## 1. Công cụ tìm kiếm (Search Engines)
 
-Từ bản 2.4.4, Magento bắt buộc sử dụng một trong hai công cụ sau:
-- **OpenSearch (1.x, 2.x):** Khuyên dùng cho các dự án mới.
-- **Elasticsearch (7.x, 8.x):** Vẫn được hỗ trợ đầy đủ.
+Từ bản **2.4.8**, Magento chỉ hỗ trợ **OpenSearch** — Elasticsearch không còn được hỗ trợ:
+- **OpenSearch (1.x, 2.x, 3.x):** Engine duy nhất được hỗ trợ từ 2.4.8
+- **Elasticsearch:** Đã bị loại bỏ hoàn toàn từ 2.4.8
+
+> **Lưu ý migration:** Nếu đang dùng Elasticsearch, phải migrate sang OpenSearch trước khi upgrade lên 2.4.8. Xem: `bin/magento elasticsearch:check-compatibility`
 
 ---
 

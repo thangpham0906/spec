@@ -302,6 +302,39 @@ public function build(array $buildSubject): array {
 
 ---
 
+## 14. Offline Payment Method (Adapter Pattern)
+
+Dùng `Magento\Payment\Model\Method\Adapter` qua `virtualType` — không extend `AbstractMethod` (deprecated).
+
+**`etc/config.xml`** — các flag quan trọng cho offline:
+```xml
+<vendor_offline>
+    <model>VendorOfflinePaymentFacade</model><!-- virtualType name trong di.xml -->
+    <group>offline</group>
+    <is_offline>1</is_offline>
+    <can_use_checkout>1</can_use_checkout>
+    <can_use_internal>1</can_use_internal>
+    <order_status>pending</order_status>
+</vendor_offline>
+```
+
+**`etc/di.xml`** — Facade tối giản cho offline (không cần commandPool):
+```xml
+<virtualType name="VendorOfflinePaymentFacade" type="Magento\Payment\Model\Method\Adapter">
+    <arguments>
+        <argument name="code" xsi:type="const">Vendor\Module\Model\Ui\ConfigProvider::CODE</argument>
+        <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+        <argument name="infoBlockType" xsi:type="string">Magento\Payment\Block\Info</argument>
+        <argument name="valueHandlerPool" xsi:type="object">VendorOfflinePaymentValueHandlerPool</argument>
+        <!-- commandPool KHÔNG cần cho offline — không có authorize/capture/void -->
+    </arguments>
+</virtualType>
+```
+
+> Blueprint đầy đủ: xem [examples/integration/custom-payment-offline-blueprint.md](../../examples/integration/custom-payment-offline-blueprint.md)
+
+---
+
 ## Liên kết
 
 - Architectural Patterns: xem [architectural-patterns.md](./architectural-patterns.md)

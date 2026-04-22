@@ -74,6 +74,78 @@ public function collectRates(RateRequest $request): bool|\Magento\Shipping\Model
 
 ---
 
+## system.xml chuẩn cho carrier
+
+```xml
+<section id="carriers">
+    <group id="{carrier_code}" translate="label" type="text" sortOrder="0"
+           showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>My Carrier</label>
+        <field id="active" translate="label" type="select" sortOrder="10"
+               showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+            <label>Enabled</label>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+        </field>
+        <field id="title" translate="label" type="text" sortOrder="20"
+               showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+            <label>Title</label>
+        </field>
+        <field id="name" translate="label" type="text" sortOrder="30"
+               showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+            <label>Method Name</label>
+        </field>
+        <field id="sallowspecific" translate="label" type="select" sortOrder="50"
+               showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+            <label>Ship to Applicable Countries</label>
+            <frontend_class>shipping-applicable-country</frontend_class>
+            <source_model>Magento\Shipping\Model\Config\Source\Allspecificcountries</source_model>
+        </field>
+        <field id="specificcountry" translate="label" type="multiselect" sortOrder="60"
+               showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+            <label>Ship to Specific Countries</label>
+            <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+            <can_be_empty>1</can_be_empty>
+        </field>
+        <field id="showmethod" translate="label" type="select" sortOrder="70"
+               showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Show Method if Not Applicable</label>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <frontend_class>shipping-skip-hide</frontend_class>
+        </field>
+        <field id="specificerrmsg" translate="label" type="textarea" sortOrder="80"
+               showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+            <label>Displayed Error Message</label>
+        </field>
+        <field id="sort_order" translate="label" type="text" sortOrder="90"
+               showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+            <label>Sort Order</label>
+        </field>
+    </group>
+</section>
+```
+
+## Tracking support (optional)
+
+Override các method sau nếu carrier hỗ trợ tracking:
+
+```php
+public function isTrackingAvailable(): bool
+{
+    return true;
+}
+
+public function getTrackingInfo(string $tracking): \Magento\Shipping\Model\Tracking\Result\Status
+{
+    $status = $this->trackStatusFactory->create();
+    $status->setCarrier($this->_code);
+    $status->setCarrierTitle($this->getConfigData('title'));
+    $status->setTracking($tracking);
+    $status->setStatus(__('In Transit'));
+    // Gọi API carrier để lấy thông tin thực tế
+    return $status;
+}
+```
+
 ## Verify bắt buộc
 
 1. `bin/magento setup:di:compile` — bắt lỗi constructor DI sớm
@@ -85,5 +157,6 @@ public function collectRates(RateRequest $request): bool|\Magento\Shipping\Model
 
 ## Liên kết
 
+- Blueprint đầy đủ: xem [examples/integration/custom-shipping-carrier-blueprint.md](../../../examples/integration/custom-shipping-carrier-blueprint.md)
 - Patterns index: [../../magento-patterns.md](../../magento-patterns.md)
 - Config paths: [../ops/config-paths.md](../ops/config-paths.md)
