@@ -5,8 +5,15 @@
 > Nếu test fail hoặc review còn Critical/High issue: **DỪNG, không được báo task hoàn thành**.
 > - Test fail → phân tích root cause → sửa implementation (không sửa test để "cheat") → chạy lại. Tối đa **3 lần**; nếu vẫn fail sau 3 lần thì DỪNG, báo người dùng kèm phân tích nguyên nhân.
 > - Review Critical/High → sửa implementation → chạy lại test → review lại. Tối đa **3 lần**; nếu vẫn còn issue thì DỪNG, báo người dùng kèm danh sách issue còn lại.
+>
+> **Task labels:**
+> - `[enabler]` — scaffold, config, setup; không có business logic, không cần unit test
+> - `[feature]` — có business logic, bắt buộc TDD
 
-## Task 1 - <tên>
+## Task 1 - <tên> [enabler|feature]
+
+- Depends-on: `—` *(hoặc: Task X)*
+- Context: `<1-2 câu tóm tắt từ spec/plan liên quan trực tiếp đến task này — đủ để AI không cần đọc lại toàn bộ spec>`
 - Scope: `<path>`
 - Acceptance criteria:
   - `<AC 1>`
@@ -23,7 +30,10 @@
   - Dùng skill `magento-code-reviewer`
   - Đối chiếu `config/checklist.md`
 
-## Task 2 - <tên> *(không có business logic — không cần unit test)*
+## Task 2 - <tên> [enabler]
+
+- Depends-on: `Task 1`
+- Context: `<1-2 câu tóm tắt đủ để AI hiểu task này mà không cần đọc lại spec>`
 - Scope: `<path>`
 - Acceptance criteria:
   - `<AC 1>`
