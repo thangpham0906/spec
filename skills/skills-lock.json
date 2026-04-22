@@ -1,6 +1,16 @@
 {
   "version": 1,
   "skills": {
+    "cc-sdd-new-agent": {
+      "source": "gotalab/cc-sdd",
+      "sourceType": "github",
+      "computedHash": "06037dcdba2747a528668ef1c70e85b375236a48c079a5a1002d86acaf76a021"
+    },
+    "context-engineering-collection": {
+      "source": "muratcankoylan/Agent-Skills-for-Context-Engineering",
+      "sourceType": "github",
+      "computedHash": "618e1d8fb15cad0ab9ed71e293d8cf09639a191298b604bc0d3380ceeb82958e"
+    },
     "ddev-magento": {
       "source": "chuccv/ddev-skill",
       "sourceType": "github",
@@ -185,6 +195,11 @@
       "source": "proxiblue/claude-skills",
       "sourceType": "github",
       "computedHash": "7d8879b84a9a9f6905043b14b316a0464476a2d21bd6aeb30ad0ef456c7c5134"
+    },
+    "writing-clearly-and-concisely": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "computedHash": "136a0413255aa82d800459c775eabf041620b2e9cbf2d713b739bf1b87a3db3a"
     }
   }
 }

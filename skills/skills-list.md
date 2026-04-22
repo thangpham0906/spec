@@ -28,6 +28,8 @@
 | Build backend tổng hợp (module + patterns) | `magento2-backend-toolkit` |
 | Module scaffolding / module workflow | `magento-module-development` |
 | Doc/spec update (không code module) | Không bắt buộc skill, follow `.spec/config/*` |
+| Viết spec/doc ngắn gọn, bỏ verbose | `writing-clearly-and-concisely` |
+| Quản lý context khi làm Epic/feature lớn nhiều sub-features | `context-engineering-collection` |
 
 ---
 
@@ -127,6 +129,11 @@ Danh sách phát hiện trong `.spec/skills/.agents/skills/*`: **37 skills**
 - `magento-security-analyst`
 - `magento-code-reviewer`
 - `magento-issue-debugger`
+
+### 3.5 Workflow / Context / Writing Quality
+
+- `context-engineering-collection`
+- `writing-clearly-and-concisely`
 
 ### 3.4 DevOps / Environment / Release
 
