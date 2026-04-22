@@ -67,6 +67,30 @@ class MyObserver implements ObserverInterface
 
 ---
 
+## 3.5. Area-specific Events
+
+Đặt `events.xml` vào đúng thư mục để giới hạn phạm vi — tránh Observer chạy ở area không cần thiết (ảnh hưởng performance).
+
+| Vị trí file | Area áp dụng |
+|-------------|-------------|
+| `etc/events.xml` | **Global** — chạy ở mọi area (frontend, adminhtml, cron, REST, GraphQL) |
+| `etc/frontend/events.xml` | Chỉ frontend storefront |
+| `etc/adminhtml/events.xml` | Chỉ Admin panel |
+| `etc/webapi_rest/events.xml` | Chỉ REST API |
+| `etc/webapi_soap/events.xml` | Chỉ SOAP API |
+| `etc/graphql/events.xml` | Chỉ GraphQL |
+| `etc/crontab/events.xml` | Chỉ cron jobs |
+
+**Khuyến nghị:** Luôn đặt Observer vào area cụ thể nhất có thể. Ví dụ: Observer gửi email sau khi đặt hàng → `etc/frontend/events.xml` (không cần chạy khi admin tạo order qua API).
+
+---
+
+## 3.6. Thứ tự Observer — không kiểm soát được
+
+Khác với Plugin (có `sortOrder`), **Observer không có cơ chế kiểm soát thứ tự thực thi**. Nếu cần đảm bảo thứ tự, dùng Plugin thay thế.
+
+---
+
 ## 4. Best Practices (Quy tắc của <Vendor>)
 
 1. **Ưu tiên Plugin:** Nếu có thể dùng Plugin (Before/After/Around), hãy dùng Plugin thay vì Observer. Plugin có hiệu suất tốt hơn và kiểm soát luồng dữ liệu tốt hơn.

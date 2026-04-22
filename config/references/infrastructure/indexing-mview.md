@@ -1,130 +1,221 @@
-# Tham khảo: Indexing & MView
+# Tham khảo: Indexer & Mview
 
 Nguồn: https://developer.adobe.com/commerce/php/development/components/indexing/
 
 ---
 
-## 1. Indexing là gì?
+## Tổng quan
 
-Indexing là quá trình biến đổi dữ liệu (ví dụ: giá sản phẩm, tồn kho) thành các bảng được tối ưu để truy vấn nhanh hơn. 
+Indexer chuyển đổi dữ liệu gốc (catalog, price, customer...) thành dạng tối ưu cho storefront. Thay vì tính toán on-the-fly mỗi request, Magento pre-compute và lưu vào index tables.
 
-**Hai chế độ Index:**
-- **Update on Save:** Cập nhật ngay khi dữ liệu gốc thay đổi. (Phù hợp với dữ liệu ít, cần ngay).
-- **Update by Schedule:** Theo dõi thay đổi và cập nhật qua Cron job. (Khuyên dùng cho dữ liệu lớn để tránh làm chậm thao tác lưu).
+Ví dụ: `catalog_product_price` pre-tính giá sau khi áp dụng tier price, catalog rule, special price — tránh tính lại mỗi lần load trang.
 
 ---
 
-## 2. Cách tạo Custom Indexer
+## Indexing modes
 
-### Bước 1: Khai báo trong `etc/indexer.xml`
-```xml
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Indexer/etc/indexer.xsd">
-    <indexer id="nulltracex_custom_indexer" view_id="nulltracex_custom_view" class="<Vendor>\<Module>\Model\Indexer\CustomIndexer">
-        <title translate="true">NullTraceX Custom Indexer</title>
-        <description translate="true">Mô tả indexer của bạn</description>
-    </indexer>
-</config>
-```
+| Mode | Mô tả | Khi nào dùng |
+|------|-------|--------------|
+| **Update on Save** | Reindex ngay khi entity được lưu | Dev environment, catalog nhỏ |
+| **Update by Schedule** | Reindex theo cron job (mặc định từ 2.4.8) | Production — khuyến nghị |
 
-### Bước 2: Viết class Indexer
-Implement `Magento\Framework\Indexer\ActionInterface` và `Magento\Framework\Mview\ActionInterface`.
+**Lưu ý 2.4.8:** Default mode đổi sang `Update by Schedule` cho tất cả indexer mới, kể cả `customer_grid` (trước đây chỉ hỗ trợ `Update on Save`).
 
-```php
-namespace <Vendor>\<Module>\Model\Indexer;
+Đặt mode qua Admin: `System > Tools > Index Management` hoặc CLI:
 
-class CustomIndexer implements \Magento\Framework\Indexer\ActionInterface, \Magento\Framework\Mview\ActionInterface
-{
-    /**
-     * Chạy khi reindex toàn bộ qua CLI: bin/magento indexer:reindex id
-     */
-    public function executeFull() { ... }
-
-    /**
-     * Chạy khi có sự thay đổi hàng loạt (Mass Action trong Admin)
-     */
-    public function executeList(array $ids) { ... }
-
-    /**
-     * Chạy khi một bản ghi duy nhất thay đổi (Plugin/Runtime)
-     */
-    public function executeRow($id) { ... }
-    
-    /**
-     * QUAN TRỌNG: Method này dùng cho MView (Update by Schedule).
-     * Được gọi bởi Cron job khi phát hiện thay đổi trong bảng subscriptions.
-     */
-    public function execute($ids) { ... }
-}
+```bash
+bin/magento indexer:set-mode schedule catalog_product_price
+bin/magento indexer:set-mode realtime catalog_product_price
 ```
 
 ---
 
-## 3. MView (Materialized View) - Theo dõi thay đổi
+## Indexer status
 
-Để dùng chế độ "Update by Schedule", bạn phải khai báo `etc/mview.xml`. Magento sẽ tự động tạo Trigger trong Database để theo dõi bảng gốc.
+| DB Status | Admin Status | Ý nghĩa |
+|-----------|-------------|---------|
+| `valid` | Ready | Dữ liệu đồng bộ, không cần reindex |
+| `invalid` | Reindex Required | Dữ liệu gốc thay đổi, cần reindex |
+| `working` | Processing | Đang reindex |
+
+Kiểm tra:
+```bash
+bin/magento indexer:status
+bin/magento indexer:info
+```
+
+---
+
+## Mview (Materialized View)
+
+Mview theo dõi thay đổi DB cho entity cụ thể và trigger partial reindex chỉ cho những entity đã thay đổi.
+
+### Cơ chế hoạt động
+
+1. Khi `Update by Schedule` được bật, Magento tạo **MySQL AFTER triggers** trên các bảng được subscribe.
+2. Mỗi INSERT/UPDATE/DELETE ghi `entity_id` vào **changelog table** (`<indexer_table>_cl`).
+3. Cron job `indexer_reindex_all_invalid` chạy mỗi phút, đọc changelog và gọi `execute($ids)` của indexer.
+
+### Cấu trúc mview.xml
 
 ```xml
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Mview/etc/mview.xsd">
-    <view id="nulltracex_custom_view" class="<Vendor>\<Module>\Model\Indexer\CustomIndexer" group="indexer">
+<!-- <Vendor>/<Module>/etc/mview.xml -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Mview/etc/mview.xsd">
+    <view id="vendor_module_entity" class="Vendor\Module\Model\Indexer\Entity" group="indexer">
         <subscriptions>
-            <table name="my_custom_table" entity_column="entity_id" />
+            <!-- Theo dõi bảng này, khi thay đổi sẽ trigger reindex -->
+            <table name="vendor_module_entity" entity_column="entity_id" />
+            <!-- Có thể subscribe nhiều bảng -->
+            <table name="vendor_module_entity_int" entity_column="entity_id" />
         </subscriptions>
     </view>
 </config>
 ```
 
----
-
-## 4. Lưu ý cho bản 2.4.8
-
-- Từ bản 2.4.8, `customer_grid` đã hỗ trợ cả 2 chế độ (trước đây chỉ hỗ trợ Update on Save).
-- Luôn ưu tiên dùng **Update by Schedule** cho các tác vụ tốn tài nguyên để đảm bảo trải nghiệm người dùng không bị gián đoạn.
+Changelog table tự động tạo theo quy tắc: `<view_id>_cl` (ví dụ: `vendor_module_entity_cl`).
 
 ---
 
-## 5. Tối ưu hóa Indexer (Optimization)
+## Indexer mặc định của Magento
 
-Khi xử lý dữ liệu lớn, cần cấu hình tối ưu để tránh treo server hoặc tràn bộ nhớ.
+| Indexer | Class | Mô tả |
+|---------|-------|-------|
+| `catalog_category_product` | `Magento\Catalog\Model\Indexer\Category\Product` | Liên kết category/product |
+| `catalog_product_category` | `Magento\Catalog\Model\Indexer\Product\Category` | Liên kết product/category |
+| `catalog_product_price` | `Magento\Catalog\Model\Indexer\Product\Price` | Pre-tính giá sản phẩm |
+| `catalog_product_attribute` | `Magento\Catalog\Model\Indexer\Product\Flat` | EAV → flat structure |
+| `inventory` | MSI indexer | Salable quantity |
+| `customer_grid` | `Magento\Customer\Model\Indexer\Source` | Customer grid trong Admin |
 
-### A. Cấu hình Batch Size (Chia nhỏ dữ liệu)
-Mặc định Magento chia dữ liệu theo lô (Batch). Bạn có thể điều chỉnh lô này trong `di.xml` để tối ưu tốc độ.
-- **Price Indexer:** Mặc định 5000. Giảm xuống 1000 có thể giúp Reindex nhanh hơn nếu có nhiều Website/Tier Price.
-- **EAV Indexer:** Mặc định 1000.
+---
 
-**Ví dụ cấu hình lại Batch Size cho Price Indexer:**
+## Tạo Custom Indexer
+
+### Bước 1: Khai báo indexer.xml
+
 ```xml
-<type name="Magento\Catalog\Model\ResourceModel\Product\Indexer\Price\BatchSizeCalculator">
-    <arguments>
-        <argument name="batchRowsCount" xsi:type="array">
-            <item name="configurable" xsi:type="number">1000</item>
-        </argument>
-    </arguments>
-</type>
+<!-- <Vendor>/<Module>/etc/indexer.xml -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Indexer/etc/indexer.xsd">
+    <indexer id="vendor_module_entity_index"
+             view_id="vendor_module_entity"
+             class="Vendor\Module\Model\Indexer\Entity"
+             primary="vendor_module_entity">
+        <title translate="true">Vendor Module Entity Index</title>
+        <description translate="true">Reindexes vendor module entity data</description>
+    </indexer>
+</config>
 ```
 
-### B. Cơ chế Table Switching (Replica)
-Magento dùng bảng `_replica` để thực hiện Reindex ngầm. Khi hoàn tất, nó mới tráo bảng này thành bảng chính.
-- **Lợi ích:** Frontend không bị lock, khách vẫn xem web bình thường khi đang reindex.
-- **Điều kiện:** Phải để chế độ **Update by Schedule**. Nếu để "Update on Save", cơ chế Replica sẽ không hoạt động tối ưu.
+### Bước 2: Tạo Indexer class
 
-### C. Vấn đề bộ nhớ (Memory)
-Nếu Reindex bị lỗi "Memory Limit", hãy kiểm tra Batch size. Chia nhỏ batch size thường giải quyết được vấn đề này mà không cần nâng RAM server quá cao.
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace Vendor\Module\Model\Indexer;
+
+use Magento\Framework\Indexer\ActionInterface;
+use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
+
+class Entity implements ActionInterface, MviewActionInterface
+{
+    /**
+     * Full reindex — chạy khi bin/magento indexer:reindex
+     */
+    public function executeFull(): void
+    {
+        // Reindex toàn bộ
+    }
+
+    /**
+     * Partial reindex theo danh sách IDs — chạy khi Update on Save
+     */
+    public function executeList(array $ids): void
+    {
+        $this->execute($ids);
+    }
+
+    /**
+     * Reindex 1 entity — chạy khi Update on Save cho 1 entity
+     */
+    public function executeRow($id): void
+    {
+        $this->execute([$id]);
+    }
+
+    /**
+     * Partial reindex — được gọi bởi Mview (Update by Schedule)
+     */
+    public function execute($ids): void
+    {
+        // Reindex chỉ các entity trong $ids
+    }
+}
+```
+
+### Bước 3: Khai báo mview.xml (nếu dùng Update by Schedule)
+
+Xem cấu trúc mview.xml ở phần trên.
 
 ---
 
-## 6. Các lệnh CLI hỗ trợ
+## Application Lock Mode (từ 2.4.3)
 
-| Lệnh | Mô tả |
-|------|-------|
-| `bin/magento indexer:status` | Xem trạng thái các indexer. |
-| `bin/magento indexer:reindex [id]` | Thực hiện reindex (Full). |
-| `bin/magento indexer:reset [id]` | Reset indexer nếu bị treo (về trạng thái Invalid). |
-| `bin/magento indexer:set-mode {realtime|schedule} [id]` | Đổi chế độ index. |
+Bật để có trạng thái indexer chính xác hơn khi reindex thất bại:
+
+```php
+// app/etc/env.php
+return [
+    'indexer' => [
+        'use_application_lock' => true
+    ]
+];
+```
+
+Lợi ích: Khi indexer fail, cron job sẽ tự retry thay vì phải reset thủ công.
+
+---
+
+## CLI commands
+
+```bash
+# Xem danh sách indexer
+bin/magento indexer:info
+
+# Kiểm tra trạng thái
+bin/magento indexer:status
+
+# Reindex tất cả
+bin/magento indexer:reindex
+
+# Reindex indexer cụ thể
+bin/magento indexer:reindex catalog_product_price
+
+# Đặt mode
+bin/magento indexer:set-mode schedule
+bin/magento indexer:set-mode realtime catalog_product_price
+
+# Reset indexer về trạng thái invalid (để force reindex)
+bin/magento indexer:reset
+```
+
+---
+
+## Lưu ý quan trọng
+
+- **Không chạy `indexer:reindex` trên Production** trong giờ cao điểm — dùng `Update by Schedule` thay thế.
+- Khi `Update on Save`, indexer class phải tự trigger reindex qua plugin/event — không tự động.
+- Changelog table có thể tích lũy lớn nếu cron không chạy — monitor `<indexer>_cl` table size.
+- `--safe-mode=1` khi `setup:upgrade` để tránh mất dữ liệu khi disable module có indexer.
 
 ---
 
 ## Liên kết
 
-- DI & Codegen: xem [di-codegen.md](./di-codegen.md)
+- Cron Jobs: xem [cron-jobs.md](./cron-jobs.md)
+- Cache Management: xem [cache-management.md](./cache-management.md)
+- Maintenance CLI: xem [../ops/maintenance-cli.md](../ops/maintenance-cli.md)
 - Quy tắc chung: xem [../constitution.md](../constitution.md)
-- Checklist: xem [../checklist.md](../checklist.md)

@@ -53,15 +53,19 @@
 | Pattern | Dùng khi | Reference |
 |---|---|---|
 | ViewModel | Logic cho phtml, thay Block cũ | [frontend/frontend-view-models.md](./references/frontend/frontend-view-models.md) |
+| Layout XML | Khai báo cấu trúc trang, blocks, containers | [frontend/layout-xml.md](./references/frontend/layout-xml.md) |
 | UI Components (Admin Grid/Form) | Admin listing, form CRUD | [frontend/ui-components.md](./references/frontend/ui-components.md) |
 | Admin UI Grid | Admin grid với filter/sort/action | [frontend/admin-ui-grid.md](./references/frontend/admin-ui-grid.md) |
 | Admin Form Save and Continue | Admin form giữ lại trang edit sau save | [frontend/admin-save-and-continue.md](./references/frontend/admin-save-and-continue.md) |
+| Hyvä Theme | Alpine.js, Magewire, Tailwind CSS frontend | [frontend/hyva-theme.md](./references/frontend/hyva-theme.md) |
 
 ### Infrastructure & Ops
 
 | Pattern | Dùng khi | Reference |
 |---|---|---|
 | Cache Management | Redis/Valkey, cache type custom | [infrastructure/cache-management.md](./references/infrastructure/cache-management.md) |
+| Indexer & Mview | Custom indexer, reindex strategy, schedule mode | [infrastructure/indexing-mview.md](./references/infrastructure/indexing-mview.md) |
+| Performance | N+1 query, eager loading, profiler, Varnish | [infrastructure/performance.md](./references/infrastructure/performance.md) |
 | Storage (S3) | Upload/lưu file trên S3 | [infrastructure/storage-media.md](./references/infrastructure/storage-media.md) |
 | Search & Navigation | Elasticsearch, layered nav | [infrastructure/search-navigation.md](./references/infrastructure/search-navigation.md) |
 | Logging | Custom logger, Monolog channel | [infrastructure/logging.md](./references/infrastructure/logging.md) |
@@ -69,6 +73,7 @@
 | Shipping Carrier | Custom shipping method | [infrastructure/shipping-carrier.md](./references/infrastructure/shipping-carrier.md) |
 | Import/Export | Custom import entity CSV | [infrastructure/import-export.md](./references/infrastructure/import-export.md) |
 | CLI Command | Console command `bin/magento` | [ops/maintenance-cli.md](./references/ops/maintenance-cli.md) |
+| Multi-Store | Scope, store_view, config inheritance | [ops/multi-store.md](./references/ops/multi-store.md) |
 | Config Paths | Đọc/ghi system config | [ops/config-paths.md](./references/ops/config-paths.md) |
 | Configuration Management | Scope, deploy config | [ops/configuration-management.md](./references/ops/configuration-management.md) |
 | Deployment Pipeline | Deploy flow, setup commands | [ops/deployment-pipeline.md](./references/ops/deployment-pipeline.md) |
@@ -87,6 +92,9 @@
 | Pattern | Dùng khi | Reference |
 |---|---|---|
 | Inventory MSI | Multi-source inventory, reservation | [inventory/inventory-msi.md](./references/inventory/inventory-msi.md) |
+| Order Lifecycle | State/status flow, invoice, shipment, creditmemo | [business/order-lifecycle.md](./references/business/order-lifecycle.md) |
+| Customer Management | CustomerRepository, address, group, session | [business/customer-management.md](./references/business/customer-management.md) |
+| Catalog Product Types | Product types, price hierarchy, EAV attributes | [business/catalog-product-types.md](./references/business/catalog-product-types.md) |
 | Quote & Totals | Tính giá, totals collector | [business/quote-totals.md](./references/business/quote-totals.md) |
 | Catalog Price Rules | Rule giảm giá catalog | [business/catalog-price-rules.md](./references/business/catalog-price-rules.md) |
 | Reporting | Advanced reporting, grid report | [business/advanced-reporting.md](./references/business/advanced-reporting.md) |

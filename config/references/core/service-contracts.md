@@ -171,6 +171,87 @@ interface EmployeeSearchResultsInterface extends SearchResultsInterface
 
 ---
 
+## 10. SearchCriteria — AND/OR logic (dễ nhầm nhất)
+
+Nguồn: https://developer.adobe.com/commerce/php/development/components/searching-with-repositories
+
+**Quy tắc:**
+- Filters trong **cùng 1 FilterGroup** → kết hợp bằng **OR**
+- Các **FilterGroup khác nhau** → kết hợp bằng **AND**
+
+Ví dụ: `(url LIKE %magento.com OR store_id = 1) AND (url_type = 1)`
+
+```php
+// Dùng SearchCriteriaBuilder (khuyến nghị — tránh shared instance)
+$filter1 = $this->filterBuilder
+    ->setField('url')->setValue('%magento.com')->setConditionType('like')->create();
+$filter2 = $this->filterBuilder
+    ->setField('store_id')->setValue('1')->setConditionType('eq')->create();
+
+// filter1 OR filter2 → cùng 1 FilterGroup (addFilters nhận array)
+$this->searchCriteriaBuilder->addFilters([$filter1, $filter2]);
+
+$filter3 = $this->filterBuilder
+    ->setField('url_type')->setValue(1)->setConditionType('eq')->create();
+
+// filter3 → FilterGroup riêng → AND với group trên
+$this->searchCriteriaBuilder->addFilters([$filter3]);
+
+$searchCriteria = $this->searchCriteriaBuilder->create();
+```
+
+### Condition types phổ biến
+
+| Condition | Ý nghĩa |
+|-----------|---------|
+| `eq` | Bằng (=) |
+| `neq` | Khác (!=) |
+| `like` | LIKE (dùng `%` wildcard) |
+| `nlike` | NOT LIKE |
+| `in` | IN (value là array hoặc chuỗi phân cách bởi `,`) |
+| `nin` | NOT IN |
+| `gt` | Lớn hơn (>) |
+| `lt` | Nhỏ hơn (<) |
+| `gteq` | Lớn hơn hoặc bằng (>=) |
+| `lteq` | Nhỏ hơn hoặc bằng (<=) |
+| `null` | IS NULL |
+| `notnull` | IS NOT NULL |
+
+### Sorting + Pagination
+
+```php
+use Magento\Framework\Api\SortOrderBuilder;
+
+$sortOrder = $this->sortOrderBuilder
+    ->setField('created_at')
+    ->setDirection(\Magento\Framework\Api\SortOrder::SORT_DESC)
+    ->create();
+
+$searchCriteria = $this->searchCriteriaBuilder
+    ->addFilter('status', 'active')
+    ->setSortOrders([$sortOrder])
+    ->setPageSize(20)
+    ->setCurrentPage(1)
+    ->create();
+```
+
+### EAV Model — lưu ý quan trọng
+
+Khi Repository dùng EAV collection (ví dụ: Customer, Product), phải dùng `Magento\Eav\Model\Api\SearchCriteria\CollectionProcessor` thay vì processor mặc định — nếu không custom filters sẽ không được áp dụng đúng.
+
+```xml
+<!-- di.xml -->
+<type name="Vendor\Module\Model\CustomerRepository">
+    <arguments>
+        <argument name="collectionProcessor" xsi:type="object">
+            Magento\Eav\Model\Api\SearchCriteria\CollectionProcessor
+        </argument>
+    </arguments>
+</type>
+```
+
+---
+
 ## Liên kết
 
 - DI & Code Generation: xem [di-codegen.md](./di-codegen.md)

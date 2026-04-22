@@ -61,8 +61,49 @@ $viewModel = $block->getViewModel();
 
 ---
 
+## 4. Shared Instance và Multiple ViewModels
+
+ViewModel là **shared instance** (singleton) theo mặc định trong DI. Điều này có nghĩa:
+- Cùng 1 ViewModel class được inject vào nhiều blocks → cùng 1 instance
+- Không nên lưu state per-request trong ViewModel property
+
+### Dùng nhiều ViewModel trong 1 block
+
+```xml
+<referenceBlock name="product.info.main">
+    <arguments>
+        <!-- ViewModel chính -->
+        <argument name="view_model" xsi:type="object">Vendor\Module\ViewModel\ProductData</argument>
+        <!-- ViewModel phụ -->
+        <argument name="price_view_model" xsi:type="object">Vendor\Module\ViewModel\PriceData</argument>
+    </arguments>
+</referenceBlock>
+```
+
+```php
+// Trong template
+$viewModel = $block->getData('view_model');
+$priceViewModel = $block->getData('price_view_model');
+```
+
+### Lấy ViewModel trong template
+
+```php
+// Cách 1: getData() — explicit, rõ ràng
+$viewModel = $block->getData('view_model');
+
+// Cách 2: magic getter — camelCase của key
+$viewModel = $block->getViewModel();  // getData('view_model')
+
+// Cách 3: nếu key có underscore
+$priceVm = $block->getData('price_view_model');
+// KHÔNG dùng $block->getPriceViewModel() — magic getter không handle underscore đúng
+```
+
+---
+
 ## Liên kết
 
 - Quy tắc chung: xem [../constitution.md](../constitution.md)
 - Architectural Patterns: xem [architectural-patterns.md](./architectural-patterns.md)
-- Maintenance CLI: xem [maintenance-cli.md](./maintenance-cli.md)
+- Layout XML: xem [layout-xml.md](./layout-xml.md)

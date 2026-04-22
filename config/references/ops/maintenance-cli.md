@@ -65,6 +65,106 @@ Mọi thao tác quản trị Magento đều thực hiện qua lệnh:
 
 ---
 
+## 7. Tạo Custom CLI Command
+
+### Bước 1: Tạo Command class
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace Vendor\Module\Console\Command;
+
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Magento\Framework\Exception\LocalizedException;
+
+class SyncDataCommand extends Command
+{
+    private const OPTION_STORE = 'store';
+
+    public function __construct(
+        private readonly \Vendor\Module\Service\SyncService $syncService,
+        string $name = null
+    ) {
+        parent::__construct($name);
+    }
+
+    protected function configure(): void
+    {
+        $this->setName('vendor:module:sync-data');
+        $this->setDescription('Sync data from external source.');
+        $this->addOption(
+            self::OPTION_STORE,
+            null,
+            InputOption::VALUE_OPTIONAL,
+            'Store ID to sync (default: all stores)'
+        );
+
+        parent::configure();
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $storeId = $input->getOption(self::OPTION_STORE);
+
+        try {
+            $output->writeln('<info>Starting sync...</info>');
+            $this->syncService->sync($storeId ? (int) $storeId : null);
+            $output->writeln('<info>Sync completed successfully.</info>');
+            return Command::SUCCESS;  // = 0
+        } catch (LocalizedException $e) {
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
+            return Command::FAILURE;  // = 1
+        }
+    }
+}
+```
+
+### Bước 2: Đăng ký trong di.xml
+
+```xml
+<!-- etc/di.xml -->
+<type name="Magento\Framework\Console\CommandListInterface">
+    <arguments>
+        <argument name="commands" xsi:type="array">
+            <item name="vendor_module_sync_data" xsi:type="object">
+                Vendor\Module\Console\Command\SyncDataCommand
+            </item>
+        </argument>
+    </arguments>
+</type>
+```
+
+### Naming convention
+
+Format: `group:[subject:]action`
+
+| Ví dụ | Giải thích |
+|-------|-----------|
+| `vendor:module:sync-data` | group=vendor:module, action=sync-data |
+| `catalog:product:reindex` | group=catalog:product, action=reindex |
+| `cache:clean` | group=cache, action=clean |
+
+**Quy tắc:**
+- Dùng kebab-case cho action
+- Group nên là `<vendor>:<module>` để tránh conflict
+- Tên phải unique trong toàn hệ thống
+
+### Output styling
+
+```php
+$output->writeln('<info>Success message</info>');     // Xanh lá
+$output->writeln('<comment>Comment message</comment>'); // Vàng
+$output->writeln('<error>Error message</error>');      // Đỏ
+$output->writeln('<question>Question?</question>');    // Cyan
+```
+
+---
+
 ## Liên kết
 - Configuration Management: xem [configuration-management.md](./configuration-management.md)
 - Quản lý Kho (MSI): xem [inventory-msi.md](./inventory-msi.md)
