@@ -76,24 +76,41 @@ ApiSecretKey = SECRETKEY
 
 ### POST /api/merchant/paysquad — Tạo Paysquad mới
 
-**Request body:**
+**Request body (`CreatePaySquadCommand`):**
 
 | Field | Type | Required | Mô tả |
 |---|---|---|---|
-| `items` | array | ✅ | Danh sách items trong basket |
-| `currency` | string | ✅ | ISO 4217 currency code (xem Supported Currencies) |
-| `total` | integer | ✅ | Tổng tiền, đơn vị minor units. Phải ≥ minimum contribution của currency |
-| `metadata` | string | ❌ | Free-form string (≤ 2KB). Dùng để attach order/cart ID của merchant |
+| `items` | `CreatePaySquadItem[]` | ✅ | Danh sách items trong basket |
+| `currency` | string | ✅ | ISO 4217 currency code. Ví dụ: `"NZD"` |
+| `total` | integer (int32) | ✅ | Tổng tiền, minor units. Ví dụ: `22050` = $220.50. Phải ≥ minimum contribution của currency |
+| `meta` | string | ❌ | Free-form metadata (≤ 2KB). Ví dụ: `{ "cartId": "..." }`. Trả về nguyên vẹn trong GET response |
 | `successRedirectUrl` | string | ❌ | URL "back to shop" sau khi Squad Leader đóng góp lần đầu |
-| `cancelRedirectUrl` | string | ❌ | URL redirect nếu Squad Leader cancel |
-| `paymentCompleteWebhook` | string | ❌ | Per-Paysquad webhook URL. Nếu set, override Portal-level webhook |
-| `enforcedExpiry` | string (UTC) | ❌ | Fixed expiry timestamp. Nếu merchant có max-checkout-duration, lấy giá trị nhỏ hơn |
+| `cancelRedirectUrl` | string | ❌ | URL redirect nếu Squad Leader cancel trước khi complete |
+| `failedRedirectUrl` | string | ❌ | **Deprecated** — dùng `cancelRedirectUrl` thay thế. Sẽ bị xóa trong version tương lai |
+| `paymentCompleteWebhook` | string | ❌ | Per-Paysquad webhook URL. Override Portal-level webhook cho Paysquad này |
+| `enforcedExpiry` | string (date-time UTC) | ❌ | Fixed expiry. Ví dụ: `"2026-05-01T12:00:00Z"`. Lấy giá trị nhỏ hơn giữa đây và merchant max-checkout-duration |
 
-**Response `201 Created`:**
+**`CreatePaySquadItem` schema:**
+
+| Field | Type | Required | Mô tả |
+|---|---|---|---|
+| `id` | string | ✅ | SKU hoặc unique identifier của merchant. Ví dụ: `"Jac/Lar/Lea/Bro"` |
+| `description` | string | ✅ | Tên sản phẩm. Ví dụ: `"Brown Leather Jacket"` |
+| `price` | integer (int32) | ✅ | Giá hiển thị, minor units. **Display-only** — không được dùng để tính tổng, chỉ hiển thị cho shopper |
+| `imageUrl` | string (uri, HTTPS) | ❌ | URL ảnh sản phẩm. Paysquad fetch 1 lần lúc tạo và rehost lên CDN. URL không cần tồn tại sau đó |
+
+**Response `201 Created` (`MerchantPaySquadDto`):**
 ```json
 {
-  "paySquadId": "...",
-  "contributionLink": "https://app.paysquad.co/flow/{paySquadId}"
+  "paySquadId": "8b6449f0-f900-4b8c-a462-52fa978ae024",
+  "contributionLink": "https://app.paysquad.co/flow/8b6449f0-f900-4b8c-a462-52fa978ae024",
+  "status": "Pending",
+  "currency": "NZD",
+  "total": 22050,
+  "expiryDate": "2022-02-24T02:11:03Z",
+  "created": "2022-01-25T02:11:03Z",
+  "items": [...],
+  "meta": "{ \"cartId\": \"...\" }"
 }
 ```
 
@@ -101,28 +118,71 @@ ApiSecretKey = SECRETKEY
 
 ---
 
-### GET /api/merchant/paysquad/{paySquadId} — Lấy thông tin Paysquad
+### GET /api/merchant/paysquad/{PaySquadId} — Lấy thông tin Paysquad
 
-Trả về thông tin đầy đủ: status, basket details, anchor info, contributor info.  
-Dùng để reconciliation hoặc khi cần xác nhận state sau webhook.
+**Path param:** `PaySquadId` (uuid) — ví dụ: `8b6449f0-f900-4b8c-a462-52fa978ae024`
+
+**Response `200 OK` (`MerchantPaySquadDto`):**
+
+| Field | Type | Mô tả |
+|---|---|---|
+| `paySquadId` | uuid | ID duy nhất của Paysquad |
+| `contributionLink` | string | URL hosted flow (chỉ có trong response Create) |
+| `merchantId` | uuid | ID của merchant |
+| `merchantName` | string | Tên hiển thị của merchant |
+| `status` | `PaySquadStatus` | Trạng thái hiện tại |
+| `failureReason` | `PaysquadFailureReason` | Lý do thất bại (nếu status = Failed) |
+| `failureSubReason` | `PaysquadFailureSubReason` | Lý do phụ (optional) |
+| `created` | date-time | Thời điểm tạo |
+| `completedAt` | date-time | Thời điểm complete (nếu có) |
+| `refundedAt` | date-time | Thời điểm refund (nếu có) |
+| `expiryDate` | date-time | Thời điểm hết hạn |
+| `currency` | string (3 chars) | ISO 4217 currency code |
+| `total` | integer | Tổng tiền, minor units |
+| `meta` | string | Metadata truyền vào lúc tạo |
+| `items` | `MerchantItemDto[]` | Danh sách items |
+| `contributions` | `MerchantContributionDto[]` | Danh sách contributions |
+| `anchorContributorName` | string | Tên Squad Leader (null cho đến khi họ đóng góp lần đầu) |
+| `anchorContributorEmail` | string | Email Squad Leader (null cho đến khi họ đóng góp lần đầu) |
+| `detailTitle` | string | Tiêu đề Squad Leader đặt cho Paysquad (optional) |
+
+**`MerchantContributionDto` schema:**
+
+| Field | Type | Mô tả |
+|---|---|---|
+| `contributionId` | integer | ID của contribution |
+| `stripePaymentId` | string | Stripe payment ID |
+| `name` | string | Tên contributor |
+| `amount` | integer | Số tiền đóng góp, minor units |
+| `created` | date-time | Thời điểm đóng góp |
+| `status` | `ContributionStatus` | Trạng thái contribution |
+
+**`ContributionStatus` enum:** `Pending` \| `Uncaptured` \| `Complete` \| `Failed` \| `Cancelled` \| `RefundRequired`
+
+Dùng để reconciliation hoặc xác nhận state sau webhook.
 
 ---
 
 ### POST /api/merchant/paysquad/refund — Yêu cầu hoàn tiền
 
-**Request body:**
+**Request body (`RefundPaySquadCommand`):**
 
 | Field | Type | Required | Mô tả |
 |---|---|---|---|
-| `paySquadId` | string | ✅ | ID của Paysquad cần refund |
-| `reason` | string | ✅ | Mô tả lý do refund |
-| `merchantReference` | string | ❌ | Reference number của merchant |
+| `paySquadId` | uuid | ✅ | ID của Paysquad cần refund |
+| `description` | string | ❌ | Mô tả lý do refund |
+| `reference` | string | ❌ | Reference number của merchant |
+
+**Responses:**
+- `202 Accepted` — refund đã được queue
+- `400 Bad Request` — Paysquad không ở status `Complete`, hoặc đã refund rồi
+- `404 Not Found` — không tìm thấy Paysquad `Complete` với ID đó
 
 **Constraints:**
 - Chỉ refund được Paysquad ở status `Complete`
 - Chỉ refund **một lần**, **toàn bộ** (partial refund chưa hỗ trợ)
 - Refund được queue, không xử lý ngay — merchant nhận email khi hoàn tất
-- Response: `202 Accepted`
+- Webhook refund-completed đang được plan nhưng chưa có
 
 ---
 
@@ -179,7 +239,35 @@ X-Paysquad-Signature: {HMAC-SHA256 signature, base64-encoded}
 X-Paysquad-Environment: Production | Sandbox | Beta
 ```
 
-Body chứa `paySquadId` và `eventName`.
+### Webhook payload schemas
+
+**`paysquad.succeeded`:**
+```json
+{
+  "paySquadId": "8b6449f0-f900-4b8c-a462-52fa978ae024",
+  "eventName": "paysquad.succeeded"
+}
+```
+
+**`paysquad.cancelled`:**
+```json
+{
+  "paySquadId": "8b6449f0-f900-4b8c-a462-52fa978ae024",
+  "eventName": "paysquad.cancelled"
+}
+```
+
+**`paysquad.failed`:**
+```json
+{
+  "paySquadId": "8b6449f0-f900-4b8c-a462-52fa978ae024",
+  "reason": "Abandoned | Expired | Cancellation",
+  "subReason": "Duplicate | Fraudulent | RequestedByCustomer | Abandoned | null",
+  "eventName": "paysquad.failed"
+}
+```
+
+> Webhook chỉ mang `paySquadId` + event metadata. Luôn gọi `GET /api/merchant/paysquad/{id}` để lấy state đầy đủ trước khi thực hiện business logic.
 
 ### Xác thực webhook signature
 
