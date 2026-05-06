@@ -236,3 +236,34 @@ Copy link dùng JS Clipboard API, fallback `document.execCommand('copy')`.
   - Rollback: validate currency trong `CreatePaySquadBuilder`, throw exception nếu currency không trong supported list
 - Risk: `sales_order_payment` alter có thể conflict với module khác cũng alter bảng này
   - Rollback: dùng `db_schema.xml` declarative — Magento tự handle conflict; test trên staging trước
+
+## Gotchas khi implement
+
+### 1. `is_gateway` bắt buộc trong `config.xml`
+
+`Magento\Payment\Model\Method\Adapter::isAvailable()` kiểm tra `isGateway()`. Nếu thiếu `<is_gateway>1</is_gateway>` trong `config.xml`, method sẽ không xuất hiện trong payment list dù `active=1`.
+
+```xml
+<!-- etc/config.xml -->
+<is_gateway>1</is_gateway>
+```
+
+### 2. `CompositeConfigProvider` phải đăng ký trong `etc/frontend/di.xml`
+
+Không đăng ký trong `etc/di.xml` (global scope). Magento chỉ load `CompositeConfigProvider` trong frontend context.
+
+### 3. `checkout_index_index.xml` phải có `component` trên `billing-step`
+
+```xml
+<item name="billing-step" xsi:type="array">
+    <item name="component" xsi:type="string">uiComponent</item>
+    <item name="children" xsi:type="array">
+        ...
+    </item>
+</item>
+```
+Thiếu khai báo này khiến jsLayout không merge đúng và renderer không được đăng ký vào `rendererList`.
+
+### 4. `strpos` với prefix `layby` — cẩn thận với `laybyland_`
+
+`strpos('laybyland_paysquad', 'layby')` trả về `0` (truthy). Nếu có observer nào filter payment methods dựa trên `strpos($code, 'layby')`, PaySquad sẽ bị nhận nhầm là layby method. Cần whitelist `laybyland_paysquad` trong các observer đó.

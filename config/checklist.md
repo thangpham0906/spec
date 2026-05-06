@@ -49,6 +49,7 @@
 - [ ] Hạn chế `around` plugin
 - [ ] `before` plugin: không `unset()` tham số trong return array
 - [ ] Observer chỉ làm 1 việc
+- [ ] Observer dùng `strpos()` để filter: kiểm tra method code có bị nhận nhầm không (ví dụ `laybyland_` bắt đầu bằng `layby`)
 
 ## 7. Config (`system.xml`)
 
@@ -60,7 +61,15 @@
 - [ ] Giá trị mặc định trong `config.xml`
 - [ ] `cache:clean config` + `cache:flush` + verify menu path Admin
 
-## 8. Testing
+## 8. Payment Gateway (bổ sung)
+
+- [ ] `<is_gateway>1</is_gateway>` trong `config.xml` — bắt buộc cho `Magento\Payment\Model\Method\Adapter`
+- [ ] `CompositeConfigProvider` đăng ký trong `etc/frontend/di.xml`, không phải `etc/di.xml`
+- [ ] `Magento\Checkout\Block\Cart\Sidebar` plugin đăng ký trong `etc/frontend/di.xml`
+- [ ] `checkout_index_index.xml`: node `billing-step` có `<item name="component" xsi:type="string">uiComponent</item>`
+- [ ] Nếu dùng Mageplaza OSC: tạo thêm `onestepcheckout_index_index.xml`
+
+## 9. Testing
 
 - [ ] Task có business logic: unit test viết trước (TDD), đặt tại `Test/Unit/`
 - [ ] Cover happy path + ít nhất 1 edge/negative case

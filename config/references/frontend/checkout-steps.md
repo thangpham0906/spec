@@ -327,6 +327,62 @@ class SaveCustomDataToOrder implements ObserverInterface
 
 ---
 
+## 7. Gotchas khi đăng ký Payment Renderer
+
+### 7.1 `billing-step` phải có `component` declaration
+
+Khi đăng ký renderer qua `checkout_index_index.xml`, node `billing-step` **bắt buộc** phải có `<item name="component" xsi:type="string">uiComponent</item>`. Thiếu khai báo này khiến Magento không merge đúng jsLayout tree và renderer không được đăng ký vào `rendererList`.
+
+```xml
+<!-- ✅ ĐÚNG -->
+<item name="billing-step" xsi:type="array">
+    <item name="component" xsi:type="string">uiComponent</item>
+    <item name="children" xsi:type="array">
+        <item name="payment" xsi:type="array">
+            ...
+        </item>
+    </item>
+</item>
+
+<!-- ❌ SAI: thiếu component → renderer không được load -->
+<item name="billing-step" xsi:type="array">
+    <item name="children" xsi:type="array">
+        ...
+    </item>
+</item>
+```
+
+### 7.2 Mageplaza OSC — cần file layout riêng
+
+Mageplaza One Step Checkout dùng layout handle `onestepcheckout_index_index` (có `<update handle="checkout_index_index"/>` nhưng OSC dùng `osc-payment-list` component riêng với `deps` trỏ đến `checkout.steps.billing-step.payment.renders`).
+
+Nếu renderer không xuất hiện trong OSC, tạo thêm:
+```
+view/frontend/layout/onestepcheckout_index_index.xml
+```
+với nội dung giống `checkout_index_index.xml`.
+
+**Debug nhanh trong browser console:**
+```js
+// Kiểm tra renderer đã được đăng ký chưa
+require(['Magento_Checkout/js/model/payment/renderer-list'], function(list) {
+    console.log(list());
+});
+
+// Kiểm tra jsLayout có chứa renderer không
+document.body.innerHTML.indexOf('my-payment-renderer-name');
+// Nếu -1 → layout XML không được merge → kiểm tra billing-step component
+```
+
+### 7.3 `window.checkoutConfig` vs `window.checkout`
+
+- `window.checkoutConfig` — inject bởi `CompositeConfigProvider` tại trang checkout/OSC
+- `window.checkout` — inject bởi `Magento\Checkout\Block\Cart\Sidebar::getConfig()` tại trang có minicart
+
+Plugin inject config vào minicart phải target `Magento\Checkout\Block\Cart\Sidebar`, không phải `CompositeConfigProvider`.
+
+---
+
 ## Liên kết
 
 - RequireJS/KnockoutJS: xem [requirejs-knockoutjs.md](./requirejs-knockoutjs.md)

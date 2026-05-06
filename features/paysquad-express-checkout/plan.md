@@ -162,3 +162,74 @@ Place Order:
 
 - Risk: `window.checkout` chưa load khi minicart.js khởi tạo
   - Mitigation: `window.checkout` được inject server-side vào tất cả trang qua `Sidebar::getConfig()`
+
+## Bugs đã phát hiện và fix (production)
+
+### Bug 1 — `ConfigProvider` và `Sidebar` plugin đăng ký sai scope
+
+**Triệu chứng:** `window.checkoutConfig.payment.laybyland_paysquad` không tồn tại trên trang OSC.
+
+**Root cause:** `CompositeConfigProvider` và `Magento\Checkout\Block\Cart\Sidebar` plugin được đăng ký trong `etc/di.xml` (global scope) thay vì `etc/frontend/di.xml` (frontend scope). Magento chỉ load `CompositeConfigProvider` trong frontend context, nên global scope không inject đúng.
+
+**Fix:** Di chuyển cả 2 entries sang `etc/frontend/di.xml`:
+```xml
+<!-- etc/frontend/di.xml -->
+<type name="Magento\Checkout\Model\CompositeConfigProvider">
+    <arguments>
+        <argument name="configProviders" xsi:type="array">
+            <item name="laybyland_paysquad_config_provider" xsi:type="object">Laybyland\PaySquad\Model\Ui\ConfigProvider</item>
+        </argument>
+    </arguments>
+</type>
+<type name="Magento\Checkout\Block\Cart\Sidebar">
+    <plugin name="laybyland_paysquad_minicart_config" type="Laybyland\PaySquad\Plugin\Block\Cart\Sidebar"/>
+</type>
+```
+
+---
+
+### Bug 2 — `isGateway` không được set → `isAvailable()` trả false
+
+**Triệu chứng:** `laybyland_paysquad` không xuất hiện trong payment methods list dù `active=1`.
+
+**Root cause:** `Magento\Payment\Model\Method\Adapter::isAvailable()` kiểm tra `isGateway()`. Nếu `is_gateway` không được set trong `config.xml`, method bị coi là không available.
+
+**Fix:** Thêm vào `etc/config.xml`:
+```xml
+<is_gateway>1</is_gateway>
+```
+
+---
+
+### Bug 3 — `PaymentMethodAvailable` observer nhận nhầm `laybyland_paysquad` là layby method
+
+**Triệu chứng:** `laybyland_paysquad` bị filter ra khỏi payment list bởi `Laybyland\Layby\Observer\PaymentCombine\PaymentMethodAvailable`.
+
+**Root cause:** Observer dùng `strpos($code, 'layby')` để phân biệt layby vs non-layby methods. `strpos('laybyland_paysquad', 'layby')` trả về `0` (truthy, không phải `false`) vì string bắt đầu bằng `layby`. Kết quả: PaySquad bị coi là layby method và bị filter trong cả 2 nhánh logic.
+
+**Fix:** Thêm whitelist `NON_LAYBY_METHODS` vào observer `Laybyland\Layby\Observer\PaymentCombine\PaymentMethodAvailable`:
+```php
+private const NON_LAYBY_METHODS = [
+    'laybyland_paysquad',
+];
+```
+Áp dụng whitelist vào tất cả 3 chỗ check `strpos(..., LAYBY_PREFIX)` trong observer (useLaybyProcess=true, useLaybyProcess=false, và guest check).
+
+---
+
+### Bug 4 — `checkout_index_index.xml` thiếu `component` declaration trên `billing-step`
+
+**Triệu chứng:** `laybyland_paysquad` không xuất hiện trong `rendererList` dù layout XML đúng path.
+
+**Root cause:** Layout XML của PaySquad thiếu `<item name="component" xsi:type="string">uiComponent</item>` trên node `billing-step`. Các module khác (LaybyPaypal, LaybyStripe) đều có khai báo này. Thiếu nó khiến Magento không merge đúng jsLayout tree.
+
+**Fix:** Thêm vào `view/frontend/layout/checkout_index_index.xml`:
+```xml
+<item name="billing-step" xsi:type="array">
+    <item name="component" xsi:type="string">uiComponent</item>
+    <item name="children" xsi:type="array">
+        ...
+    </item>
+</item>
+```
+Áp dụng tương tự cho `view/frontend/layout/onestepcheckout_index_index.xml`.
