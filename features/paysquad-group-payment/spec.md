@@ -90,16 +90,21 @@
   - PaySquad là async payment: order fulfil qua webhook, không phải tại checkout
   - Amount luôn dùng minor units (integer) — cần convert từ Magento decimal
   - Webhook Secret phải base64-decode trước khi dùng làm HMAC key — khác với cách thông thường
+  - `paymentCompleteWebhook` phải truyền trong mỗi Create request — PaySquad không tự biết URL
 - Risks/assumptions:
   - Webhook có thể đến trước order được lưu xong → cần idempotency + retry-safe handler
   - Refund async (202) → không có webhook confirm — Admin cần biết refund chưa hoàn tất ngay
+  - `AsyncOrder` module wrap `PaymentInformationManagementInterface` → after-plugin không được gọi
 - Approach đã chốt:
   - Module mới `Laybyland/PaySquad`, không sửa core Magento
-  - Webhook xử lý qua Magento Message Queue (async) để đảm bảo respond < 10s
-  - Dùng `meta` field để lưu Magento order increment ID → mapping khi webhook retry
+  - **Method code: `paysquad`** (không phải `laybyland_paysquad`) để tránh conflict với layby prefix filter
+  - Webhook xử lý synchronous (không cần MQ) — handler chạy < 10s
+  - `CreateHandler` set session data trực tiếp thay vì dùng after-plugin (vì AsyncOrder)
+  - `payment_action = authorize` — không tạo Invoice tại checkout, chờ webhook
 - Business rules chính:
   - Chỉ tạo 1 Invoice duy nhất khi đủ 100%
   - Chỉ full refund, chỉ khi PaySquad status = `Complete`
+  - Contributions luôn được lưu kể cả khi order đã có Invoice (idempotency tách riêng)
 - Scope được phép sửa: `app/code/Laybyland/PaySquad/` (toàn bộ module mới)
 
 ## Testcase

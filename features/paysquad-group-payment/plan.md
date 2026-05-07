@@ -16,10 +16,9 @@
 
 ## References sử dụng
 - `config/references/security/payment-gateway.md` — Facade, CommandPool, RequestBuilder, TransferFactory, ResponseHandler
-- `config/references/network/message-queues.md` — Publisher/Consumer cho webhook async
+- `config/references/business/laybyland-payment-integration.md` — **Laybyland-specific patterns**: whitelist observers, method code naming, JS renderer, async flow
 - `config/references/infrastructure/logging.md` — VirtualType logger → `paysquad_debug.log`
 - `config/references/core/declarative-schema.md` — `db_schema.xml` cho `paysquad_transactions` + alter `sales_order_payment`
-- `config/references/network/paysquad.md` — API spec, auth, webhook signature, amount format
 
 ## Thiết kế
 
@@ -266,4 +265,185 @@ Thiếu khai báo này khiến jsLayout không merge đúng và renderer không 
 
 ### 4. `strpos` với prefix `layby` — cẩn thận với `laybyland_`
 
-`strpos('laybyland_paysquad', 'layby')` trả về `0` (truthy). Nếu có observer nào filter payment methods dựa trên `strpos($code, 'layby')`, PaySquad sẽ bị nhận nhầm là layby method. Cần whitelist `laybyland_paysquad` trong các observer đó.
+`strpos('laybyland_paysquad', 'layby')` trả về `0` (truthy). Nếu có observer nào filter payment methods dựa trên `strpos($code, 'layby')`, PaySquad sẽ bị nhận nhầm là layby method. Cần whitelist trong các observer đó.
+
+**Các observer/class cần whitelist trong codebase Laybyland:**
+- `Laybyland\Layby\Observer\PaymentCombine\PaymentMethodAvailable` — filter payment methods theo layby/buynow mode
+- `Laybyland\Layby\Observer\QuoteSubmitSuccessObserver` — cancel order nếu không có layby_order trong registry
+- `Laybyland\BnplExclusion\Observer\PlaceOrder` — block non-layby methods khi cart có BNPL-excluded items
+
+Pattern fix chuẩn:
+```php
+private const ALWAYS_AVAILABLE_METHODS = ['paysquad'];
+
+public function execute(Observer $observer)
+{
+    $code = $observer->getEvent()->getMethodInstance()->getCode();
+    if (in_array($code, self::ALWAYS_AVAILABLE_METHODS, true)) {
+        return; // bypass toàn bộ layby filter logic
+    }
+    // ... filter logic bình thường
+}
+```
+
+### 5. Payment method code không được chứa prefix của module khác
+
+**Đặt tên method code là `paysquad`, không phải `laybyland_paysquad`.**
+
+`laybyland_paysquad` chứa `layby` → bị toàn bộ hệ thống Layby nhận nhầm là layby method. Dùng `paysquad` (không prefix) để tránh conflict.
+
+Nếu đã deploy với tên cũ, cần:
+1. `sed -i 's/laybyland_paysquad/paysquad/g'` trên tất cả PHP/XML/JS (trừ `db_schema.xml` và ResourceModel `_init()`)
+2. `UPDATE core_config_data SET path = REPLACE(path, 'payment/laybyland_paysquad/', 'payment/paysquad/') WHERE path LIKE 'payment/laybyland_paysquad/%'`
+3. ResourceModel `_init()` phải giữ tên table gốc (`laybyland_paysquad_webhook_log`, `laybyland_paysquad_transaction`) vì table đã tồn tại trong DB
+
+### 6. JS renderer list — cần file `method-renderer.js` riêng
+
+Layout XML khai báo `component: Vendor_Module/js/view/payment/method-renderer`. File này phải là **renderer list component** (gọi `rendererList.push()`), không phải actual renderer.
+
+```
+view/frontend/web/js/view/payment/
+├── method-renderer.js          ← renderer list (gọi rendererList.push)
+└── method-renderer/
+    └── paysquad.js             ← actual renderer (extend default)
+```
+
+`method-renderer.js`:
+```js
+define(['uiComponent', 'Magento_Checkout/js/model/payment/renderer-list'],
+function (Component, rendererList) {
+    rendererList.push({
+        type: 'paysquad',
+        component: 'Laybyland_PaySquad/js/view/payment/method-renderer/paysquad'
+    });
+    return Component.extend({});
+});
+```
+
+**Không dùng `requirejs-config.js` alias** để map `method-renderer` → actual renderer. Alias bypass renderer list → method không hiện trong checkout.
+
+### 7. `Laybyland_Checkout` override `Magento_Checkout/js/view/payment/list`
+
+`app/code/Laybyland/Checkout/view/frontend/requirejs-config.js` map:
+```js
+"Magento_Checkout/js/view/payment/list": "Laybyland_Checkout/js/view/payment/list"
+```
+
+Custom list này chia payment methods thành 2 groups: `layby` và `buyNow` dựa trên `window.checkoutConfig.paymentGroups`. `paysquad` sẽ tự động vào `buyNow` group vì không có prefix `layby`.
+
+`LaybyCheckoutConfigProvider` build `paymentGroups` dựa trên `strpos($code, 'layby')` — `paysquad` không bị ảnh hưởng.
+
+### 8. `payment_action` phải là `authorize`, không phải `authorize_capture`
+
+`authorize_capture` → Magento tự tạo Invoice ngay khi place order → webhook `paysquad.succeeded` đến sau thấy order đã có Invoice → skip tạo Invoice → **contributions không được lưu**.
+
+```xml
+<!-- etc/config.xml -->
+<payment_action>authorize</payment_action>
+```
+
+Flow đúng:
+- Place order → `authorize` command → tạo PaySquad session → order `pending_payment`, **không có Invoice**
+- Webhook `paysquad.succeeded` → lưu contributions → tạo Invoice → order `processing`
+
+### 9. `SucceededHandler` — idempotency check phải sau khi lưu contributions
+
+Nếu check `$order->hasInvoices()` và return sớm, contributions sẽ không được lưu khi webhook retry. Tách riêng:
+
+```php
+$alreadyInvoiced = $order->hasInvoices();
+
+// Luôn lưu contributions
+foreach ($contributions as $contribution) {
+    $this->saveContribution($order, $contribution);
+}
+
+// Chỉ skip tạo Invoice nếu đã có
+if (!$alreadyInvoiced) {
+    $this->createInvoice($order);
+}
+```
+
+### 10. `CreateValidator` không nên check `http_status` từ response array
+
+`GatewayCommand` chạy Validator trước Handler. Response array chỉ chứa decoded JSON body từ API — không có `http_status`. Check `http_status` sẽ luôn là `0` → validation fail dù API trả 201.
+
+```php
+// ✅ ĐÚNG: chỉ check paySquadId có trong response không
+$isValid = ($response['paySquadId'] ?? '') !== '';
+
+// ❌ SAI: http_status không có trong response array
+$isValid = ($response['http_status'] ?? 0) === 201;
+```
+
+### 11. `CreateHandler` phải set session data trực tiếp
+
+`RedirectAfterPlaceOrder` plugin trên `PaymentInformationManagementInterface` không được gọi khi `AsyncOrder` module active (nó wrap inner call). Set `paysquad_contribution_link` vào session ngay trong `CreateHandler`:
+
+```php
+// Gateway/Response/CreateHandler.php
+$this->checkoutSession->setData('paysquad_contribution_link', $contributionLink);
+```
+
+### 12. `config:set` CLI không encrypt encrypted fields
+
+`php bin/magento config:set payment/paysquad/api_secret_key "value"` lưu plain text dù field có `backend_model="Magento\Config\Model\Config\Backend\Encrypted"`. `encryptor->decrypt(plain_text)` → binary garbage → 401.
+
+**Cách set encrypted config đúng:**
+```php
+$enc = $om->get(EncryptorInterface::class);
+$conn->insert('core_config_data', [
+    'scope' => 'default', 'scope_id' => 0,
+    'path' => 'payment/paysquad/api_secret_key',
+    'value' => $enc->encrypt('actual_value')
+]);
+```
+
+Hoặc set qua Admin UI (recommended).
+
+**Detect và handle plain text trong `Config.php`:**
+```php
+public function getApiSecretKey(): string
+{
+    $value = $this->scopeConfig->getValue(self::XML_PATH_API_SECRET_KEY, ...);
+    if ($value === '') return '';
+    // Magento encrypted values có prefix "0:N:"
+    if (!preg_match('/^\d+:\d+:/', $value)) {
+        return $value; // plain text từ CLI
+    }
+    return $this->encryptor->decrypt($value);
+}
+```
+
+### 13. `product->getImage()` trả về relative path
+
+`$product->getImage()` trả về `/w/k/filename.jpg`, không phải absolute URL. PaySquad API validate `imageUrl` phải là URL hợp lệ → 400.
+
+```php
+// ✅ ĐÚNG
+$baseUrl = $this->urlBuilder->getBaseUrl(['_type' => UrlInterface::URL_TYPE_MEDIA]);
+$imageUrl = rtrim($baseUrl, '/') . '/catalog/product/' . ltrim($image, '/');
+
+// ❌ SAI
+$imageUrl = $product->getImage(); // "/w/k/filename.jpg"
+```
+
+### 14. `paymentCompleteWebhook` phải truyền trong Create payload
+
+PaySquad chỉ gửi webhook về URL được chỉ định trong từng request, không phải URL cấu hình global trong dashboard (hoặc cả hai). Phải include trong payload:
+
+```php
+$payload = [
+    // ...
+    'paymentCompleteWebhook' => $this->urlBuilder->getUrl('paysquad/webhook/receive'),
+];
+```
+
+### 15. SRI hash mismatch sau khi sửa JS
+
+Khi sửa nội dung JS file, phải xóa `pub/static/frontend` và redeploy để Magento tính lại SHA-256 hash. Nếu chỉ flush cache mà không xóa static files, browser sẽ block file vì hash cũ không khớp nội dung mới.
+
+```bash
+rm -rf pub/static/frontend pub/static/_cache
+php bin/magento setup:static-content:deploy -f
+```
