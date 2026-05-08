@@ -84,16 +84,17 @@
 ## - [ ] Task 4 - Payment Gateway: Facade + CommandPool [feature]
 
 - Depends-on: `Task 3`
-- Context: Khai báo Payment Facade (`Laybyland_PaySquad`) dùng `Magento\Payment\Model\Method\Adapter`. CommandPool gồm `authorize`, `capture`, `refund`. `config.xml` set `order_status=pending_payment`, `can_refund=1`. `ConfigProvider.php` cung cấp JS config cho checkout.
+- Context: Khai báo Payment Facade (`Laybyland_PaySquad`) dùng `Magento\Payment\Model\Method\Adapter`. CommandPool gồm `order`, `authorize`, `capture`, `refund`. `config.xml` set `payment_action=order`, `can_order=1`, `order_status=awaiting_group_payment`. `ConfigProvider.php` cung cấp JS config cho checkout.
 - Scope:
   - `app/code/Laybyland/PaySquad/etc/di.xml` (Facade, CommandPool, ValueHandlerPool)
-  - `app/code/Laybyland/PaySquad/etc/config.xml` (payment flags)
+  - `app/code/Laybyland/PaySquad/etc/config.xml` (payment flags — bắt buộc có `<can_order>1</can_order>` và `<payment_action>order</payment_action>`)
   - `app/code/Laybyland/PaySquad/Model/Ui/ConfigProvider.php`
   - `app/code/Laybyland/PaySquad/Gateway/Request/CreatePaySquadBuilder.php`
   - `app/code/Laybyland/PaySquad/Gateway/Request/RefundBuilder.php`
   - `app/code/Laybyland/PaySquad/Gateway/Response/CreateHandler.php`
   - `app/code/Laybyland/PaySquad/Gateway/Validator/CreateValidator.php`
-  - `app/code/Laybyland/PaySquad/Observer/DataAssignObserver.php`
+  - `app/code/Laybyland/PaySquad/Observer/SetOrderPendingPayment.php` (event `sales_order_place_after`)
+  - `app/code/Laybyland/PaySquad/Setup/Patch/Data/AddAwaitingGroupPaymentStatus.php`
 - Acceptance criteria:
   - `CreatePaySquadBuilder::build()` tạo payload đúng: `items[]` (id=SKU, description, price minor units), `currency`, `total` (minor units), `meta` chứa order increment ID, `successRedirectUrl`, `cancelRedirectUrl`
   - `total` phải ≥ minimum contribution của currency — throw exception nếu không đủ
@@ -240,13 +241,17 @@
 ## - [ ] Task 9 - My Account: progress bar + contributor list + share link [enabler]
 
 - Depends-on: `Task 7`
-- Context: Tại trang Order Detail trong My Account, hiển thị progress bar (% đóng góp), danh sách contributors (name + amount formatted), và nút "Copy Link". Khi order `processing`: progress = 100%, ẩn share link.
+- Context: Tại trang Order Detail trong My Account, hiển thị progress bar (% đóng góp), danh sách contributors (name + amount formatted), và nút "Copy Link". Khi order `processing`: progress = 100%, ẩn share link. Block dùng `Magento\Sales\Block\Order\Info` để tự load order từ registry, inject vào `referenceContainer name="content"` sau `sales.order.view`.
 - Scope:
   - `app/code/Laybyland/PaySquad/ViewModel/Order/GroupPayment.php`
   - `app/code/Laybyland/PaySquad/view/frontend/layout/sales_order_view.xml`
   - `app/code/Laybyland/PaySquad/view/frontend/templates/order/group-payment.phtml`
   - `app/code/Laybyland/PaySquad/view/frontend/web/js/group-payment.js` (Clipboard API)
 - Acceptance criteria:
+  - Block class = `Magento\Sales\Block\Order\Info`; inject vào `referenceContainer name="content"` với `after="sales.order.view"`
+  - Template dùng `$block->getOrder()` (không phải `$block->getData('order')`)
+  - `isPaysquadOrder()` check `paysquad_id` column trước, fallback sang `additional_information['paySquadId']`
+  - `getContributionLink()` check `contribution_link` column trước, fallback sang `additional_information['contributionLink']`
   - Progress bar hiển thị `SUM(amount) / order_grand_total × 100` %
   - Contributor list: name + amount formatted từ minor units (ví dụ: $220.50)
   - "Copy Link" button copy `contribution_link` vào clipboard (Clipboard API + fallback execCommand)
@@ -302,12 +307,60 @@
 
 ---
 
+## - [ ] Task 12 - My Account: real-time progress polling [feature]
+
+- Depends-on: `Task 9`
+- Context: PaySquad không có webhook intermediate cho từng contribution lẻ. Để My Account hiển thị progress real-time khi order còn `pending_payment`, JS polling `GET /paysquad/order/progress` mỗi 5s, lấy data mới nhất từ PaySquad API, cập nhật DOM không reload trang.
+- Scope:
+  - `app/code/Laybyland/PaySquad/Controller/Order/Progress.php`
+  - `app/code/Laybyland/PaySquad/etc/frontend/routes.xml` (route `paysquad` đã có)
+  - `app/code/Laybyland/PaySquad/view/frontend/web/js/group-payment.js` (thêm polling logic)
+- Acceptance criteria:
+  - `GET /paysquad/order/progress?order_id=X` — chỉ chấp nhận GET, customer phải login và là owner của order
+  - Không phải owner → HTTP 403 JSON `{"error": "Forbidden"}`
+  - Order không có `paysquad_id` → HTTP 400 JSON `{"error": "Not a PaySquad order"}`
+  - Controller gọi `GET /api/merchant/paysquad/{paySquadId}` → trả JSON:
+    ```json
+    {
+      "status": "Pending|InProgress|Complete",
+      "progressPercent": 45.5,
+      "contributions": [
+        {"name": "Alice", "amount": "100.00", "status": "Complete"}
+      ],
+      "isPending": true
+    }
+    ```
+  - JS polling: chỉ chạy khi `isPending = true` trong initial page render
+  - Interval: 5 giây; dừng khi `isPending = false` trong response
+  - Tab visibility: dừng polling khi tab ẩn (`document.hidden`), tiếp tục khi tab active lại
+  - Khi `isPending = false`: cập nhật progress = 100%, ẩn share link, dừng polling
+  - Không tạo thêm request nếu request trước chưa complete (tránh queue up)
+- Unit test (`Test/Unit/Controller/Order/ProgressTest.php`):
+  - Happy path: customer là owner, order có paysquad_id → trả JSON đúng format
+  - Negative: customer không phải owner → 403
+  - Negative: order không có paysquad_id → 400
+- Verify sau implement:
+  - My Account → Order Detail (pending_payment) → mở DevTools Network → thấy request đến `/paysquad/order/progress` mỗi 5s
+  - Contributor mới đóng góp trên PaySquad → progress bar + list cập nhật trong vòng 5s không reload
+  - Ẩn tab → requests dừng; mở lại → tiếp tục
+  - Order chuyển `processing` → polling dừng, progress = 100%
+- Code review: `config/checklist.md`
+
+---
+
 > Rules bổ sung:
 > - Logger: inject `Laybyland\PaySquad\Logger\Logger` (concrete class, không phải PSR interface) để ghi vào `var/log/paysquad_debug.log` — xem `examples/integration/magento-module-custom-logger-blueprint.md`
 > - Amount luôn dùng minor units khi giao tiếp với PaySquad API
 > - `system.xml` → `cache:clean config` sau khi sửa
 > - Không log raw credentials (Merchant ID, API Secret Key, Webhook Secret)
 > - Webhook handler phải idempotent — check order/invoice status trước khi thực hiện
+> - `payment_action = order` bắt buộc phải có `<can_order>1</can_order>` trong `config.xml` — thiếu flag này API không được gọi
+> - My Account block phải dùng `Magento\Sales\Block\Order\Info`, inject vào `referenceContainer name="content"` sau `sales.order.view`; template dùng `$block->getOrder()` không phải `$block->getData('order')`
+> - Order status `awaiting_group_payment` tạo qua Data Patch (`Setup/Patch/Data/`), không tạo thủ công
+> - Observer `SetOrderPendingPayment` set `status = AddAwaitingGroupPaymentStatus::STATUS_CODE`, không hardcode string
+> - Static content deploy phải chỉ định đúng theme: `bin/magento setup:static-content:deploy -f en_AU en_US -t Laybyland/layup`; xóa `pub/static/frontend` trước khi deploy lại nếu CSS không apply
+> - Shared logic giữa handlers → extract vào `Model/Service/`; `FailedHandler` + `CancelledHandler` extend `AbstractCancellationHandler`
+> - Checkout payment template cần logo trong `<label>` của `payment-method-title` (xem pattern Afterpay)
 
 ## Completion report
 1. Files changed
