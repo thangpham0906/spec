@@ -20,7 +20,7 @@
 - Strict types bắt buộc: `declare(strict_types=1);` ở mọi file PHP
 - Không dùng `@suppress`, không dùng `@codingStandardsIgnore`
 - Return type bắt buộc cho mọi method (kể cả `: void`)
-- Docblock chỉ khi cần giải thích logic phức tạp, không lặp lại type hint
+- **Docblock bắt buộc** cho mọi class và mọi method public/protected — không được bỏ qua kể cả khi type hint đã rõ. Tối thiểu phải có mô tả ngắn 1 dòng giải thích mục đích. Không được chỉ lặp lại type hint mà không có mô tả.
 
 ### Nguyên tắc thiết kế (Technical Guidelines)
 

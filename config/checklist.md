@@ -8,6 +8,7 @@
 
 - [ ] `declare(strict_types=1)` mọi file PHP
 - [ ] Return type mọi method
+- [ ] **Docblock bắt buộc**: mọi class và mọi method public/protected phải có docblock với mô tả ngắn. Không được thiếu dù type hint đã rõ
 - [ ] Không có `ObjectManager::getInstance()`
 - [ ] Không có code chết, comment out, `exit`, `die`, `var_dump`, `print_r`
 - [ ] Không có `new` trong business code — dùng factory/DI
