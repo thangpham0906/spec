@@ -34,6 +34,17 @@ Khi prompt có `Project:` và `Phạm vi biết chắc:` không trống:
 - **Không được tự suy project từ context** (ví dụ thấy `projects/laybyland/` tồn tại mà tự đặt vào đó)
 - Nếu không chắc → hỏi user: "Feature này thuộc project cụ thể hay là core reusable?"
 
+## Quy tắc bắt buộc cho frontend theme (Luma/Figma)
+
+Khi task liên quan đến frontend theme (XML/PHTML/LESS/BEM/Figma):
+
+- Bắt buộc đọc `config/references/frontend/luma-figma-theme-docs-index.md` trước khi plan/implement.
+- Bắt buộc hỏi rõ trước khi chốt plan (không tự đoán):
+  1. Theme vendor
+  2. Theme name
+  3. Module chịu trách nhiệm seed CMS block/Data Patch (nếu có)
+- Nếu thiếu một trong các thông tin trên: dừng ở bước làm rõ requirement, chưa tạo plan implement.
+
 ## Chế độ hỏi đáp (Q: mode)
 
 Khi prompt bắt đầu bằng `Q:`:

@@ -192,3 +192,19 @@ Dùng lại spec tại projects/<tên-project>/features/<tên-feature>/spec.md v
 | Templates feature | `features/_template/` |
 | Task contracts | `templates/task-contract*.md` |
 | Blueprints index | `examples/INDEX.md` |
+| Frontend theme references (Luma + Figma) | `config/references/frontend/luma-figma-theme-docs-index.md` |
+
+---
+
+## Frontend Luma + Figma (dùng cho nhiều page)
+
+Khi làm frontend theme (homepage/PLP/PDP/cart/checkout), đọc trước:
+
+- `config/references/frontend/luma-figma-theme-docs-index.md`
+
+Bộ docs này chuẩn hóa:
+
+- Kiến trúc theme theo XML + PHTML + LESS
+- Token + breakpoint strategy (mobile-first)
+- Component contract + QA gate
+- Section-module pattern (Data Patch tạo CMS block + render trong PHTML)
