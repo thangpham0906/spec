@@ -4,7 +4,7 @@
 - Feature: `PaySquad Express Checkout — "Buy Now with PaySquad"`
 - Vấn đề: Customer muốn checkout nhanh với PaySquad trực tiếp từ minicart, không cần chọn payment method thủ công tại trang checkout
 - Mục tiêu: Thêm nút "Buy Now with PaySquad" vào minicart; khi click, redirect thẳng đến OSC với PaySquad được pre-select và là payment method duy nhất hiển thị
-- Module/scope biết chắc: `app/code/Laybyland/PaySquad` (extension của module hiện tại, không tạo module mới)
+- Module/scope biết chắc: `app/code/Secomm/PaySquad` (module `Secomm_PaySquad`; payment method code `paysquad`, config `payment/paysquad/*`)
 
 ## Business + scope
 
@@ -12,11 +12,11 @@
   - Nút "Buy Now with PaySquad" trong minicart (hiển thị khi cart có ít nhất 1 item và PaySquad enabled)
   - Session flag `paysquad_express=1` được set khi click nút
   - Redirect đến `onestepcheckout-index-index` (Mageplaza OSC)
-  - Plugin filter payment methods: khi flag active, chỉ cho phép `laybyland_paysquad`
+  - Plugin filter payment methods: khi flag active, chỉ cho phép `paysquad`
   - JS auto-select PaySquad khi flag active tại checkout
   - Flag clear sau khi: order placed thành công, customer navigate ra khỏi checkout, hoặc session expire
   - Admin config: toggle bật/tắt nút Express Checkout độc lập với toggle PaySquad chính
-  - Thêm config path `payment/laybyland_paysquad/express_checkout_enabled` vào `config.xml` và `system.xml`
+  - Thêm config path `payment/paysquad/express_checkout_enabled` vào `config.xml` và `system.xml`
 
 - Out-of-scope:
   - Thay đổi flow checkout sau khi PaySquad được select (giữ nguyên flow hiện tại)
@@ -27,11 +27,11 @@
 ## Acceptance criteria
 
 **AC-01 — Nút minicart:**
-- Nút "Buy Now with PaySquad" hiển thị trong minicart khi: `payment/laybyland_paysquad/active = 1` VÀ `payment/laybyland_paysquad/express_checkout_enabled = 1` VÀ cart có ít nhất 1 item
+- Nút "Buy Now with PaySquad" hiển thị trong minicart khi: `payment/paysquad/active = 1` VÀ `payment/paysquad/express_checkout_enabled = 1` VÀ cart có ít nhất 1 item (và trong giới hạn min/max order total nếu cấu hình)
 - Nút ẩn khi PaySquad disabled (`active = 0`) hoặc Express Checkout disabled (`express_checkout_enabled = 0`)
 - Nút ẩn khi cart trống
-- PaySquad là group payment (pay full ngay), không phải BNPL — không bị ảnh hưởng bởi `bnpl_exclude` attribute
-- Nút render qua KnockoutJS component, đọc config từ `window.checkoutConfig.payment.laybyland_paysquad`
+- Trên storefront Laybyland (Mageplaza QuickCart): nút KO có thể bị disable khi cart có BNPL exclusion / giới hạn sản phẩm (theo `bnplExclusionMessage` / `cartMaxProductActive` trong theme) — cần thống nhất với business rule “Decision” bên dưới
+- Nút render qua KnockoutJS (QuickCart): cờ hiển thị đọc từ `window.checkout` (inject qua `Secomm\PaySquad\Plugin\Block\Cart\Sidebar::afterGetConfig`), ví dụ `isPaySquadExpressEnabled`; **không** dùng `window.checkoutConfig.payment.*` cho minicart
 
 **AC-02 — Session flag:**
 - WHEN customer click nút "Buy Now with PaySquad", THE Express_Checkout_Controller SHALL set session flag `paysquad_express = 1` qua AJAX call đến endpoint `/paysquad/express/set`
@@ -43,29 +43,29 @@
 - THE Redirect SHALL dùng URL được build bởi `Magento\Framework\UrlInterface` (không hardcode path)
 
 **AC-04 — Filter payment methods:**
-- WHILE session flag `paysquad_express = 1` active, THE Payment_Filter_Plugin SHALL filter danh sách payment methods chỉ còn `laybyland_paysquad`
+- WHILE session flag `paysquad_express = 1` active, THE Payment_Filter_Plugin SHALL filter danh sách payment methods chỉ còn `paysquad`
 - THE Payment_Filter_Plugin SHALL là `afterGetActiveQuoteMethods` plugin trên `Magento\Payment\Model\MethodList`
 - WHEN customer ở trang checkout không phải OSC (ví dụ: standard checkout), THE Payment_Filter_Plugin SHALL vẫn áp dụng filter nếu flag active
 
 **AC-05 — Auto-select PaySquad tại checkout:**
-- WHEN trang OSC load với session flag `paysquad_express = 1`, THE ConfigProvider SHALL expose `isExpressCheckout: true` trong `window.checkoutConfig.payment.laybyland_paysquad`
+- WHEN trang OSC load với session flag `paysquad_express = 1`, THE ConfigProvider SHALL expose `isExpressCheckout: true` trong `window.checkoutConfig.payment.paysquad`
 - WHEN `isExpressCheckout = true`, THE PaySquad_JS_Component SHALL tự động select PaySquad làm payment method active (gọi `selectPaymentMethod()`)
 - THE Auto_Select SHALL xảy ra sau khi payment methods list đã render (dùng KO subscription hoặc `afterRender`)
 
 **AC-05b — Ẩn payment methods khác tại OSC:**
-- WHILE session flag `paysquad_express = 1` active, THE Payment_Filter_Plugin SHALL đảm bảo chỉ `laybyland_paysquad` có trong danh sách trả về từ `MethodList::getActiveQuoteMethods`
+- WHILE session flag `paysquad_express = 1` active, THE Payment_Filter_Plugin SHALL đảm bảo chỉ `paysquad` có trong danh sách trả về từ `MethodList::getActiveQuoteMethods`
 - Các payment method khác bị ẩn hoàn toàn (không render trong DOM), không chỉ bị disable
 
 **AC-06 — Clear flag:**
 - WHEN order được placed thành công (event `checkout_onepage_controller_success_action`), THE Flag_Clear_Observer SHALL unset session flag `paysquad_express`
-- WHEN customer navigate ra khỏi trang checkout (request đến route khác ngoài `onestepcheckout/*`), THE Flag_Clear_Plugin SHALL unset session flag `paysquad_express`
+- WHEN customer navigate ra khỏi trang checkout (request đến route khác ngoài `onestepcheckout/*`), THE Flag_Clear_Observer (`controller_action_predispatch`) SHALL unset session flag `paysquad_express` (implementation hiện tại: observer, không phải plugin `FrontController`)
 - WHEN PHP session expire, THE flag SHALL tự động mất theo session (không cần xử lý thêm)
 - THE Flag_Clear SHALL không ảnh hưởng đến order đã được tạo
 
 **AC-07 — Admin config:**
-- Admin config có thêm field `Express Checkout Button` (yes/no) trong group `laybyland_paysquad` tại `system.xml`
+- Admin config có thêm field `Express Checkout Button` (yes/no) trong group payment PaySquad (`payment/paysquad` trong `config.xml` / `system.xml`)
 - Default value: `0` (disabled) trong `config.xml`
-- Config path: `payment/laybyland_paysquad/express_checkout_enabled`
+- Config path: `payment/paysquad/express_checkout_enabled`
 
 **AC-08 — Security:**
 - Endpoint `/paysquad/express/set` chỉ chấp nhận POST request
@@ -87,7 +87,7 @@
   - Clear flag khi navigate away: dùng plugin trên `Magento\Framework\App\FrontController::dispatch` hoặc observer `controller_action_predispatch` để check route; cần cẩn thận không clear flag khi customer đang ở các sub-route của OSC (ví dụ: AJAX calls từ OSC)
 
 - Approach đã chốt:
-  - Không tạo module mới — thêm files vào `app/code/Laybyland/PaySquad/` hiện tại
+  - Module: `Secomm_PaySquad` tại `app/code/Secomm/PaySquad/`
   - Session flag dùng `Magento\Checkout\Model\Session` (không dùng `Magento\Framework\Session\SessionManagerInterface` generic)
   - Plugin filter: `afterGetActiveQuoteMethods` trên `Magento\Payment\Model\MethodList` — đơn giản, không cần around
   - Clear flag khi navigate away: observer `controller_action_predispatch` check route không phải `onestepcheckout`
@@ -100,7 +100,7 @@
   - Flag clear ngay khi order placed hoặc rời checkout — không persist sang session tiếp theo
   - BNPL exclusion check dùng `Laybyland\BnplExclusion\Helper\Data::isQuoteContainExcludeBnplItems()` — tái sử dụng logic đã có
 
-- Scope được phép sửa: `app/code/Laybyland/PaySquad/` (toàn bộ module hiện tại)
+- Scope được phép sửa: `app/code/Secomm/PaySquad/` + override theme Mageplaza QuickCart trên `Laybyland/layup` khi cần nút minicart
 
 ## Testcase
 

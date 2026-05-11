@@ -4,7 +4,7 @@
 - Feature: `PaySquad Group Payment`
 - Vấn đề: Khách hàng muốn thanh toán đơn hàng theo nhóm — nhiều người cùng góp tiền cho một đơn
 - Mục tiêu: Tích hợp PaySquad vào Magento 2 như một payment method async, order fulfil sau khi nhận webhook `paysquad.succeeded`
-- Module/scope biết chắc: `app/code/Laybyland/PaySquad` (module mới)
+- Module/scope biết chắc: `app/code/Secomm/PaySquad` (module `Secomm_PaySquad`)
 
 ## Business + scope
 - In-scope:
@@ -32,7 +32,8 @@
 
 **AC-02 — Database:**
 - Thêm `paysquad_id` (VARCHAR 255) và `contribution_link` (TEXT) vào `sales_order_payment`
-- Tạo bảng `paysquad_transactions`: `transaction_id` PK, `order_id`, `contributor_name`, `amount` (INT minor units), `txn_id`, `status`, `created_at`
+- Tạo bảng contributions (implementation: `secomm_paysquad_transaction`): `transaction_id` PK, `order_id`, `contributor_name`, `amount` (INT minor units), `txn_id`, `status`, `created_at`
+- Bổ sung có thể có `secomm_paysquad_webhook_log` cho idempotency webhook (`pay_squad_id` + `event_name`)
 
 **AC-03 — Checkout:**
 - PaySquad hiển thị trong danh sách payment methods khi module enabled
@@ -50,7 +51,7 @@
 - Endpoint `/paysquad/webhook/receive`
 - Validate signature: `base64_decode(Webhook_Secret)` → HMAC key → `base64_encode(hash_hmac('sha256', rawBody, key, true))` so sánh với header `X-Paysquad-Signature` (constant-time)
 - Sai signature → HTTP 401, log
-- Trả HTTP 200 ngay, xử lý async
+- Trả HTTP 200 sau khi xử lý (implementation: xử lý **đồng bộ** trong request qua `Processor`, không Message Queue — khác wording “async” nếu hiểu theo MQ/thread riêng)
 - Idempotency key: `paySquadId` + `eventName`
 - `paysquad.succeeded` → GET details → lưu contributions → tạo 1 Invoice → order `processing`
 - `paysquad.failed` / `paysquad.cancelled` → GET details → log `reason`/`subReason` → cancel order + restock
@@ -119,7 +120,7 @@
   - `PendingOrdersSync` filter `$order->getState() === Order::STATE_PENDING_PAYMENT` — `awaiting_group_payment` vẫn có state `pending_payment` nên vẫn được sync, không bị bỏ sót
   - Template `details_snapshot.phtml` của `Laybyland_Layby` render cho tất cả orders kể cả PaySquad → crash "Trying to access array offset on null" khi `$laybyPaymentPlan` là null → phải guard `if ($laybyOrder && $laybyPaymentPlan)` trước khi render layby-specific content
 - Approach đã chốt:
-  - Module mới `Laybyland/PaySquad`, không sửa core Magento
+  - Module `Secomm/PaySquad` (`Secomm_PaySquad`), không sửa core Magento
   - **Method code: `paysquad`** (không phải `laybyland_paysquad`) để tránh conflict với layby prefix filter
   - Webhook xử lý synchronous (không cần MQ) — handler chạy < 10s
   - `CreateHandler` set session data trực tiếp thay vì dùng after-plugin (vì AsyncOrder)
@@ -149,7 +150,7 @@
   - Contribution status phải được update khi thay đổi (Uncaptured → Complete) — không chỉ skip nếu record đã tồn tại
   - Progress bar trong My Account cập nhật real-time qua polling PaySquad API — không cần reload trang
   - Order status `awaiting_group_payment` chỉ set khi có contribution thực tế, không set ngay lúc place order
-- Scope được phép sửa: `app/code/Laybyland/PaySquad/` (toàn bộ module mới)
+- Scope được phép sửa: `app/code/Secomm/PaySquad/` (toàn bộ module) + theme `Laybyland/layup` khi cần (ví dụ override `Secomm_PaySquad` LESS)
 
 ## Testcase
 - Happy:

@@ -1,5 +1,7 @@
 # Tasks - paysquad-express-checkout
 
+> **Code thực tế:** `app/code/Secomm/PaySquad/` (payment code `paysquad`, config `payment/paysquad/*`). Nút minicart trên storefront: thêm theme `Laybyland/layup/Mageplaza_QuickCart` (`web/js/view/minicart.js`, `web/template/minicart/content.html`) + `Plugin/Block/Cart/Sidebar` inject `isPaySquadExpressEnabled`.
+
 > Không lặp business context. Mỗi task: scope + AC + unit test + verify.
 > TDD flow bắt buộc với task có business logic: **viết test trước → implement → test pass → code review**.
 > Nếu test fail hoặc review còn Critical/High issue: **DỪNG, không được báo task hoàn thành**.
@@ -11,13 +13,13 @@
 - Depends-on: `—`
 - Context: Thêm config `express_checkout_enabled` (default=0) vào `config.xml` và field UI vào `system.xml`. Thêm method `isExpressCheckoutEnabled()` vào `Gateway/Config/Config.php`.
 - Scope:
-  - `app/code/Laybyland/PaySquad/etc/config.xml`
-  - `app/code/Laybyland/PaySquad/etc/adminhtml/system.xml`
-  - `app/code/Laybyland/PaySquad/Gateway/Config/Config.php`
+  - `app/code/Secomm/PaySquad/etc/config.xml`
+  - `app/code/Secomm/PaySquad/etc/adminhtml/system.xml`
+  - `app/code/Secomm/PaySquad/Gateway/Config/Config.php`
 - Acceptance criteria:
-  - `config.xml` có `<express_checkout_enabled>0</express_checkout_enabled>` trong group `laybyland_paysquad`
+  - `config.xml` có `<express_checkout_enabled>0</express_checkout_enabled>` trong group `paysquad`
   - `system.xml` có field `express_checkout_enabled` type=select, source=Yesno, sortOrder=70
-  - `Config::isExpressCheckoutEnabled()` đọc `payment/laybyland_paysquad/express_checkout_enabled` trả về bool
+  - `Config::isExpressCheckoutEnabled()` đọc `payment/paysquad/express_checkout_enabled` trả về bool
 - Verify:
   - `bin/magento cache:clean config`
   - Admin → Stores → Config → Sales → Payment Methods → PaySquad → thấy field "Express Checkout Button"
@@ -29,7 +31,7 @@
 - Depends-on: `Task 1`
 - Context: POST `/paysquad/express/set` validate form key + cart không trống, set `paysquad_express=1` trong `Magento\Checkout\Model\Session`, trả JSON. Route `paysquad` đã có trong `etc/frontend/routes.xml`.
 - Scope:
-  - `app/code/Laybyland/PaySquad/Controller/Express/Set.php`
+  - `app/code/Secomm/PaySquad/Controller/Express/Set.php`
 - Acceptance criteria:
   - Chỉ chấp nhận POST (implement `HttpPostActionInterface`)
   - Validate form key — Magento tự xử lý qua `CsrfAwareActionInterface` hoặc form key validator
@@ -42,8 +44,8 @@
   - Negative: PaySquad disabled → flag không set, return error
 - Reference: `config/references/core/routing-controllers.md`
 - Verify sau implement:
-  - `./vendor/bin/phpunit app/code/Laybyland/PaySquad/Test/Unit/Controller/Express/SetTest.php` → all pass
-  - `curl -X POST https://<domain>/paysquad/express/set` → 403 (no form key)
+  - `./vendor/bin/phpunit app/code/Secomm/PaySquad/Test/Unit/Controller/Express/SetTest.php` → all pass
+  - POST `/paysquad/express/set` với cart có item + `form_key` → JSON success (controller hiện bypass CSRF strict; không kỳ vọng 403 mặc định)
 - Code review: `config/checklist.md`
 
 ---
@@ -51,21 +53,21 @@
 ## Task 3 - Plugin filter payment methods [feature]
 
 - Depends-on: `Task 2`
-- Context: `afterGetActiveQuoteMethods` plugin trên `Magento\Payment\Model\MethodList`. Khi `paysquad_express=1` trong session, filter result chỉ giữ method có code `laybyland_paysquad`. OSC gọi `PaymentMethodManagementInterface::getList()` → bên trong gọi `MethodList::getActiveQuoteMethods()` → plugin intercept được.
+- Context: `afterGetActiveQuoteMethods` plugin trên `Magento\Payment\Model\MethodList`. Khi `paysquad_express=1` trong session, filter result chỉ giữ method có code `paysquad`. OSC gọi `PaymentMethodManagementInterface::getList()` → bên trong gọi `MethodList::getActiveQuoteMethods()` → plugin intercept được.
 - Scope:
-  - `app/code/Laybyland/PaySquad/Plugin/ExpressPaymentFilter.php`
-  - `app/code/Laybyland/PaySquad/etc/di.xml` (thêm plugin)
+  - `app/code/Secomm/PaySquad/Plugin/ExpressPaymentFilter.php`
+  - `app/code/Secomm/PaySquad/etc/di.xml` (thêm plugin)
 - Acceptance criteria:
-  - Flag active + PaySquad trong list → chỉ trả về `[laybyland_paysquad]`
+  - Flag active + PaySquad trong list → chỉ trả về `[paysquad]`
   - Flag active + PaySquad không trong list (disabled) → trả về `[]`
   - Flag không active → trả về `$result` nguyên vẹn
 - Unit test (`Test/Unit/Plugin/ExpressPaymentFilterTest.php`):
-  - Happy path: flag=1, list có 3 methods → chỉ còn laybyland_paysquad
+  - Happy path: flag=1, list có 3 methods → chỉ còn paysquad
   - Edge: flag=1, PaySquad không trong list → empty array
   - Negative: flag=0 → list không bị filter
 - Reference: `config/references/core/plugins.md`
 - Verify sau implement:
-  - `./vendor/bin/phpunit app/code/Laybyland/PaySquad/Test/Unit/Plugin/ExpressPaymentFilterTest.php` → all pass
+  - `./vendor/bin/phpunit app/code/Secomm/PaySquad/Test/Unit/Plugin/ExpressPaymentFilterTest.php` → all pass
   - Set flag manually trong session → vào OSC → chỉ thấy PaySquad
 - Code review: `config/checklist.md`
 
@@ -76,7 +78,7 @@
 - Depends-on: `Task 2`
 - Context: Mở rộng `Model/Ui/ConfigProvider.php` inject thêm `Magento\Checkout\Model\Session` để expose `isExpressCheckout` flag cho JS. JS component đọc flag này để auto-select PaySquad.
 - Scope:
-  - `app/code/Laybyland/PaySquad/Model/Ui/ConfigProvider.php`
+  - `app/code/Secomm/PaySquad/Model/Ui/ConfigProvider.php`
 - Acceptance criteria:
   - `getConfig()` trả thêm `'isExpressCheckout' => (bool) $checkoutSession->getData('paysquad_express')`
   - Khi flag=0: `isExpressCheckout = false`
@@ -85,8 +87,8 @@
   - Flag=1 → `isExpressCheckout: true` trong config
   - Flag=0 → `isExpressCheckout: false` trong config
 - Verify sau implement:
-  - `./vendor/bin/phpunit app/code/Laybyland/PaySquad/Test/Unit/Model/Ui/ConfigProviderTest.php` → all pass
-  - Set flag → vào OSC → `window.checkoutConfig.payment.laybyland_paysquad.isExpressCheckout === true`
+  - `./vendor/bin/phpunit app/code/Secomm/PaySquad/Test/Unit/Model/Ui/ConfigProviderTest.php` → all pass
+  - Set flag → vào OSC → `window.checkoutConfig.payment.paysquad.isExpressCheckout === true`
 - Code review: `config/checklist.md`
 
 ---
@@ -96,9 +98,9 @@
 - Depends-on: `Task 2`
 - Context: 2 observers clear `paysquad_express` flag: (1) sau order success, (2) khi navigate ra khỏi OSC. Observer navigate away check `$request->getModuleName() !== 'onestepcheckout'` và `!$request->isAjax()`.
 - Scope:
-  - `app/code/Laybyland/PaySquad/Observer/ClearExpressFlagOnSuccess.php`
-  - `app/code/Laybyland/PaySquad/Observer/ClearExpressFlagOnNavigate.php`
-  - `app/code/Laybyland/PaySquad/etc/events.xml`
+  - `app/code/Secomm/PaySquad/Observer/ClearExpressFlagOnSuccess.php`
+  - `app/code/Secomm/PaySquad/Observer/ClearExpressFlagOnNavigate.php`
+  - `app/code/Secomm/PaySquad/etc/events.xml`
 - Acceptance criteria:
   - `ClearExpressFlagOnSuccess`: event `checkout_onepage_controller_success_action` → `checkoutSession->unsetData('paysquad_express')`
   - `ClearExpressFlagOnNavigate`: event `controller_action_predispatch` → check module != `onestepcheckout` AND !isAjax → unset flag
@@ -110,7 +112,7 @@
   - Module=homepage, isAjax=true → flag không bị clear
 - Reference: `config/references/core/events-observers.md`
 - Verify sau implement:
-  - `./vendor/bin/phpunit app/code/Laybyland/PaySquad/Test/Unit/Observer/` → all pass
+  - `./vendor/bin/phpunit app/code/Secomm/PaySquad/Test/Unit/Observer/` → all pass
   - Set flag → navigate về homepage → flag bị clear (check session)
   - Set flag → place order → flag bị clear
 - Code review: `config/checklist.md`
@@ -122,10 +124,10 @@
 - Depends-on: `Task 1`, `Task 4`
 - Context: Block `Block/Minicart/Button.php` implement `ShortcutInterface`. Observer `AddExpressShortcut` inject block vào minicart qua event `shortcut_buttons_container`. Template có nút với AJAX call + redirect. JS dùng RequireJS.
 - Scope:
-  - `app/code/Laybyland/PaySquad/Block/Minicart/Button.php`
-  - `app/code/Laybyland/PaySquad/Observer/AddExpressShortcut.php`
-  - `app/code/Laybyland/PaySquad/view/frontend/templates/minicart/button.phtml`
-  - `app/code/Laybyland/PaySquad/etc/events.xml` (thêm observer)
+  - `app/code/Secomm/PaySquad/Block/Minicart/Button.php`
+  - `app/code/Secomm/PaySquad/Observer/AddExpressShortcut.php`
+  - `app/code/Secomm/PaySquad/view/frontend/templates/minicart/button.phtml`
+  - `app/code/Secomm/PaySquad/etc/events.xml` (thêm observer)
 - Acceptance criteria:
   - `Button::isActive()` = `Config::isActive() && Config::isExpressCheckoutEnabled()`
   - `Button::_toHtml()` trả `''` khi `!isActive()`
@@ -146,7 +148,7 @@
 - Depends-on: `Task 4`, `Task 6`
 - Context: Cập nhật `view/frontend/web/js/view/payment/method-renderer/paysquad.js` để đọc `isExpressCheckout` từ `window.checkoutConfig` và gọi `selectPaymentMethod()` trong `initialize()`.
 - Scope:
-  - `app/code/Laybyland/PaySquad/view/frontend/web/js/view/payment/method-renderer/paysquad.js`
+  - `app/code/Secomm/PaySquad/view/frontend/web/js/view/payment/method-renderer/paysquad.js`
 - Acceptance criteria:
   - Khi `isExpressCheckout = true`: gọi `this.selectPaymentMethod()` trong `initialize()`
   - Khi `isExpressCheckout = false`: không auto-select (behavior bình thường)
@@ -158,7 +160,7 @@
 ---
 
 > Rules bổ sung:
-> - Inject `Laybyland\PaySquad\Logger\Logger` (không phải PSR interface) cho các class cần log
+> - Inject `Secomm\PaySquad\Logger\Logger` (không phải PSR interface) cho các class cần log
 > - Không tạo Factory thủ công — Magento auto-generate
 > - `system.xml` → `cache:clean config` sau khi sửa
 > - `controller_action_predispatch` observer: check `isAjax()` trước khi clear flag

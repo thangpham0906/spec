@@ -80,6 +80,16 @@
 - [ ] Custom carrier: verify checkout method đúng điều kiện
 - [ ] Custom thay core: verify so sánh behavior
 
+## 10. Cron + Async Payment Pitfalls (rút kinh nghiệm PaySquad)
+
+- [ ] Cron UX rõ nghĩa với business: nếu chạy hourly thì config theo `minute` (00-59), không dùng `time` dễ gây hiểu nhầm
+- [ ] `config_path` dùng cho `crontab.xml` luôn phải là cron expression hợp lệ (`* * * * *`), không lưu raw value kiểu `HH,MM,SS`
+- [ ] Backend model config phải convert value UI -> cron expression, và xử lý cả format array/string
+- [ ] Cron class có guard theo flag enable (defense-in-depth), không phụ thuộc hoàn toàn vào scheduler
+- [ ] Verify cron bằng DB (`core_config_data`, `cron_schedule`) + lưu ý window generate (`system/cron/default/schedule_ahead_for`)
+- [ ] Với API async (refund 202 Accepted): xác nhận cả request đã gửi + trạng thái eventual consistency, không kết luận fail chỉ từ UI tức thời
+- [ ] Sau rename module/table: luôn có checklist migrate data cũ (ví dụ `laybyland_*` -> `secomm_*`) trước khi kết luận grid "không có dữ liệu"
+
 ---
 
 > Khi có dấu hỏi về cách implement: tra `magento-patterns.md` → đọc reference tương ứng.

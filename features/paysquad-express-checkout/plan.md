@@ -32,9 +32,9 @@ Thêm vào `etc/config.xml`:
 <allowspecific>0</allowspecific>
 ```
 
-Thêm vào `etc/adminhtml/system.xml` (trong group `laybyland_paysquad`):
+Thêm vào `etc/adminhtml/system.xml` (group payment `paysquad` / `payment/paysquad/*`):
 - Express Checkout Button (yes/no), Sort Order, Min/Max Order Total
-- New Order Status (source: `Laybyland\PaySquad\Model\Config\Source\Order\Status\PendingPayment`)
+- New Order Status (source: `Secomm\PaySquad\Model\Config\Source\Order\Status\PendingPayment`)
 - Payment from Applicable Countries, Payment from Specific Countries
 
 Thêm method vào `Gateway/Config/Config.php`:
@@ -62,7 +62,7 @@ Route khai báo trong `etc/frontend/routes.xml` (đã có, dùng frontName `pays
 - `checkoutConfig` trong minicart.js = `window.checkout` (không phải `window.checkoutConfig`)
 
 **Plugin inject config vào `window.checkout`:**
-`Plugin/Block/Cart/Sidebar.php` — `afterGetConfig` trên `Magento\Checkout\Block\Cart\Sidebar`:
+`Secomm\PaySquad\Plugin\Block\Cart\Sidebar` — `afterGetConfig` trên `Magento\Checkout\Block\Cart\Sidebar`:
 ```php
 $result['isPaySquadExpressEnabled'] = $this->config->isActive()
     && $this->config->isExpressCheckoutEnabled();
@@ -86,7 +86,7 @@ proceedWithPaySquad: function () {
 ### 4. Plugin — Filter Payment Methods
 
 `Plugin/ExpressPaymentFilter.php` — `afterGetActiveQuoteMethods` trên `Magento\Payment\Model\MethodList`:
-- Flag active → filter chỉ giữ `laybyland_paysquad`
+- Flag active → filter chỉ giữ `paysquad`
 - Flag không active → return nguyên vẹn
 
 OSC gọi `PaymentMethodManagementInterface::getList()` → bên trong gọi `MethodList::getActiveQuoteMethods()` → plugin intercept được.
@@ -120,7 +120,7 @@ Minicart (QuickCart KO template) → click "Buy Now with PaySquad"
 
 OSC load:
   → ConfigProvider::getConfig() → isExpressCheckout: true
-  → Plugin::afterGetActiveQuoteMethods() → filter → chỉ laybyland_paysquad
+  → Plugin::afterGetActiveQuoteMethods() → filter → chỉ paysquad
   → JS paysquad.js initialize() → selectPaymentMethod()
   → Customer thấy chỉ PaySquad, đã được select
 
@@ -167,7 +167,7 @@ Place Order:
 
 ### Bug 1 — `ConfigProvider` và `Sidebar` plugin đăng ký sai scope
 
-**Triệu chứng:** `window.checkoutConfig.payment.laybyland_paysquad` không tồn tại trên trang OSC.
+**Triệu chứng:** `window.checkoutConfig.payment.paysquad` không tồn tại trên trang OSC.
 
 **Root cause:** `CompositeConfigProvider` và `Magento\Checkout\Block\Cart\Sidebar` plugin được đăng ký trong `etc/di.xml` (global scope) thay vì `etc/frontend/di.xml` (frontend scope). Magento chỉ load `CompositeConfigProvider` trong frontend context, nên global scope không inject đúng.
 
@@ -177,12 +177,12 @@ Place Order:
 <type name="Magento\Checkout\Model\CompositeConfigProvider">
     <arguments>
         <argument name="configProviders" xsi:type="array">
-            <item name="laybyland_paysquad_config_provider" xsi:type="object">Laybyland\PaySquad\Model\Ui\ConfigProvider</item>
+            <item name="paysquad_config_provider" xsi:type="object">Secomm\PaySquad\Model\Ui\ConfigProvider</item>
         </argument>
     </arguments>
 </type>
 <type name="Magento\Checkout\Block\Cart\Sidebar">
-    <plugin name="laybyland_paysquad_minicart_config" type="Laybyland\PaySquad\Plugin\Block\Cart\Sidebar"/>
+    <plugin name="paysquad_minicart_config" type="Secomm\PaySquad\Plugin\Block\Cart\Sidebar"/>
 </type>
 ```
 
@@ -190,7 +190,7 @@ Place Order:
 
 ### Bug 2 — `isGateway` không được set → `isAvailable()` trả false
 
-**Triệu chứng:** `laybyland_paysquad` không xuất hiện trong payment methods list dù `active=1`.
+**Triệu chứng:** `paysquad` không xuất hiện trong payment methods list dù `active=1`.
 
 **Root cause:** `Magento\Payment\Model\Method\Adapter::isAvailable()` kiểm tra `isGateway()`. Nếu `is_gateway` không được set trong `config.xml`, method bị coi là không available.
 
@@ -201,16 +201,16 @@ Place Order:
 
 ---
 
-### Bug 3 — `PaymentMethodAvailable` observer nhận nhầm `laybyland_paysquad` là layby method
+### Bug 3 — `PaymentMethodAvailable` observer nhận nhầm method code chứa `layby` là layby method
 
-**Triệu chứng:** `laybyland_paysquad` bị filter ra khỏi payment list bởi `Laybyland\Layby\Observer\PaymentCombine\PaymentMethodAvailable`.
+**Triệu chứng:** Nếu đặt method code dạng `laybyland_*`, method có thể bị filter bởi `Laybyland\Layby\Observer\PaymentCombine\PaymentMethodAvailable`.
 
-**Root cause:** Observer dùng `strpos($code, 'layby')` để phân biệt layby vs non-layby methods. `strpos('laybyland_paysquad', 'layby')` trả về `0` (truthy, không phải `false`) vì string bắt đầu bằng `layby`. Kết quả: PaySquad bị coi là layby method và bị filter trong cả 2 nhánh logic.
+**Root cause:** Observer dùng `strpos($code, 'layby')` để phân biệt layby vs non-layby methods.
 
-**Fix:** Thêm whitelist `NON_LAYBY_METHODS` vào observer `Laybyland\Layby\Observer\PaymentCombine\PaymentMethodAvailable`:
+**Fix đã chốt trong Decision:** Method code **`paysquad`** (không prefix `laybyland_`) để tránh conflict; có thể bổ sung whitelist trong observer nếu cần.
 ```php
 private const NON_LAYBY_METHODS = [
-    'laybyland_paysquad',
+    'paysquad',
 ];
 ```
 Áp dụng whitelist vào tất cả 3 chỗ check `strpos(..., LAYBY_PREFIX)` trong observer (useLaybyProcess=true, useLaybyProcess=false, và guest check).
@@ -219,7 +219,7 @@ private const NON_LAYBY_METHODS = [
 
 ### Bug 4 — `checkout_index_index.xml` thiếu `component` declaration trên `billing-step`
 
-**Triệu chứng:** `laybyland_paysquad` không xuất hiện trong `rendererList` dù layout XML đúng path.
+**Triệu chứng:** `paysquad` không xuất hiện trong `rendererList` dù layout XML đúng path.
 
 **Root cause:** Layout XML của PaySquad thiếu `<item name="component" xsi:type="string">uiComponent</item>` trên node `billing-step`. Các module khác (LaybyPaypal, LaybyStripe) đều có khai báo này. Thiếu nó khiến Magento không merge đúng jsLayout tree.
 

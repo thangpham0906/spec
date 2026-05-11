@@ -3,9 +3,9 @@
 > Technical design only. Business context → `spec.md`.
 
 ## Mục tiêu kỹ thuật
-- Tạo module `Laybyland/PaySquad` tích hợp PaySquad như một async payment method trong Magento 2
+- Module `Secomm/PaySquad` (`Secomm_PaySquad`) tích hợp PaySquad như payment method (order fulfil qua webhook / cron sync)
 - Implement Payment Gateway pattern (Facade + CommandPool) với authorize/capture/refund
-- Webhook receiver xử lý async qua Message Queue để đảm bảo respond < 10s
+- Webhook receiver: validate signature → xử lý **đồng bộ** trong request qua `Processor` (không Message Queue trong implementation hiện tại)
 - Custom logger riêng tại `var/log/paysquad_debug.log`
 - Frontend: progress bar + contributor list + share link tại My Account và Admin Order
 
@@ -25,17 +25,18 @@
 ### 1. Module Structure
 
 ```
-app/code/Laybyland/PaySquad/
+app/code/Secomm/PaySquad/
 ├── etc/
 │   ├── module.xml                  # sequence: Magento_Sales, Magento_Payment, Magento_Checkout
 │   ├── config.xml                  # payment flags: can_authorize, can_capture, can_refund, order_status=pending_payment
-│   ├── di.xml                      # Facade, CommandPool, Logger, MQ Publisher
+│   ├── di.xml                      # Facade, CommandPool, Logger, plugins
 │   ├── adminhtml/
 │   │   └── system.xml              # Admin config: Merchant ID, API Secret Key, Webhook Secret, Mode
-│   ├── communication.xml           # MQ topic: laybyland.paysquad.webhook
-│   ├── queue_publisher.xml
-│   ├── queue_topology.xml
-│   └── queue_consumer.xml
+│   ├── frontend/
+│   │   ├── di.xml
+│   │   └── routes.xml
+│   └── crontab.xml                 # sync fallback (giờ — theo implementation)
+│   # Không dùng communication.xml / queue_* trong implementation hiện tại
 ├── Gateway/
 │   ├── Config/
 │   │   └── Config.php              # Đọc system config, build Basic Auth header, resolve base URL
@@ -68,7 +69,7 @@ app/code/Laybyland/PaySquad/
 │   └── AmountConverter.php         # Magento decimal ↔ minor units (integer)
 ├── Controller/
 │   ├── Webhook/
-│   │   └── Receive.php             # POST /paysquad/webhook/receive → validate sig → publish MQ → HTTP 200
+│   │   └── Receive.php             # POST /paysquad/webhook/receive → validate sig → Processor → HTTP 200
 │   └── Payment/
 │       └── Redirect.php            # Redirect customer đến contributionLink sau place order
 ├── Observer/
@@ -295,7 +296,7 @@ public function execute(Observer $observer)
 Nếu đã deploy với tên cũ, cần:
 1. `sed -i 's/laybyland_paysquad/paysquad/g'` trên tất cả PHP/XML/JS (trừ `db_schema.xml` và ResourceModel `_init()`)
 2. `UPDATE core_config_data SET path = REPLACE(path, 'payment/laybyland_paysquad/', 'payment/paysquad/') WHERE path LIKE 'payment/laybyland_paysquad/%'`
-3. ResourceModel `_init()` phải giữ tên table gốc (`laybyland_paysquad_webhook_log`, `laybyland_paysquad_transaction`) vì table đã tồn tại trong DB
+3. ResourceModel `_init()` trỏ tới bảng thực tế trong DB (implementation: `secomm_paysquad_transaction`, `secomm_paysquad_webhook_log`)
 
 ### 6. JS renderer list — cần file `method-renderer.js` riêng
 
@@ -314,7 +315,7 @@ define(['uiComponent', 'Magento_Checkout/js/model/payment/renderer-list'],
 function (Component, rendererList) {
     rendererList.push({
         type: 'paysquad',
-        component: 'Laybyland_PaySquad/js/view/payment/method-renderer/paysquad'
+        component: 'Secomm_PaySquad/js/view/payment/method-renderer/paysquad'
     });
     return Component.extend({});
 });
